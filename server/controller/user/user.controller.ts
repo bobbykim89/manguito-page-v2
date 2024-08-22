@@ -1,6 +1,6 @@
 import { type RuntimeConfig } from '@nuxt/schema'
 import { useRuntimeConfig } from '#imports'
-import { User, UserModel } from '@/server/models'
+import { User, type UserModel } from '@/server/models'
 import { Model } from 'mongoose'
 import bcrypt from 'bcryptjs'
 import type { EventHandlerRequest, H3Event, H3EventContext } from 'h3'

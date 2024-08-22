@@ -4,7 +4,6 @@ const modelName: string = 'comment'
 
 export interface CommentModel extends Document {
   text: string
-  name: string
   author: Schema.Types.ObjectId
   post: Schema.Types.ObjectId
   date: Date
@@ -14,9 +13,6 @@ const commentSchema: Schema<CommentModel> = new Schema<CommentModel>({
   text: {
     type: String,
     required: true,
-  },
-  name: {
-    type: String,
   },
   author: {
     type: Schema.Types.ObjectId,

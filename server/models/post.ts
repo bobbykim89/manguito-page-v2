@@ -5,9 +5,9 @@ const modelName: string = 'post'
 export interface PostModel extends Document {
   content: string
   imageId: string
-  name: string
   author: Schema.Types.ObjectId
   date: Date
+  updatedAt: Date
 }
 
 const postSchema: Schema<PostModel> = new Schema<PostModel>({
@@ -19,14 +19,15 @@ const postSchema: Schema<PostModel> = new Schema<PostModel>({
     type: String,
     required: true,
   },
-  name: {
-    type: String,
-  },
   author: {
     type: Schema.Types.ObjectId,
     ref: 'user',
   },
   date: {
+    type: Date,
+    default: Date.now,
+  },
+  updatedAt: {
     type: Date,
     default: Date.now,
   },
