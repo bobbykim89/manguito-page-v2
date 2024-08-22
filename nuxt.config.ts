@@ -38,6 +38,7 @@ export default defineNuxtConfig({
     mongoDBName: process.env.MONGO_DB_NAME,
     mongoUrl: process.env.MONGO_URL,
     jwtSecret: process.env.JWT_SECRET,
+    adminSecretPhrase: process.env.ADMIN_SECRET_PHRASE,
     cloudinaryCloudName: process.env.CLOUDINARY_CLOUD_NAME,
     cloudinaryApiKey: process.env.CLOUDINARY_API_KEY,
     cloudinaryApiSecret: process.env.CLOUDINARY_API_SECRET,
