@@ -4,7 +4,6 @@ const modelName: string = 'post'
 
 export interface PostModel extends Document {
   content: string
-  image: string
   imageId: string
   name: string
   author: Schema.Types.ObjectId
@@ -13,10 +12,6 @@ export interface PostModel extends Document {
 
 const postSchema: Schema<PostModel> = new Schema<PostModel>({
   content: {
-    type: String,
-    required: true,
-  },
-  image: {
     type: String,
     required: true,
   },
