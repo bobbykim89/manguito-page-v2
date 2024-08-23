@@ -3,9 +3,16 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "db:local:rm": "docker compose rm local-db -s -f -v",
+    "db:local:up": "docker compose up local-db -d",
+    "db:local:restart": "pnpm db:local:rm && pnpm db:local:up",
     "build": "nuxt build",
     "build:local": "nuxt build --dotenv .env.local",
+    "build:dev": "nuxt build --dotenv .env.dev",
+    "build:prod": "nuxt build --dotenv .env",
     "dev": "nuxt dev --dotenv .env.local",
+    "dev:dev": "nuxt dev --dotenv .env.dev",
+    "dev:prod": "nuxt dev --dotenv .env",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"

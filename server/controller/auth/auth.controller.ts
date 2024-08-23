@@ -1,5 +1,4 @@
-import { User, type UserModel } from '@/server/models'
-import { Model } from 'mongoose'
+import { type UserModel } from '@/server/models'
 import bcrypt from 'bcryptjs'
 import type { EventHandlerRequest, H3Event } from 'h3'
 import {
@@ -9,32 +8,34 @@ import {
   readValidatedBody,
   setResponseStatus,
 } from 'h3'
+import { Model } from 'mongoose'
 import { UserController } from '../user/user.controller'
 import { authInputSchema } from './dto'
 
-export class AuthController {
-  private userModel: Model<UserModel>
-  private userController: UserController
+export class AuthController<T extends UserModel> {
+  private userModel: Model<T>
+  private userController: UserController<T>
 
-  constructor() {
-    this.userModel = User
-    this.userController = new UserController()
+  constructor(userModel: Model<T>) {
+    this.userModel = userModel
+    this.userController = new UserController(userModel)
   }
-  public async getCurrentUser(e: H3Event<EventHandlerRequest>) {
-    try {
-      const user = this.userModel
-        .findById(e.context.user.id)
-        .select('-password')
-      return user
-    } catch (err) {
+  public getCurrentUser = async (
+    e: H3Event<EventHandlerRequest>
+  ): Promise<T> => {
+    const user = await this.userModel
+      .findById(e.context.user.id)
+      .select('-password')
+    if (!user) {
       throw createError({
         status: 404,
         message: 'Not found',
         statusMessage: 'User not found',
       })
     }
+    return user
   }
-  public async loginUser(e: H3Event<EventHandlerRequest>) {
+  public loginUser = async (e: H3Event<EventHandlerRequest>) => {
     // validate body
     const { email, password } = await readValidatedBody(
       e,

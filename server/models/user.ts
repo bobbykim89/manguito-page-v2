@@ -1,4 +1,4 @@
-import { Schema, model, Document, Model } from 'mongoose'
+import { Document, Schema, model } from 'mongoose'
 
 const modelName: string = 'user'
 
@@ -34,4 +34,4 @@ const userSchema: Schema<UserModel> = new Schema<UserModel>({
   },
 })
 
-export const User: Model<UserModel> = model(modelName, userSchema)
+export const User = model<UserModel>(modelName, userSchema)
