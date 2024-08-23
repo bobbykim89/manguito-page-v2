@@ -13,10 +13,11 @@ export default defineNuxtConfig({
       meta: [
         {
           name: 'description',
-          content: 'Photo blog for Manguito, a peachfaced lovebird',
+          content: 'A photo blog for Manguito, a peachfaced lovebird',
         },
+        { property: 'og:title', content: 'Manguito Page' },
       ],
-      link: [],
+      link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
     },
   },
   typescript: {
@@ -32,6 +33,7 @@ export default defineNuxtConfig({
     },
   },
   runtimeConfig: {
+    workBranch: process.env.WORK_BRANCH,
     mongoId: process.env.MONGO_ADMIN_ID,
     mongoPw: process.env.MONGO_ADMIN_PW,
     mongoClusterName: process.env.MONGO_CLUSTER_NAME,

@@ -1,7 +1,6 @@
-import { type RuntimeConfig } from '@nuxt/schema'
 import { useRuntimeConfig } from '#imports'
-import { User, type UserModel } from '@/server/models'
-import { Model } from 'mongoose'
+import { type UserModel } from '@/server/models'
+import { type RuntimeConfig } from '@nuxt/schema'
 import bcrypt from 'bcryptjs'
 import type { EventHandlerRequest, H3Event, H3EventContext } from 'h3'
 import {
@@ -12,22 +11,23 @@ import {
   setResponseStatus,
 } from 'h3'
 import jwt from 'jsonwebtoken'
+import type { Model } from 'mongoose'
 import {
-  userInputSchema,
-  pwUpdateInputSchema,
   newUsernameInputSchema,
+  pwUpdateInputSchema,
   setAdminInputSchema,
+  userInputSchema,
 } from './dto'
 
-export class UserController {
-  config: RuntimeConfig
-  userModel: Model<UserModel>
+export class UserController<T extends UserModel> {
+  private config: RuntimeConfig
+  private userModel: Model<T>
 
-  constructor() {
+  constructor(userModel: Model<T>) {
     this.config = useRuntimeConfig()
-    this.userModel = User
+    this.userModel = userModel
   }
-  public async signupUser(e: H3Event<EventHandlerRequest>) {
+  public signupUser = async (e: H3Event<EventHandlerRequest>) => {
     // validate body
     const { name, email, password } = await readValidatedBody(
       e,
@@ -42,6 +42,7 @@ export class UserController {
           'Bad Request: following email address is already in use, please use different email address',
       })
     }
+    await this.checkUniqueUsername(name)
     user = new this.userModel({
       name,
       email,
@@ -64,7 +65,7 @@ export class UserController {
       access_token: `Bearer ${accessToken}`,
     }
   }
-  public async updatePassword(e: H3Event<EventHandlerRequest>) {
+  public updatePassword = async (e: H3Event<EventHandlerRequest>) => {
     const user = await this.getRawCurrentUserData(e.context)
     // validate body
     const { currentPassword, newPassword } = await readValidatedBody(
@@ -102,14 +103,15 @@ export class UserController {
       message: text,
     }
   }
-  public async updateUsername(
+  public updateUsername = async (
     e: H3Event<EventHandlerRequest>
-  ): Promise<UserModel> {
+  ): Promise<T> => {
     const user = await this.getRawCurrentUserData(e.context)
     const { username } = await readValidatedBody(
       e,
       newUsernameInputSchema.parse
     )
+    await this.checkUniqueUsername(username)
     const updatedUser = await this.userModel
       .findByIdAndUpdate(
         user.id,
@@ -126,7 +128,7 @@ export class UserController {
     }
     return updatedUser
   }
-  public async setAdmin(e: H3Event<EventHandlerRequest>): Promise<UserModel> {
+  public setAdmin = async (e: H3Event<EventHandlerRequest>): Promise<T> => {
     const user = await this.getRawCurrentUserData(e.context)
     const { phrase } = await readValidatedBody(e, setAdminInputSchema.parse)
     if (phrase !== this.config.adminSecretPhrase) {
@@ -152,12 +154,24 @@ export class UserController {
     }
     return updatedUser
   }
-  private async hashPassword(password: string): Promise<string> {
+  private hashPassword = async (password: string): Promise<string> => {
     const salt = await bcrypt.genSalt(10)
     const hashedPassword = await bcrypt.hash(password, salt)
     return hashedPassword
   }
-  public async getRawCurrentUserData(ctx: H3EventContext): Promise<UserModel> {
+  private checkUniqueUsername = async (username: string): Promise<void> => {
+    const user = await this.userModel
+      .find({ name: username })
+      .select('-password')
+    if (user.length > 0) {
+      throw createError({
+        status: 400,
+        message: 'Bad Request',
+        statusMessage: `Bad Request: username '${username}' is already in use, please use different username`,
+      })
+    }
+  }
+  public getRawCurrentUserData = async (ctx: H3EventContext): Promise<T> => {
     const user = await this.userModel.findById(ctx.user.id)
     if (!user) {
       throw createError({
@@ -168,18 +182,18 @@ export class UserController {
     }
     return user
   }
-  public async getCurrentUserData(ctx: H3EventContext): Promise<UserModel> {
+  public getCurrentUserData = async (ctx: H3EventContext): Promise<T> => {
     const user = await this.userModel.findById(ctx.user.id).select('-password')
     if (!user) {
       throw createError({
-        status: 403,
-        message: 'Access denied',
+        status: 404,
+        message: 'Not Found',
         statusMessage: 'Access denied: user not found',
       })
     }
     return user
   }
-  public signToken(payload: { id: string }) {
+  public signToken = (payload: { id: string }) => {
     return jwt.sign(payload, this.config.jwtSecret, {
       expiresIn: '7d',
     })

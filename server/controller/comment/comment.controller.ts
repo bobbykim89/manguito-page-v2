@@ -1,30 +1,30 @@
-import { Comment, type CommentModel } from '@/server/models'
-import { Model } from 'mongoose'
+import { type CommentModel, type UserModel, User } from '@/server/models'
 import type { EventHandlerRequest, H3Event } from 'h3'
 import {
   createError,
   getResponseStatus,
   getResponseStatusText,
+  getRouterParam,
   readValidatedBody,
   setResponseStatus,
-  getRouterParam,
 } from 'h3'
+import { Model } from 'mongoose'
 import { UserController } from '../user/user.controller'
 import { commentInputSchema } from './dto'
 
-export class CommentController {
-  private commentModel: Model<CommentModel>
-  private userController: UserController
+export class CommentController<T extends CommentModel> {
+  private commentModel: Model<T>
+  private userController: UserController<UserModel>
 
-  constructor() {
-    this.commentModel = Comment
-    this.userController = new UserController()
+  constructor(commentModel: Model<T>) {
+    this.commentModel = commentModel
+    this.userController = new UserController(User)
   }
-  public async getAllComment(): Promise<CommentModel[]> {
-    const comments = await this.commentModel
-      .find({})
-      .populate('author')
-      .populate('post')
+  public getAllComment = async (): Promise<T[]> => {
+    const comments = await this.commentModel.find({}).populate([
+      { path: 'author', select: 'id name' },
+      { path: 'post', select: 'id date updatedAt' },
+    ])
     if (!comments) {
       throw createError({
         status: 404,
@@ -34,14 +34,14 @@ export class CommentController {
     }
     return comments
   }
-  public async getCommentsByPostId(
+  public getCommentsByPostId = async (
     e: H3Event<EventHandlerRequest>
-  ): Promise<CommentModel[]> {
+  ): Promise<T[]> => {
     const postId = getRouterParam(e, 'id')
-    const comments = await this.commentModel
-      .find({ post: postId })
-      .populate('author')
-      .populate('post')
+    const comments = await this.commentModel.find({ post: postId }).populate([
+      { path: 'author', select: 'id name' },
+      { path: 'post', select: 'id date updatedAt' },
+    ])
     if (!comments) {
       throw createError({
         status: 404,
@@ -51,7 +51,9 @@ export class CommentController {
     }
     return comments
   }
-  public async createNewComment(e: H3Event<EventHandlerRequest>) {
+  public createNewComment = async (
+    e: H3Event<EventHandlerRequest>
+  ): Promise<T> => {
     const postId = getRouterParam(e, 'id')
     const user = await this.userController.getCurrentUserData(e.context)
     const { text } = await readValidatedBody(e, commentInputSchema.parse)
@@ -68,9 +70,12 @@ export class CommentController {
         statusMessage: 'Something went wrong, please try again.',
       })
     }
-    return comment
+    return await comment.populate([
+      { path: 'author', select: 'id name' },
+      { path: 'post', select: 'id date updatedAt' },
+    ])
   }
-  public async deleteCommentById(e: H3Event<EventHandlerRequest>) {
+  public deleteCommentById = async (e: H3Event<EventHandlerRequest>) => {
     const commentId = getRouterParam(e, 'id')
     const user = await this.userController.getCurrentUserData(e.context)
     const comment = await this.commentModel.findById(commentId)

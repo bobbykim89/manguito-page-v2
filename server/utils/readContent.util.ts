@@ -1,4 +1,4 @@
-import { type H3Event, readMultipartFormData, createError } from 'h3'
+import { createError, type H3Event, readMultipartFormData } from 'h3'
 
 export const readFormDataText = async (
   e: H3Event,
