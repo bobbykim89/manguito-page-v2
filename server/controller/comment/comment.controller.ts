@@ -1,13 +1,6 @@
-import {
-  User,
-  type UserModel,
-  Post,
-  type PostModel,
-  Comment,
-  type CommentModel,
-} from '@/server/models'
+import { Comment, type CommentModel } from '@/server/models'
 import { Model } from 'mongoose'
-import type { EventHandlerRequest, H3Event, H3EventContext } from 'h3'
+import type { EventHandlerRequest, H3Event } from 'h3'
 import {
   createError,
   getResponseStatus,
@@ -16,17 +9,16 @@ import {
   setResponseStatus,
   getRouterParam,
 } from 'h3'
+import { UserController } from '../user/user.controller'
 import { commentInputSchema } from './dto'
 
 export class CommentController {
-  userModel: Model<UserModel>
-  postModel: Model<PostModel>
-  commentModel: Model<CommentModel>
+  private commentModel: Model<CommentModel>
+  private userController: UserController
 
   constructor() {
-    this.userModel = User
-    this.postModel = Post
     this.commentModel = Comment
+    this.userController = new UserController()
   }
   public async getAllComment(): Promise<CommentModel[]> {
     const comments = await this.commentModel
@@ -61,7 +53,7 @@ export class CommentController {
   }
   public async createNewComment(e: H3Event<EventHandlerRequest>) {
     const postId = getRouterParam(e, 'id')
-    const user = await this.checkCurrentUser(e.context)
+    const user = await this.userController.getCurrentUserData(e.context)
     const { text } = await readValidatedBody(e, commentInputSchema.parse)
     const newComment = new this.commentModel({
       text,
@@ -80,7 +72,7 @@ export class CommentController {
   }
   public async deleteCommentById(e: H3Event<EventHandlerRequest>) {
     const commentId = getRouterParam(e, 'id')
-    const user = await this.checkCurrentUser(e.context)
+    const user = await this.userController.getCurrentUserData(e.context)
     const comment = await this.commentModel.findById(commentId)
     if (!comment) {
       throw createError({
@@ -105,16 +97,5 @@ export class CommentController {
       status,
       text: statusText,
     }
-  }
-  private async checkCurrentUser(ctx: H3EventContext): Promise<UserModel> {
-    const user = await this.userModel.findById(ctx.user.id).select('-password')
-    if (!user) {
-      throw createError({
-        status: 403,
-        message: 'Access denied',
-        statusMessage: 'Access denied: user not found',
-      })
-    }
-    return user
   }
 }

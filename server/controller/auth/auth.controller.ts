@@ -1,5 +1,3 @@
-import { type RuntimeConfig } from '@nuxt/schema'
-import { useRuntimeConfig } from '#imports'
 import { User, type UserModel } from '@/server/models'
 import { Model } from 'mongoose'
 import bcrypt from 'bcryptjs'
@@ -11,16 +9,16 @@ import {
   readValidatedBody,
   setResponseStatus,
 } from 'h3'
-import jwt from 'jsonwebtoken'
+import { UserController } from '../user/user.controller'
 import { authInputSchema } from './dto'
 
 export class AuthController {
-  config: RuntimeConfig
-  userModel: Model<UserModel>
+  private userModel: Model<UserModel>
+  private userController: UserController
 
   constructor() {
-    this.config = useRuntimeConfig()
     this.userModel = User
+    this.userController = new UserController()
   }
   public async getCurrentUser(e: H3Event<EventHandlerRequest>) {
     try {
@@ -62,11 +60,8 @@ export class AuthController {
     }
     const payload = {
       id: user.id,
-      admin: user.admin,
     }
-    const accessToken = jwt.sign(payload, this.config.jwtSecret, {
-      expiresIn: '7d',
-    })
+    const accessToken = this.userController.signToken(payload)
 
     setResponseStatus(e, 200, 'Login successful!')
     const status = getResponseStatus(e)

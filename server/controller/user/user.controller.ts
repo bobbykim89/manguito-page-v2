@@ -52,12 +52,9 @@ export class UserController {
     await user.save()
     const payload = {
       id: user.id,
-      admin: user.admin,
     }
     // set access token
-    const accessToken = jwt.sign(payload, this.config.jwtSecret, {
-      expiresIn: '7d',
-    })
+    const accessToken = this.signToken(payload)
     const status = getResponseStatus(e)
     const text = getResponseStatusText(e)
 
@@ -68,7 +65,7 @@ export class UserController {
     }
   }
   public async updatePassword(e: H3Event<EventHandlerRequest>) {
-    const user = await this.checkCurrentUser(e.context)
+    const user = await this.getRawCurrentUserData(e.context)
     // validate body
     const { currentPassword, newPassword } = await readValidatedBody(
       e,
@@ -108,7 +105,7 @@ export class UserController {
   public async updateUsername(
     e: H3Event<EventHandlerRequest>
   ): Promise<UserModel> {
-    const user = await this.checkCurrentUser(e.context)
+    const user = await this.getRawCurrentUserData(e.context)
     const { username } = await readValidatedBody(
       e,
       newUsernameInputSchema.parse
@@ -130,7 +127,7 @@ export class UserController {
     return updatedUser
   }
   public async setAdmin(e: H3Event<EventHandlerRequest>): Promise<UserModel> {
-    const user = await this.checkCurrentUser(e.context)
+    const user = await this.getRawCurrentUserData(e.context)
     const { phrase } = await readValidatedBody(e, setAdminInputSchema.parse)
     if (phrase !== this.config.adminSecretPhrase) {
       throw createError({
@@ -160,7 +157,7 @@ export class UserController {
     const hashedPassword = await bcrypt.hash(password, salt)
     return hashedPassword
   }
-  private async checkCurrentUser(ctx: H3EventContext): Promise<UserModel> {
+  public async getRawCurrentUserData(ctx: H3EventContext): Promise<UserModel> {
     const user = await this.userModel.findById(ctx.user.id)
     if (!user) {
       throw createError({
@@ -170,5 +167,21 @@ export class UserController {
       })
     }
     return user
+  }
+  public async getCurrentUserData(ctx: H3EventContext): Promise<UserModel> {
+    const user = await this.userModel.findById(ctx.user.id).select('-password')
+    if (!user) {
+      throw createError({
+        status: 403,
+        message: 'Access denied',
+        statusMessage: 'Access denied: user not found',
+      })
+    }
+    return user
+  }
+  public signToken(payload: { id: string }) {
+    return jwt.sign(payload, this.config.jwtSecret, {
+      expiresIn: '7d',
+    })
   }
 }
