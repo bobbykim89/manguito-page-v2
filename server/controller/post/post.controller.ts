@@ -1,13 +1,11 @@
 import {
-  User,
-  type UserModel,
   Post,
   type PostModel,
   Comment,
   type CommentModel,
 } from '@/server/models'
 import { Model } from 'mongoose'
-import type { EventHandlerRequest, H3Event, H3EventContext } from 'h3'
+import type { EventHandlerRequest, H3Event } from 'h3'
 import {
   createError,
   getResponseStatus,
@@ -17,17 +15,18 @@ import {
   getRouterParam,
 } from 'h3'
 import { updatePostInputSchema } from './dto'
+import { UserController } from '../user/user.controller'
 import { deleteCloudinaryImage } from '@/server/utils'
 
 export class PostController {
-  userModel: Model<UserModel>
-  postModel: Model<PostModel>
-  commentModel: Model<CommentModel>
+  private postModel: Model<PostModel>
+  private commentModel: Model<CommentModel>
+  private userController: UserController
 
   constructor() {
-    this.userModel = User
     this.postModel = Post
     this.commentModel = Comment
+    this.userController = new UserController()
   }
 
   public async getAllPost(): Promise<PostModel[]> {
@@ -67,7 +66,7 @@ export class PostController {
   ): Promise<PostModel> {
     const file = e.context.file
     const content = e.context.content
-    const user = await this.checkCurrentUser(e.context)
+    const user = await this.userController.getCurrentUserData(e.context)
 
     if (!user.admin) {
       throw createError({
@@ -95,7 +94,7 @@ export class PostController {
   }
   public async updatePost(e: H3Event<EventHandlerRequest>): Promise<PostModel> {
     const postId = getRouterParam(e, 'id')
-    const user = await this.checkCurrentUser(e.context)
+    const user = await this.userController.getCurrentUserData(e.context)
     // validate body
     const { content } = await readValidatedBody(e, updatePostInputSchema.parse)
     const post = await this.postModel.findById(postId)
@@ -134,7 +133,7 @@ export class PostController {
   }
   public async deletePostById(e: H3Event<EventHandlerRequest>) {
     const postId = getRouterParam(e, 'id')
-    const user = await this.checkCurrentUser(e.context)
+    const user = await this.userController.getCurrentUserData(e.context)
     const post = await this.postModel.findById(postId)
     if (!post) {
       throw createError({
@@ -185,16 +184,5 @@ export class PostController {
       status,
       text: statusText,
     }
-  }
-  private async checkCurrentUser(ctx: H3EventContext): Promise<UserModel> {
-    const user = await this.userModel.findById(ctx.user.id).select('-password')
-    if (!user) {
-      throw createError({
-        status: 403,
-        message: 'Access denied',
-        statusMessage: 'Access denied: user not found',
-      })
-    }
-    return user
   }
 }
