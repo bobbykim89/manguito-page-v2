@@ -9,6 +9,7 @@ import { deleteCloudinaryImage } from '@/server/utils'
 import type { EventHandlerRequest, H3Event } from 'h3'
 import {
   createError,
+  getQuery,
   getResponseStatus,
   getResponseStatusText,
   getRouterParam,
@@ -35,6 +36,26 @@ export class PostController<T extends PostModel> {
       .find({})
       .populate('author', '-password -admin')
       .sort({ date: -1 })
+    if (!allPost) {
+      throw createError({
+        status: 404,
+        message: 'Not found',
+        statusMessage: 'Post not found',
+      })
+    }
+    return allPost
+  }
+  public getAllTrimmedPost = async (
+    e: H3Event<EventHandlerRequest>
+  ): Promise<T[]> => {
+    const query = getQuery(e)
+    let allPost = await this.postModel
+      .find({})
+      .sort({ date: -1 })
+      .select('id imageId')
+    if (query.sort === 'asc') {
+      allPost = await this.postModel.find({}).select('id imageId')
+    }
     if (!allPost) {
       throw createError({
         status: 404,
