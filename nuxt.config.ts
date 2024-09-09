@@ -45,6 +45,9 @@ export default defineNuxtConfig({
     cloudinaryApiKey: process.env.CLOUDINARY_API_KEY,
     cloudinaryApiSecret: process.env.CLOUDINARY_API_SECRET,
     cloudinaryFolderName: process.env.CLOUDINARY_FOLDER,
+    public: {
+      cloudinarySourceUrl: process.env.CLOUDINARY_SOURCE_URL,
+    },
   },
   css: ['~/assets/css/page_transition.scss'],
   tailwindcss: {
