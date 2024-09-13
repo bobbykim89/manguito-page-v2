@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import MclLogo from '@/assets/img/logo192.png'
+import AuthBlock from '@/components/layout-components/AuthBlock.vue'
 import { HeaderHorizontal } from '@bobbykim/manguito-theme'
 import {
   MclFooterA,
@@ -62,12 +63,12 @@ const handleFooterMenuClick = (e: Event, item: MenuItemType) => {
     <HeaderHorizontal
       ref="headerRef"
       bg-color="light-1"
-      mobile-menu-bg-color="light-1"
+      mobile-menu-bg-color="light-4"
       :scroll-distance="100"
     >
       <template #content>
         <div class="flex flex-shrink-0 items-center self-center md:py-3xs">
-          <div class="h-md md:h-lg mr-2xs md:mr-sm align-middle">
+          <div class="h-md md:h-lg mr-2xs md:mr-xs align-middle">
             <NuxtLink :to="menuItemData.logoLink">
               <img
                 :src="menuItemData.logo"
@@ -83,11 +84,42 @@ const handleFooterMenuClick = (e: Event, item: MenuItemType) => {
                 v-html="menuItemData.title"
               ></h2>
             </NuxtLink>
+            <div
+              class="hidden lg:flex items-center gap-4 tracking-wider font-semibold text-lg"
+            >
+              <NuxtLink
+                v-for="(link, idx) in menuItemData.menu"
+                :key="idx"
+                :to="link.url"
+                class="relative before:absolute before:h-3xs before:w-0 before:bottom-0 before:bg-primary hover:before:w-full before:transition-[width] before:duration-300 before:ease-linear"
+                ><span class="relative">{{ link.title }}</span></NuxtLink
+              >
+            </div>
           </div>
         </div>
       </template>
       <template #content-right>
-        <div>content right</div>
+        <div>
+          <AuthBlock
+            login-url="/auth/login"
+            signup-url="/auth/signup"
+            :auth="false"
+          />
+        </div>
+      </template>
+      <template #mobile-content="{ headerClose }">
+        <div
+          class="flex justify-center items-center gap-4 tracking-wider font-semibold text-lg py-xs"
+        >
+          <NuxtLink
+            v-for="(link, idx) in menuItemData.menu"
+            :key="idx"
+            :to="link.url"
+            @click="headerClose"
+            class="relative before:absolute before:h-3xs before:w-0 before:bottom-0 before:bg-primary hover:before:w-full before:transition-[width] before:duration-300 before:ease-linear"
+            ><span class="relative">{{ link.title }}</span></NuxtLink
+          >
+        </div>
       </template>
     </HeaderHorizontal>
     <div>
@@ -108,7 +140,13 @@ const handleFooterMenuClick = (e: Event, item: MenuItemType) => {
       social-icon-color="light-1"
       @logo-click="handleTitleClick"
       @menu-click="handleFooterMenuClick"
-    ></MclFooterA>
+    >
+      <ClientOnly>
+        <small class="text-light-1"
+          >&copy; Manguito Page {{ new Date().getFullYear() }}</small
+        >
+      </ClientOnly>
+    </MclFooterA>
   </div>
 </template>
 
