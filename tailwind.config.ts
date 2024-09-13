@@ -13,12 +13,5 @@ export default <Partial<Config>>{
   theme: {
     extend: {},
   },
-  plugins: [
-    mclTheme({
-      colors: {
-        primary: '#312e81',
-        info: '#14532d',
-      },
-    }),
-  ],
+  plugins: [mclTheme],
 }
