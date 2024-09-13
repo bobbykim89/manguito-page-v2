@@ -49,7 +49,7 @@ export class PostController<T extends PostModel> {
     e: H3Event<EventHandlerRequest>
   ): Promise<T[]> => {
     const query = getQuery(e)
-    let allPost = await this.postModel
+    let allPost: T[] = await this.postModel
       .find({})
       .sort({ date: -1 })
       .select('id imageId')
