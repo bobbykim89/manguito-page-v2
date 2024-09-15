@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@bobbykim/manguito-theme": "^0.22.1",
+    "@bobbykim/mcl-cards": "^0.7.4",
     "@bobbykim/mcl-container": "^0.7.0",
     "@bobbykim/mcl-footer": "0.8.0",
     "@bobbykim/mcl-forms": "^0.8.2",

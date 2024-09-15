@@ -28,9 +28,9 @@
     "**/.hg": true,
     "**/CVS": true,
     "**/.DS_Store": true,
-    "**/Thumbs.db": true,
-    "**/node_modules": true,
-    "**/dist": true
+    "**/Thumbs.db": true
+    // "**/node_modules": true,
+    // "**/dist": true
   },
   "tailwindCSS.experimental.configFile": "./tailwind.config.ts",
   "tailwindCSS.validate": false,

@@ -11,6 +11,9 @@ importers:
       '@bobbykim/manguito-theme':
         specifier: ^0.22.1
         version: 0.22.1(typescript@5.6.2)
+      '@bobbykim/mcl-cards':
+        specifier: ^0.7.4
+        version: 0.7.4(typescript@5.6.2)
       '@bobbykim/mcl-container':
         specifier: ^0.7.0
         version: 0.7.0(typescript@5.6.2)
@@ -251,6 +254,9 @@ packages:
 
   '@bobbykim/manguito-theme@0.22.1':
     resolution: {integrity: sha512-DgjM8U/bBhMqBIwq8B6q6ROc2qJgCvLdxVhO/ZwDLQp0wiA+htEJ/DEGlklTgSq8AIBZNdoadUnDRqOv2b8Zxw==}
+
+  '@bobbykim/mcl-cards@0.7.4':
+    resolution: {integrity: sha512-7RaXCFwCYbmQVSklBF8Q89diS9lK4ATRyDaecoh5cGBCzAuC3NWNvQOLcojT99zPLCDqmTQrlxAJ8nQ7qD+Lqw==}
 
   '@bobbykim/mcl-container@0.7.0':
     resolution: {integrity: sha512-JJCxQf4dvZhfA0WDEpAdUadQAeZY0jf8okdt1O8q1YoAz9jvRxPfl4P0nuJpDBUSokBFeVe1dRe2N45XfRIuLw==}
@@ -4274,6 +4280,14 @@ snapshots:
     dependencies:
       '@vueuse/core': 10.11.1(vue@3.5.4(typescript@5.6.2))
       vue: 3.5.4(typescript@5.6.2)
+    transitivePeerDependencies:
+      - '@vue/composition-api'
+      - typescript
+
+  '@bobbykim/mcl-cards@0.7.4(typescript@5.6.2)':
+    dependencies:
+      '@bobbykim/manguito-theme': 0.22.1(typescript@5.6.2)
+      vue: 3.5.5(typescript@5.6.2)
     transitivePeerDependencies:
       - '@vue/composition-api'
       - typescript

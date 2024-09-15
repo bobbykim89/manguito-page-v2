@@ -65,7 +65,7 @@ const handleFooterMenuClick = (e: Event, item: MenuItemType) => {
 </script>
 
 <template>
-  <div class="relative">
+  <div class="relative bg-light-1">
     <HeaderHorizontal
       ref="headerRef"
       bg-color="light-1"
