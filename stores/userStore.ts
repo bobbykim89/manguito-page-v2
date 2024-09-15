@@ -8,6 +8,7 @@ import type {
   UserInput,
 } from '@/server/controller/user/dto'
 import { UserModel } from '@/server/models'
+import { H3Error } from 'h3'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { useAlertStore } from './alertStore'
@@ -31,32 +32,56 @@ export const useUserStore = defineStore('user', () => {
   })
   // USERS: actions
   const authUser = async () => {
-    if (!cookie.value) {
-      return
+    if (!cookie.value) return
+    try {
+      const res = await $fetch<UserModel>('/api/auth', {
+        method: 'GET',
+        headers: { Authorization: cookie.value },
+      })
+      currentUser.value = res
+      isAuthenticated.value = true
+    } catch (error) {
+      if (error instanceof H3Error) {
+        alertStore.setAlert(error.data.statusMessage)
+        currentUser.value = null
+        isAuthenticated.value = false
+      }
     }
-    const { data: res } = await useFetch<UserModel>('/api/auth', {
-      method: 'GET',
-      headers: { Authorization: cookie.value },
+  }
+  const getCurrentUser = async () => {
+    if (!cookie.value) return
+    try {
+      const res = await $fetch<UserModel>('/api/auth', {
+        method: 'GET',
+        headers: { Authorization: cookie.value },
+        ignoreResponseError: true,
+      })
+      currentUser.value = res
+      isAuthenticated.value = true
+      alertStore.setAlert('Successfully authenticated user', 'success')
+    } catch (error) {
+      if (error instanceof H3Error) {
+        alertStore.setAlert(error.data.statusMessage)
+        currentUser.value = null
+        isAuthenticated.value = false
+      }
+    }
+  }
+  const loginWithCredential = async (payload: AuthInput) => {
+    const { data: res, error } = await useFetch<AuthToken>('/api/auth', {
+      method: 'POST',
+      body: payload,
     })
-    if (!res.value) {
+    if (error.value) {
+      alertStore.setAlert(error.value.data.statusMessage)
       currentUser.value = null
       isAuthenticated.value = false
       return
     }
-    currentUser.value = res.value
-    isAuthenticated.value = true
-  }
-  const getCurrentUser = async () => {
-    await authUser()
-    alertStore.setAlert('Successfully authenticated user', 'success')
-  }
-  const loginWithCredential = async (payload: AuthInput) => {
-    const { data: res } = await useFetch<AuthToken>('/api/auth', {
-      method: 'POST',
-      body: payload,
-    })
     if (!res.value) {
-      alertStore.setAlert("Couldn't fetch user info from setver")
+      alertStore.setAlert(
+        'Failed to get response from server, please try again'
+      )
       currentUser.value = null
       isAuthenticated.value = false
       return
@@ -66,10 +91,16 @@ export const useUserStore = defineStore('user', () => {
     alertStore.setAlert('Login Successful!', 'success')
   }
   const signupUser = async (payload: UserInput) => {
-    const { data: res } = await useFetch<AuthToken>('/api/user', {
+    const { data: res, error } = await useFetch<AuthToken>('/api/user', {
       method: 'POST',
       body: payload,
     })
+    if (error.value) {
+      alertStore.setAlert(error.value.data.statusMessage)
+      currentUser.value = null
+      isAuthenticated.value = false
+      return
+    }
     if (!res.value) {
       alertStore.setAlert(
         'Failed to get response from server, please try again'
@@ -84,7 +115,7 @@ export const useUserStore = defineStore('user', () => {
     if (!cookie.value) {
       return
     }
-    const { data: res } = await useFetch<UserModel>(
+    const { data: res, error } = await useFetch<UserModel>(
       '/api/user/user-info/username',
       {
         method: 'PUT',
@@ -92,6 +123,10 @@ export const useUserStore = defineStore('user', () => {
         body: payload,
       }
     )
+    if (error.value) {
+      alertStore.setAlert(error.value.data.statusMessage)
+      return
+    }
     if (!res.value) {
       alertStore.setAlert(
         'Failed to get response from server, please try again'
@@ -105,11 +140,18 @@ export const useUserStore = defineStore('user', () => {
     if (!cookie.value) {
       return
     }
-    const { data: res } = await useFetch('/api/user/user-info/password', {
-      method: 'PUT',
-      headers: { Authentication: cookie.value },
-      body: payload,
-    })
+    const { data: res, error } = await useFetch(
+      '/api/user/user-info/password',
+      {
+        method: 'PUT',
+        headers: { Authentication: cookie.value },
+        body: payload,
+      }
+    )
+    if (error.value) {
+      alertStore.setAlert(error.value.data.statusMessage)
+      return
+    }
     if (!res.value) {
       alertStore.setAlert(
         'Failed to get response from server, please try again'
@@ -129,7 +171,7 @@ export const useUserStore = defineStore('user', () => {
     if (!cookie.value) {
       return
     }
-    const { data: res } = await useFetch<UserModel>(
+    const { data: res, error } = await useFetch<UserModel>(
       '/api/user/user-role/admin',
       {
         method: 'PUT',
@@ -137,6 +179,10 @@ export const useUserStore = defineStore('user', () => {
         body: payload,
       }
     )
+    if (error.value) {
+      alertStore.setAlert(error.value.data.statusMessage)
+      return
+    }
     if (!res.value) {
       alertStore.setAlert(
         'Failed to get response from server, please try again'
