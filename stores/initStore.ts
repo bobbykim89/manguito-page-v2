@@ -8,6 +8,7 @@ export const useInitStore = defineStore('init', () => {
   const userStore = useUserStore()
   // INIT: states
   const loading = ref<boolean>(true)
+  const isMounted = ref<boolean>(false)
   // INIT: actions
   const setLoading = (val: boolean) => {
     loading.value = val
@@ -17,9 +18,11 @@ export const useInitStore = defineStore('init', () => {
     await postStore.getAllPosts()
     await userStore.getCurrentUser()
     setLoading(false)
+    isMounted.value = true
   }
   return {
     loading,
+    isMounted,
     initStores,
   }
 })

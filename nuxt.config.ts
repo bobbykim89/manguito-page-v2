@@ -2,7 +2,7 @@
 export default defineNuxtConfig({
   compatibilityDate: '2024-04-03',
   devtools: { enabled: true },
-  modules: ['@nuxtjs/tailwindcss', '@pinia/nuxt', '@nuxt/image'],
+  modules: ['@nuxtjs/tailwindcss', '@pinia/nuxt', '@nuxt/image', '@nuxt/fonts'],
   app: {
     pageTransition: { name: 'page', mode: 'out-in' },
     head: {
@@ -51,7 +51,6 @@ export default defineNuxtConfig({
   },
   css: ['~/assets/css/page_transition.scss'],
   tailwindcss: {
-    cssPath: '~/assets/css/tailwind.css',
     configPath: 'tailwind.config.ts',
     exposeConfig: false,
     viewer: true,
