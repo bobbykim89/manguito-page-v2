@@ -2,7 +2,7 @@ import { useAuthToken } from '@/composables/useAuthToken'
 import { type UpdatePostInput } from '@/server/controller/post/dto'
 import { PopulatedPostModel } from '@/server/models'
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useAlertStore } from './alertStore'
 import { useUserStore } from './userStore'
 
@@ -14,6 +14,11 @@ export const usePostStore = defineStore('post', () => {
   const posts = ref<PopulatedPostModel[]>([])
   const currentPost = ref<PopulatedPostModel | null>(null)
   const postIdx = ref<number>(0)
+
+  // POST: getters
+  const getRecentPosts = computed<PopulatedPostModel[]>(() => {
+    return posts.value.slice(0, 7)
+  })
 
   // POST: actions
   const getAllPosts = async () => {
@@ -135,6 +140,7 @@ export const usePostStore = defineStore('post', () => {
     posts,
     currentPost,
     postIdx,
+    getRecentPosts,
     getAllPosts,
     setCurrentPost,
     setNextPost,
