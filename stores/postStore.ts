@@ -124,7 +124,7 @@ export const usePostStore = defineStore('post', () => {
       alertStore.setAlert('Unauthorized user')
       return
     }
-    const { data: res } = await useFetch(`/api/post/${postId}`, {
+    const { data: res } = await useFetch(`/api/post/delete/${postId}`, {
       method: 'DELETE',
       headers: { Authorization: cookie.value },
     })
