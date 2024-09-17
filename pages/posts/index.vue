@@ -17,7 +17,7 @@ const resolveLinkPath = (id: string) => {
 <template>
   <div class="container">
     <h2 class="h2-md mb-md">Manguito Page</h2>
-    <div class="grid grid-cols-3 gap-4 px-xs md:px-md">
+    <div class="grid grid-cols-3 gap-1 lg:gap-4 px-3xs md:px-xs lg:px-md">
       <div v-for="(post, idx) in posts" :key="idx">
         <NuxtLink :to="resolveLinkPath(post._id as string)">
           <img
