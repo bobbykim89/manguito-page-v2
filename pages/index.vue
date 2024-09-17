@@ -49,7 +49,7 @@ const thankYouComponentContent = reactive<{
 }>({
   imgSrc: ManguitoFlowers,
   imgAlt: 'Manguito is perching among flowers',
-  title: 'Thank you for coming to Manguito Page',
+  title: 'Thank you for coming!',
   desc: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Est eum non atque quod culpa cum id dolorem sit repellendus, quidem beatae, aliquam omnis voluptas possimus, laborum unde. At, accusantium deserunt perspiciatis nobis tempora assumenda laudantium natus accusamus omnis, quibusdam exercitationem?',
 })
 </script>
