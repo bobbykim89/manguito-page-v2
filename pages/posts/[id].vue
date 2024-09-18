@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import { ImageUrl } from '@/composables/useImageUrl'
 import { usePostStore } from '@/stores'
 import { onClickOutside } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 
-const config = useRuntimeConfig()
 const route = useRoute()
 const router = useRouter()
 const postStore = usePostStore()
@@ -11,29 +11,21 @@ const { currentPost } = storeToRefs(postStore)
 const contentRef = ref<HTMLDivElement>()
 onClickOutside(contentRef, () => {
   router.push({ path: '/posts' })
-  postStore.resetCurrent()
 })
 
 postStore.setCurrentPost(route.params.id as string)
-// const { data: res } = await useFetch<PopulatedPostModel>(
-//   `/api/post/${route.params.id}`,
-//   {
-//     method: 'GET',
-//   }
-// )
 
 const resolveCardImage = (img: string) => {
-  return `${config.public.cloudinarySourceUrl}/c_scale,w_1200/q_auto/v1700694621/${img}`
+  const imgUrl = new ImageUrl(img)
+  return imgUrl.getPostUrl()
 }
 
 const handlePrevClick = () => {
   const prevPostUrl = postStore.setPrevPost()
-  console.log(prevPostUrl)
   router.push({ path: prevPostUrl })
 }
 const handleNextClick = () => {
   const nextPostUrl = postStore.setNextPost()
-  console.log(nextPostUrl)
   router.push({ path: nextPostUrl })
 }
 </script>
@@ -94,11 +86,11 @@ const handleNextClick = () => {
               </div>
             </div>
           </div>
+          <!-- close button -->
           <NuxtLink
             to="/posts"
             class="absolute top-0 right-0 mt-2xs mr-[12px] text-dark-2 hover:opacity-60 transition-opacity duration-300 ease-linear"
             aria-label="close cross"
-            @click="postStore.resetCurrent"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

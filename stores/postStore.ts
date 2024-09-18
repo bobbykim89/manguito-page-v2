@@ -34,7 +34,7 @@ export const usePostStore = defineStore('post', () => {
     posts.value = res.value
   }
   const setCurrentPost = (postId: string) => {
-    for (let i = 0; i < posts.value.length - 1; i++) {
+    for (let i = 0; i < posts.value.length; i++) {
       if (posts.value[i]._id === postId) {
         currentPost.value = posts.value[i]
         postIdx.value = i

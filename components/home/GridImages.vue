@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { useRuntimeConfig } from '#app'
 import ArrowImg from '@/assets/img/home/arrow.png'
+import { ImageUrl } from '@/composables/useImageUrl'
 import { PopulatedPostModel } from '@/server/models'
 import { type ColorPalette } from '@bobbykim/manguito-theme'
 import { MclCardC } from '@bobbykim/mcl-cards'
@@ -9,10 +9,9 @@ defineProps<{
   cards: PopulatedPostModel[]
 }>()
 
-const config = useRuntimeConfig()
-
 const resolveImageUrl = (id: string): string => {
-  return `${config.public.cloudinarySourceUrl}/c_scale,w_320/f_auto/v1700694621/${id}`
+  const imgUrl = new ImageUrl(id)
+  return imgUrl.getThumbUrl()
 }
 const resolveCardColor = (idx: number): ColorPalette => {
   const pinkCardIdx: number[] = [2, 3, 5]
