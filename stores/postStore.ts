@@ -41,23 +41,33 @@ export const usePostStore = defineStore('post', () => {
       }
     }
   }
-  const setNextPost = () => {
+  const setNextPost = (): string => {
+    let postId: string = '/posts'
     if (postIdx.value < posts.value.length - 1) {
-      postIdx.value += 1
+      // postIdx.value += 1
+      postId = posts.value[postIdx.value + 1]._id as string
     }
     if (postIdx.value === posts.value.length - 1) {
-      postIdx.value = 0
+      // postIdx.value = 0
+      postId = posts.value[0]._id as string
     }
-    currentPost.value = posts.value[postIdx.value]
+    return `/posts/${postId}`
   }
-  const setPrevPost = () => {
+  const setPrevPost = (): string => {
+    let postId: string = '/posts'
     if (postIdx.value > 0) {
-      postIdx.value -= 1
+      // postIdx.value -= 1
+      postId = posts.value[postIdx.value - 1]._id as string
     }
     if (postIdx.value === 0) {
-      postIdx.value = posts.value.length - 1
+      // postIdx.value = posts.value.length - 1
+      postId = posts.value[posts.value.length - 1]._id as string
     }
-    currentPost.value = posts.value[postIdx.value]
+    return `/posts/${postId}`
+  }
+  const resetCurrent = () => {
+    currentPost.value = null
+    postIdx.value = 0
   }
   const createNewPost = async (payload: FormData) => {
     const { currentUser, isAuthenticated } = userStore.getCurrentAuthInfo
@@ -124,7 +134,7 @@ export const usePostStore = defineStore('post', () => {
       alertStore.setAlert('Unauthorized user')
       return
     }
-    const { data: res } = await useFetch(`/api/post/delete/${postId}`, {
+    const { data: res } = await useFetch(`/api/post/${postId}`, {
       method: 'DELETE',
       headers: { Authorization: cookie.value },
     })
@@ -145,6 +155,7 @@ export const usePostStore = defineStore('post', () => {
     setCurrentPost,
     setNextPost,
     setPrevPost,
+    resetCurrent,
     createNewPost,
     updatePost,
     deletePostById,

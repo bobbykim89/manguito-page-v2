@@ -1,21 +1,40 @@
 <script setup lang="ts">
-import { PopulatedPostModel } from '@/server/models'
+import { usePostStore } from '@/stores'
 import { onClickOutside } from '@vueuse/core'
+import { storeToRefs } from 'pinia'
 
 const config = useRuntimeConfig()
 const route = useRoute()
 const router = useRouter()
+const postStore = usePostStore()
+const { currentPost } = storeToRefs(postStore)
 const contentRef = ref<HTMLDivElement>()
-onClickOutside(contentRef, () => router.push({ path: '/posts' }))
-const { data: res } = await useFetch<PopulatedPostModel>(
-  `/api/post/${route.params.id}`,
-  {
-    method: 'GET',
-  }
-)
+onClickOutside(contentRef, () => {
+  router.push({ path: '/posts' })
+  postStore.resetCurrent()
+})
+
+postStore.setCurrentPost(route.params.id as string)
+// const { data: res } = await useFetch<PopulatedPostModel>(
+//   `/api/post/${route.params.id}`,
+//   {
+//     method: 'GET',
+//   }
+// )
 
 const resolveCardImage = (img: string) => {
   return `${config.public.cloudinarySourceUrl}/c_scale,w_1200/q_auto/v1700694621/${img}`
+}
+
+const handlePrevClick = () => {
+  const prevPostUrl = postStore.setPrevPost()
+  console.log(prevPostUrl)
+  router.push({ path: prevPostUrl })
+}
+const handleNextClick = () => {
+  const nextPostUrl = postStore.setNextPost()
+  console.log(nextPostUrl)
+  router.push({ path: nextPostUrl })
 }
 </script>
 
@@ -24,19 +43,75 @@ const resolveCardImage = (img: string) => {
     <div class="container">
       <div class="px-xs">
         <div
-          class="max-w-screen-lg px-2xs md:px-sm py-xs md:py-md mx-auto bg-light-2 rounded-md"
+          class="max-w-screen-lg mx-auto bg-light-2 rounded-md relative"
           ref="contentRef"
         >
-          <div class="grid grid-cols-2 gap-4">
-            <img
-              :src="resolveCardImage(res?.imageId!)"
-              alt="a picture of manguito"
-              class="object-center object-cover w-full h-full rounded-md"
-            />
-            <div class="bg-light-4 px-2xs py-xs rounded-md">
-              {{ res?.content }}
+          <div
+            class="relative grid md:grid-cols-2 gap-4 px-xs pt-[40px] pb-sm md:pb-md"
+          >
+            <div class="relative">
+              <img
+                :src="resolveCardImage(currentPost?.imageId!)"
+                alt="a picture of manguito"
+                class="relative object-center object-cover w-full rounded-md"
+              />
+              <button
+                class="absolute left-0 top-1/2 -translate-y-1/2 text-light-1 p-3xs hover:text-primary transition-colors duration-300 ease-linear"
+                @click="handlePrevClick"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 320 512"
+                  fill="currentColor"
+                  class="w-xs"
+                >
+                  <!-- !Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                  <path
+                    d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l192 192c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256 246.6 86.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-192 192z"
+                  />
+                </svg>
+              </button>
+              <button
+                class="absolute right-0 top-1/2 -translate-y-1/2 text-light-1 p-3xs hover:text-primary transition-colors duration-300 ease-linear"
+                @click="handleNextClick"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 320 512"
+                  fill="currentColor"
+                  class="w-xs"
+                >
+                  <!-- !Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                  <path
+                    d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"
+                  />
+                </svg>
+              </button>
+            </div>
+            <div>
+              <div class="bg-light-4 px-xs py-sm rounded-md">
+                {{ currentPost?.content }}
+              </div>
             </div>
           </div>
+          <NuxtLink
+            to="/posts"
+            class="absolute top-0 right-0 mt-2xs mr-[12px] text-dark-2 hover:opacity-60 transition-opacity duration-300 ease-linear"
+            aria-label="close cross"
+            @click="postStore.resetCurrent"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 384 512"
+              fill="currentColor"
+              class="w-sm aspect-square"
+            >
+              <!-- !Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+              <path
+                d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"
+              />
+            </svg>
+          </NuxtLink>
         </div>
       </div>
     </div>
