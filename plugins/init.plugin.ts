@@ -5,7 +5,6 @@ export default defineNuxtPlugin({
   async setup(nuxtApp) {
     const initStore = useInitStore()
     nuxtApp.hook('app:created', async () => {
-      console.log('initialized plugin')
       await initStore.initStores()
     })
   },

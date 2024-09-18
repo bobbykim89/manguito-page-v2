@@ -22,18 +22,20 @@ const resolveCardImage = (img: string) => {
 <template>
   <section class="bg-light-4 py-md">
     <div class="container">
-      <div
-        class="max-w-screen-lg px-2xs md:px-sm py-xs md:py-md mx-auto bg-light-2 rounded-md"
-        ref="contentRef"
-      >
-        <div class="grid grid-cols-2 gap-4">
-          <img
-            :src="resolveCardImage(res?.imageId!)"
-            alt="a picture of manguito"
-            class="object-center object-cover w-full h-full rounded-md"
-          />
-          <div class="bg-light-4 px-2xs py-xs rounded-md">
-            {{ res?.content }}
+      <div class="px-xs">
+        <div
+          class="max-w-screen-lg px-2xs md:px-sm py-xs md:py-md mx-auto bg-light-2 rounded-md"
+          ref="contentRef"
+        >
+          <div class="grid grid-cols-2 gap-4">
+            <img
+              :src="resolveCardImage(res?.imageId!)"
+              alt="a picture of manguito"
+              class="object-center object-cover w-full h-full rounded-md"
+            />
+            <div class="bg-light-4 px-2xs py-xs rounded-md">
+              {{ res?.content }}
+            </div>
           </div>
         </div>
       </div>
