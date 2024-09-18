@@ -1,13 +1,14 @@
 <script setup lang="ts">
-import { useRuntimeConfig } from '#app'
+import { ImageUrl } from '@/composables/useImageUrl'
 import { usePostStore } from '@/stores'
 import { storeToRefs } from 'pinia'
 
-const config = useRuntimeConfig()
 const postStore = usePostStore()
 const { posts } = storeToRefs(postStore)
+postStore.resetCurrent()
 const formatPostUrl = (id: string) => {
-  return `${config.public.cloudinarySourceUrl}/c_scale,w_480/f_auto/v1700694621/${id}`
+  const imgUrl = new ImageUrl(id)
+  return imgUrl.getCardUrl()
 }
 const resolveLinkPath = (id: string) => {
   return `/posts/${id}`
@@ -16,7 +17,7 @@ const resolveLinkPath = (id: string) => {
 
 <template>
   <div class="container font-inter">
-    <div class="max-w-screen-lg mx-auto py-md">
+    <div class="max-w-screen-lg mx-auto pt-md pb-lg">
       <h2 class="h2-md font-light mb-md text-center">Enjoy the gallery!</h2>
       <div class="grid grid-cols-3 gap-1 lg:gap-2 px-3xs md:px-xs lg:px-md">
         <!-- cards -->
