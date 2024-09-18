@@ -15,17 +15,23 @@ const resolveLinkPath = (id: string) => {
 </script>
 
 <template>
-  <div class="container">
-    <h2 class="h2-md mb-md">Manguito Page</h2>
-    <div class="grid grid-cols-3 gap-1 lg:gap-4 px-3xs md:px-xs lg:px-md">
-      <div v-for="(post, idx) in posts" :key="idx">
-        <NuxtLink :to="resolveLinkPath(post._id as string)">
-          <img
-            :src="formatPostUrl(post.imageId)"
-            alt="image card"
-            class="aspect-square w-full object-center object-cover hover:grayscale transition-[filter] duration-300 ease-linear"
-          />
-        </NuxtLink>
+  <div class="container font-inter">
+    <div class="max-w-screen-lg mx-auto py-md">
+      <h2 class="h2-md font-light mb-md text-center">Enjoy the gallery!</h2>
+      <div class="grid grid-cols-3 gap-1 lg:gap-2 px-3xs md:px-xs lg:px-md">
+        <!-- cards -->
+        <div v-for="(post, idx) in posts" :key="idx">
+          <NuxtLink :to="resolveLinkPath(post._id as string)" class="relative">
+            <img
+              :src="formatPostUrl(post.imageId)"
+              alt="image card"
+              class="absolute aspect-square w-full object-center object-cover"
+            />
+            <div
+              class="aspect-square w-full h-full relative bg-primary opacity-0 hover:opacity-30 transition-opacity duration-300 ease-linear"
+            ></div>
+          </NuxtLink>
+        </div>
       </div>
     </div>
   </div>

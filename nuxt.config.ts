@@ -56,7 +56,7 @@ export default defineNuxtConfig({
     viewer: true,
   },
   nitro: {
-    plugins: ['~/server/plugin/connectDb.ts'],
+    // plugins: ['~/server/plugin/connectDb.ts'],
     experimental: {
       openAPI: true,
     },

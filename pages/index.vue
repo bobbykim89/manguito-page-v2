@@ -18,7 +18,7 @@ const heroContent = reactive<{
 }>({
   heading: 'Manguito Page',
   paragraph:
-    'Manguito is tiny Peach faced lovebird who likes to chirp and play! Moreover, he is so cute but also very evil.',
+    "Manguito is a tiny Peach-faced lovebird who loves to chirp, play, and get petting. He’s incredibly cuddly and adores millet. While he's undeniably cute, don't be fooled—he can be a little mischievous too!",
   url: '/posts',
   linkText: 'Head to Gallery',
 })
@@ -49,8 +49,8 @@ const thankYouComponentContent = reactive<{
 }>({
   imgSrc: ManguitoFlowers,
   imgAlt: 'Manguito is perching among flowers',
-  title: 'Thank you for coming!',
-  desc: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Est eum non atque quod culpa cum id dolorem sit repellendus, quidem beatae, aliquam omnis voluptas possimus, laborum unde. At, accusantium deserunt perspiciatis nobis tempora assumenda laudantium natus accusamus omnis, quibusdam exercitationem?',
+  title: 'Do you like lovebirds?',
+  desc: "Lovebirds are small, vibrant parrots known for their bright feathers and affectionate personalities. Native to Africa, these charming birds are famous for forming strong bonds with their companions, often seen cuddling closely together. Whether you're captivated by their playful nature or the deep connection they share, lovebirds bring joy and companionship to any home. Their lively energy and colorful presence make them a favorite among bird lovers everywhere.",
 })
 </script>
 
@@ -66,7 +66,7 @@ const thankYouComponentContent = reactive<{
       <template #left-column>
         <div class="grid grid-cols-2 gap-y-4 py-lg relative">
           <div
-            class="absolute w-[320px] bg-warning rounded-full aspect-square top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 drop-shadow-lg"
+            class="absolute w-[280px] md:w-[320px] bg-warning rounded-full aspect-square top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 drop-shadow-lg"
           ></div>
           <div
             class="aspect-square -translate-y-1/4 justify-self-end drop-shadow-lg overflow-hidden rounded-full border-4"
@@ -127,7 +127,9 @@ const thankYouComponentContent = reactive<{
       :title="thankYouComponentContent.title"
     >
       <template #content>
-        <div v-html="thankYouComponentContent.desc"></div>
+        <div>
+          <div class="md:text-lg" v-html="thankYouComponentContent.desc"></div>
+        </div>
       </template>
     </MclContainerB>
   </main>
