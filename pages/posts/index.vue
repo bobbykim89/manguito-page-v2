@@ -1,10 +1,18 @@
 <script setup lang="ts">
 import { ImageUrl } from '@/composables/useImageUrl'
-import { usePostStore } from '@/stores'
+import { usePostStore, useUserStore } from '@/stores'
+import { Modal, vToggle } from '@bobbykim/manguito-theme'
+import { MclFormGroup, MclInputFile, MclTextArea } from '@bobbykim/mcl-forms'
 import { storeToRefs } from 'pinia'
+import { ref } from 'vue'
 
 const postStore = usePostStore()
+const userStore = useUserStore()
 const { posts } = storeToRefs(postStore)
+const { currentUser, isAuthenticated } = storeToRefs(userStore)
+const imageFileRef = ref<File | undefined>(undefined)
+const contentRef = ref<string>('')
+const modalRef = ref<InstanceType<typeof Modal>>()
 postStore.resetCurrent()
 const formatPostUrl = (id: string) => {
   const imgUrl = new ImageUrl(id)
@@ -13,12 +21,42 @@ const formatPostUrl = (id: string) => {
 const resolveLinkPath = (id: string) => {
   return `/posts/${id}`
 }
+const isAuthorizedUser = computed<boolean>(() => {
+  if (isAuthenticated.value === false) return false
+  if (currentUser.value === null) return false
+  if (currentUser.value?.admin === false) return false
+  return true
+})
+const onSubmit = (): void => {
+  console.log(imageFileRef.value, contentRef.value)
+  modalRef.value?.close()
+}
 </script>
 
 <template>
   <div class="container font-inter">
     <div class="max-w-screen-lg mx-auto pt-md pb-lg">
-      <h2 class="h2-md font-light mb-md text-center">Enjoy the gallery!</h2>
+      <div class="flex flex-col justify-center items-center mb-md">
+        <h2 class="h2-md font-light text-center">Enjoy the gallery!</h2>
+        <!-- toggle modal -->
+        <button
+          v-if="isAuthorizedUser"
+          class="bg-primary p-2xs rounded-full text-light-1 mt-sm hover:bg-opacity-70 transition-colors duration-300 ease-linear"
+          v-toggle:new-post-modal
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 448 512"
+            fill="currentColor"
+            class="w-sm aspect-square"
+          >
+            <!-- !Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+            <path
+              d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z"
+            />
+          </svg>
+        </button>
+      </div>
       <div class="grid grid-cols-3 gap-1 lg:gap-2 px-3xs md:px-xs lg:px-md">
         <!-- cards -->
         <div v-for="(post, idx) in posts" :key="idx">
@@ -35,6 +73,49 @@ const resolveLinkPath = (id: string) => {
         </div>
       </div>
     </div>
+    <Modal
+      ref="modalRef"
+      id="new-post-modal"
+      backdrop-color="dark-3"
+      title="New post"
+      :class-name="['rounded-lg']"
+    >
+      <template #body="{ close }">
+        <div class="px-xs pb-xs">
+          <form @submit.prevent="onSubmit">
+            <MclFormGroup label-for="file-input">
+              <MclInputFile
+                id="file-input"
+                v-model="imageFileRef"
+                rounded
+                is-required
+                button-text="Browse"
+                button-color="primary"
+                button-text-color="light-1"
+                display-border
+              />
+            </MclFormGroup>
+            <MclFormGroup label-for="content-input">
+              <MclTextArea
+                id="content-input"
+                v-model="contentRef"
+                required
+                rounded
+                display-border
+              />
+            </MclFormGroup>
+            <div class="flex justify-end items-center gap-2 mt-xs">
+              <button role="submit" class="btn btn-primary text-light-1">
+                Save
+              </button>
+              <button class="btn btn-warning text-light-1" @click="close">
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      </template>
+    </Modal>
   </div>
 </template>
 
