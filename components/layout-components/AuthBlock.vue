@@ -33,7 +33,9 @@ const handleButtonClick = (e: Event) => {
         <span class="text-sm lg:text-md">
           {{ user?.name }}
         </span>
+        <!-- admin crown -->
         <svg
+          v-if="user?.admin"
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 576 512"
           class="h-[12px] lg:h-xs aspect-square text-warning"

@@ -44,11 +44,9 @@ export const usePostStore = defineStore('post', () => {
   const setNextPost = (): string => {
     let postId: string = '/posts'
     if (postIdx.value < posts.value.length - 1) {
-      // postIdx.value += 1
       postId = posts.value[postIdx.value + 1]._id as string
     }
     if (postIdx.value === posts.value.length - 1) {
-      // postIdx.value = 0
       postId = posts.value[0]._id as string
     }
     return `/posts/${postId}`
@@ -56,11 +54,9 @@ export const usePostStore = defineStore('post', () => {
   const setPrevPost = (): string => {
     let postId: string = '/posts'
     if (postIdx.value > 0) {
-      // postIdx.value -= 1
       postId = posts.value[postIdx.value - 1]._id as string
     }
     if (postIdx.value === 0) {
-      // postIdx.value = posts.value.length - 1
       postId = posts.value[posts.value.length - 1]._id as string
     }
     return `/posts/${postId}`
