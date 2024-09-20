@@ -10,6 +10,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'logout-click', event: Event): void
   (e: 'link-click', event: Event): void
+  (e: 'user-click', event: Event): void
 }>()
 const handleLogoutClick = (e: Event) => {
   e.preventDefault
@@ -17,6 +18,10 @@ const handleLogoutClick = (e: Event) => {
 }
 const handleButtonClick = (e: Event) => {
   emit('link-click', e)
+}
+const handleUserBlockClick = (e: Event) => {
+  e.preventDefault()
+  emit('user-click', e)
 }
 </script>
 
@@ -29,6 +34,7 @@ const handleButtonClick = (e: Event) => {
     >
       <button
         class="flex items-center gap-1 font-bold hover:opacity-60 transition-opacity duration-300 ease-linear"
+        @click="handleUserBlockClick"
       >
         <span class="text-sm lg:text-md">
           {{ user?.name }}

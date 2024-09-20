@@ -175,7 +175,7 @@ export const useUserStore = defineStore('user', () => {
       '/api/user/user-role/admin',
       {
         method: 'PUT',
-        headers: { Authentication: cookie.value },
+        headers: { Authorization: cookie.value },
         body: payload,
       }
     )

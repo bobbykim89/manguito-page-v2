@@ -27,8 +27,13 @@ const isAuthorizedUser = computed<boolean>(() => {
   if (currentUser.value?.admin === false) return false
   return true
 })
-const onSubmit = (): void => {
-  console.log(imageFileRef.value, contentRef.value)
+const onSubmit = async (): Promise<void> => {
+  const fileFormData = new FormData()
+  if (isAuthorizedUser.value === false) return
+  if (typeof imageFileRef.value === 'undefined') return
+  fileFormData.append('image', imageFileRef.value)
+  fileFormData.append('content', contentRef.value)
+  await postStore.createNewPost(fileFormData)
   modalRef.value?.close()
 }
 </script>
