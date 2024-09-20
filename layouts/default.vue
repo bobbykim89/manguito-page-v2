@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import MclLogo from '@/assets/img/logo192.png'
 import AuthBlock from '@/components/layout-components/AuthBlock.vue'
+import UpdateUserInfo from '@/components/layout-components/UpdateUserInfo.vue'
 import { useAlertStore, useUserStore } from '@/stores'
-import { Alert, HeaderHorizontal } from '@bobbykim/manguito-theme'
+import { Alert, HeaderHorizontal, Sidebar } from '@bobbykim/manguito-theme'
 import {
   MclFooterA,
   type MenuItemType,
@@ -17,6 +18,7 @@ const userStore = useUserStore()
 const { alertMessage, alertColor } = storeToRefs(alertStore)
 const { currentUser, isAuthenticated } = storeToRefs(userStore)
 const headerRef = ref()
+const sidebarRef = ref<InstanceType<typeof Sidebar>>()
 
 const footerMenuItems: MenuItemType[] = [
   {
@@ -61,6 +63,15 @@ const handleTitleClick = (e: Event, link: string) => {
 const handleFooterMenuClick = (e: Event, item: MenuItemType) => {
   e.preventDefault()
   router.push({ path: item.url })
+}
+const handleUserBlockClick = () => {
+  sidebarRef.value?.open()
+}
+const onUsernameUpdateSubmit = (e: Event, name: string) => {
+  console.log(name)
+}
+const onPwUpdateSubmit = (e: Event, currentPw: string, newPw: string) => {
+  console.log(currentPw, newPw)
 }
 </script>
 
@@ -113,6 +124,7 @@ const handleFooterMenuClick = (e: Event, item: MenuItemType) => {
             :auth="isAuthenticated"
             :user="currentUser"
             @logout-click="userStore.logoutUser"
+            @user-click="handleUserBlockClick"
           />
         </div>
       </template>
@@ -136,6 +148,7 @@ const handleFooterMenuClick = (e: Event, item: MenuItemType) => {
           :user="currentUser"
           @link-click="headerClose"
           @logout-click="userStore.logoutUser(), headerClose()"
+          @user-click="handleUserBlockClick(), headerClose()"
         />
       </template>
     </HeaderHorizontal>
@@ -187,6 +200,20 @@ const handleFooterMenuClick = (e: Event, item: MenuItemType) => {
         >
       </ClientOnly>
     </MclFooterA>
+    <Sidebar
+      v-if="currentUser !== null"
+      ref="sidebarRef"
+      :title="currentUser?.name"
+    >
+      <template #body>
+        <div class="px-2xs pt-xs">
+          <UpdateUserInfo
+            @on-username-update="onUsernameUpdateSubmit"
+            @on-pw-update="onPwUpdateSubmit"
+          />
+        </div>
+      </template>
+    </Sidebar>
   </div>
 </template>
 

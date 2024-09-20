@@ -135,7 +135,7 @@ export class UserController<T extends UserModel> {
       throw createError({
         status: 403,
         message: 'Forbidden',
-        statusMessage: 'Access denie.',
+        statusMessage: 'Access denied.',
       })
     }
     const updatedUser = await this.userModel
