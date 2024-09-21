@@ -1,22 +1,30 @@
 <script setup lang="ts">
 import { useRequestURL } from '#app'
+import ContentBlock from '@/components/posts/ContentBlock.vue'
 import { ImageUrl } from '@/composables/useImageUrl'
-import { usePostStore } from '@/stores'
-import { onClickOutside, useClipboard } from '@vueuse/core'
+import { PopulatedCommentModel } from '@/server/models'
+import { useAlertStore, usePostStore, useUserStore } from '@/stores'
+import { useClipboard } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
+import { computed, ref } from 'vue'
 
 const route = useRoute()
 const router = useRouter()
 const url = useRequestURL()
+const alertStore = useAlertStore()
 const postStore = usePostStore()
+const userStore = useUserStore()
 const { currentPost } = storeToRefs(postStore)
+const { currentUser, isAuthenticated } = storeToRefs(userStore)
 const contentRef = ref<HTMLDivElement>()
 const { copy, isSupported } = useClipboard()
-onClickOutside(contentRef, () => {
-  router.push({ path: '/posts' })
-})
 
 postStore.setCurrentPost(route.params.id as string)
+
+const { data: comments } = await useFetch<PopulatedCommentModel[]>(
+  `/api/comment/${route.params.id}`,
+  { method: 'GET' }
+)
 
 const resolveCardImage = (img: string) => {
   const imgUrl = new ImageUrl(img)
@@ -31,19 +39,58 @@ const handleNextClick = () => {
   const nextPostUrl = postStore.setNextPost()
   router.push({ path: nextPostUrl })
 }
+const copyUrl = () => {
+  copy(url.href)
+  alertStore.setAlert('Copied url to clipboard', 'info')
+}
+const isAdmin = computed<boolean>(() => {
+  if (isAuthenticated.value === false) return false
+  if (currentUser.value === null) return false
+  if (currentUser.value?.admin === false) return false
+  return true
+})
+const isAuthor = computed<boolean>(() => {
+  if (isAuthenticated.value === false) return false
+  if (currentUser.value === null) return false
+  if (currentUser.value._id !== currentPost.value?.author._id) return false
+  return true
+})
+const saveEdit = async (text: string) => {
+  if (typeof route.params.id !== 'string') return
+  if (isAuthor.value === false) return
+  if (import.meta.client && window.confirm('Please confirm to save changes.')) {
+    await postStore.updatePost(route.params.id, {
+      content: text,
+    })
+  }
+  postStore.setCurrentPost(route.params.id)
+}
+const deletePost = async () => {
+  if (typeof route.params.id !== 'string') return
+  if (isAdmin.value === false || isAuthor.value === false) return
+  if (
+    import.meta.client &&
+    window.confirm('Please confirm to permanently delete this post')
+  ) {
+    await postStore.deletePostById(route.params.id)
+  }
+  router.push({ path: '/posts' })
+}
 </script>
 
 <template>
-  <section class="bg-light-4 py-md">
+  <section class="bg-light-4 py-md" @click="router.push({ path: '/posts' })">
     <div class="container">
       <div class="px-xs">
         <div
           class="max-w-screen-lg mx-auto bg-light-2 rounded-md relative"
           ref="contentRef"
+          @click.stop
         >
           <div
             class="relative grid md:grid-cols-2 gap-4 px-xs pt-[40px] pb-sm md:pb-md"
           >
+            <!-- left side -->
             <div class="relative">
               <img
                 :src="resolveCardImage(currentPost?.imageId!)"
@@ -54,7 +101,8 @@ const handleNextClick = () => {
               <button
                 v-if="isSupported"
                 class="absolute top-0 right-0 text-light-1 p-3xs mr-2xs mt-2xs hover:text-primary transition-colors duration-300 ease-linear"
-                @click="copy(url.href)"
+                aria-label="copy current url"
+                @click="copyUrl"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -70,6 +118,7 @@ const handleNextClick = () => {
               </button>
               <button
                 class="absolute left-0 top-1/2 -translate-y-1/2 text-light-1 p-3xs hover:text-primary transition-colors duration-300 ease-linear"
+                aria-label="previous post"
                 @click="handlePrevClick"
               >
                 <svg
@@ -86,6 +135,7 @@ const handleNextClick = () => {
               </button>
               <button
                 class="absolute right-0 top-1/2 -translate-y-1/2 text-light-1 p-3xs hover:text-primary transition-colors duration-300 ease-linear"
+                aria-label="next post"
                 @click="handleNextClick"
               >
                 <svg
@@ -101,18 +151,16 @@ const handleNextClick = () => {
                 </svg>
               </button>
             </div>
+            <!-- right side -->
             <div>
-              <div class="bg-light-4 px-xs py-sm rounded-md">
-                <p>
-                  {{ currentPost?.content }}
-                </p>
-                <div class="text-end text-sm text-dark-2">
-                  <p>{{ currentPost?.author.name }}</p>
-                  <ClientOnly>
-                    <p>{{ new Date(currentPost?.date!).toDateString() }}</p>
-                  </ClientOnly>
-                </div>
-              </div>
+              <ContentBlock
+                v-if="currentPost !== null"
+                :is-admin="isAdmin"
+                :is-author="isAuthor"
+                :post="currentPost"
+                @on-delete="deletePost"
+                @on-save="saveEdit"
+              />
             </div>
           </div>
           <!-- close button -->

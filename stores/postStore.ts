@@ -1,6 +1,7 @@
 import { useAuthToken } from '@/composables/useAuthToken'
 import { type UpdatePostInput } from '@/server/controller/post/dto'
 import { PopulatedPostModel } from '@/server/models'
+import { H3Error } from 'h3'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { useAlertStore } from './alertStore'
@@ -75,19 +76,30 @@ export const usePostStore = defineStore('post', () => {
       alertStore.setAlert('Unauthorized action for current user')
       return
     }
-    const { data: res } = await useFetch<PopulatedPostModel>('/api/post', {
-      method: 'POST',
-      headers: { Authorization: cookie.value },
-      body: payload,
-    })
-    if (!res.value) {
-      alertStore.setAlert(
-        'Failed to get response from server, please try again'
-      )
-      return
+    try {
+      const res = await $fetch<PopulatedPostModel>('/api/post', {
+        method: 'POST',
+        headers: { Authorization: cookie.value },
+        body: payload,
+      })
+      posts.value = [res, ...posts.value]
+      alertStore.setAlert('Successfully created a new post', 'success')
+    } catch (error) {
+      alertStore.setAlert((error as H3Error).statusMessage!)
     }
-    posts.value = [res.value, ...posts.value]
-    alertStore.setAlert('Successfully created a new post', 'success')
+    // const { data: res } = await useFetch<PopulatedPostModel>('/api/post', {
+    //   method: 'POST',
+    //   headers: { Authorization: cookie.value },
+    //   body: payload,
+    // })
+    // if (!res.value) {
+    //   alertStore.setAlert(
+    //     'Failed to get response from server, please try again'
+    //   )
+    //   return
+    // }
+    // posts.value = [res.value, ...posts.value]
+    // alertStore.setAlert('Successfully created a new post', 'success')
   }
   const updatePost = async (postId: string, payload: UpdatePostInput) => {
     const { isAuthenticated, currentUser } = userStore.getCurrentAuthInfo
@@ -100,24 +112,37 @@ export const usePostStore = defineStore('post', () => {
       alertStore.setAlert('Unauthorized user')
       return
     }
-    const { data: res } = await useFetch<PopulatedPostModel>(
-      `/api/post/${postId}`,
-      {
+    try {
+      const res = await $fetch<PopulatedPostModel>(`/api/post/${postId}`, {
         method: 'PUT',
         headers: { Authorization: cookie.value },
         body: payload,
-      }
-    )
-    if (!res.value) {
-      alertStore.setAlert(
-        'Failed to get response from server, please try again'
+      })
+      posts.value = posts.value.map((post) =>
+        post._id === postId ? res : post
       )
-      return
+      alertStore.setAlert('Successfully updated post!', 'success')
+    } catch (error) {
+      alertStore.setAlert((error as H3Error).statusMessage!)
     }
-    posts.value = posts.value.map((post) =>
-      post._id === postId ? res.value! : post
-    )
-    alertStore.setAlert('Successfully updated post!', 'success')
+    // const { data: res } = await useFetch<PopulatedPostModel>(
+    //   `/api/post/${postId}`,
+    //   {
+    //     method: 'PUT',
+    //     headers: { Authorization: cookie.value },
+    //     body: payload,
+    //   }
+    // )
+    // if (!res.value) {
+    //   alertStore.setAlert(
+    //     'Failed to get response from server, please try again'
+    //   )
+    //   return
+    // }
+    // posts.value = posts.value.map((post) =>
+    //   post._id === postId ? res.value! : post
+    // )
+    // alertStore.setAlert('Successfully updated post!', 'success')
   }
   const deletePostById = async (postId: string) => {
     const { isAuthenticated, currentUser } = userStore.getCurrentAuthInfo
@@ -130,17 +155,27 @@ export const usePostStore = defineStore('post', () => {
       alertStore.setAlert('Unauthorized user')
       return
     }
-    const { data: res } = await useFetch(`/api/post/${postId}`, {
-      method: 'DELETE',
-      headers: { Authorization: cookie.value },
-    })
-    if (!res.value) {
-      alertStore.setAlert(
-        'Failed to get response from server, please try again'
-      )
-      return
+    try {
+      await $fetch(`/api/post/${postId}`, {
+        method: 'DELETE',
+        headers: { Authorization: cookie.value },
+      })
+      posts.value = posts.value.filter((post) => post._id !== postId)
+      alertStore.setAlert('Successfully deleted post!', 'success')
+    } catch (error) {
+      alertStore.setAlert((error as H3Error).statusMessage!)
     }
-    posts.value = posts.value.filter((post) => post._id !== postId)
+    // const { data: res } = await useFetch(`/api/post/${postId}`, {
+    //   method: 'DELETE',
+    //   headers: { Authorization: cookie.value },
+    // })
+    // if (!res.value) {
+    //   alertStore.setAlert(
+    //     'Failed to get response from server, please try again'
+    //   )
+    //   return
+    // }
+    // posts.value = posts.value.filter((post) => post._id !== postId)
   }
   return {
     posts,
