@@ -13,6 +13,9 @@ const { currentUser, isAuthenticated } = storeToRefs(userStore)
 const imageFileRef = ref<File | undefined>(undefined)
 const contentRef = ref<string>('')
 const modalRef = ref<InstanceType<typeof Modal>>()
+const postPerLoad: number = 30
+const numPostsDisplayed = ref<number>(30)
+const numberOfLoads = ref<number>(0)
 postStore.resetCurrent()
 const formatPostUrl = (id: string) => {
   const imgUrl = new ImageUrl(id)
@@ -27,6 +30,23 @@ const isAuthorizedUser = computed<boolean>(() => {
   if (currentUser.value?.admin === false) return false
   return true
 })
+const displayedPost = computed(() => {
+  const slicedPosts = posts.value.slice(0, numPostsDisplayed.value)
+  return slicedPosts
+})
+const onLoadMore = () => {
+  numPostsDisplayed.value = numPostsDisplayed.value + postPerLoad
+  numberOfLoads.value = numberOfLoads.value + 1
+}
+const showLoadMore = computed(() => {
+  const lastLoad = Math.floor(posts.value.length / postPerLoad)
+  if (numberOfLoads.value < lastLoad) return true
+  return false
+})
+const onModalClose = () => {
+  imageFileRef.value = undefined
+  contentRef.value = ''
+}
 const onSubmit = async (): Promise<void> => {
   const fileFormData = new FormData()
   if (isAuthorizedUser.value === false) return
@@ -34,6 +54,10 @@ const onSubmit = async (): Promise<void> => {
   fileFormData.append('image', imageFileRef.value)
   fileFormData.append('content', contentRef.value)
   await postStore.createNewPost(fileFormData)
+  // reset ref data
+  imageFileRef.value = undefined
+  contentRef.value = ''
+  // close modal
   modalRef.value?.close()
 }
 </script>
@@ -64,7 +88,7 @@ const onSubmit = async (): Promise<void> => {
       </div>
       <div class="grid grid-cols-3 gap-1 lg:gap-2 px-3xs md:px-xs lg:px-md">
         <!-- cards -->
-        <div v-for="(post, idx) in posts" :key="idx">
+        <div v-for="(post, idx) in displayedPost" :key="idx">
           <NuxtLink :to="resolveLinkPath(post._id as string)" class="relative">
             <img
               :src="formatPostUrl(post.imageId)"
@@ -76,6 +100,14 @@ const onSubmit = async (): Promise<void> => {
             ></div>
           </NuxtLink>
         </div>
+        <div v-if="showLoadMore" class="col-span-3">
+          <button
+            class="px-xs py-2xs w-full bg-primary hover:bg-opacity-60 text-light-1 font-semibold transition-colors duration-300 ease-linear"
+            @click="onLoadMore"
+          >
+            Load More
+          </button>
+        </div>
       </div>
     </div>
     <Modal
@@ -84,6 +116,7 @@ const onSubmit = async (): Promise<void> => {
       backdrop-color="dark-3"
       title="New post"
       :class-name="['rounded-lg']"
+      @close="onModalClose"
     >
       <template #body="{ close }">
         <div class="px-xs pb-xs">
@@ -110,10 +143,18 @@ const onSubmit = async (): Promise<void> => {
               />
             </MclFormGroup>
             <div class="flex justify-end items-center gap-2 mt-xs">
-              <button role="submit" class="btn btn-primary text-light-1">
+              <button
+                type="submit"
+                role="button"
+                class="btn btn-primary text-light-1"
+              >
                 Save
               </button>
-              <button class="btn btn-warning text-light-1" @click="close">
+              <button
+                type="reset"
+                class="btn btn-warning text-light-1"
+                @click="close"
+              >
                 Cancel
               </button>
             </div>

@@ -1,4 +1,3 @@
-import { useFetch } from '#imports'
 import { useAuthToken } from '@/composables/useAuthToken'
 import { type AuthInput } from '@/server/controller/auth/dto'
 import type {
@@ -41,11 +40,9 @@ export const useUserStore = defineStore('user', () => {
       currentUser.value = res
       isAuthenticated.value = true
     } catch (error) {
-      if (error instanceof H3Error) {
-        alertStore.setAlert(error.data.statusMessage)
-        currentUser.value = null
-        isAuthenticated.value = false
-      }
+      alertStore.setAlert((error as H3Error).statusMessage!)
+      currentUser.value = null
+      isAuthenticated.value = false
     }
   }
   const getCurrentUser = async () => {
@@ -54,112 +51,74 @@ export const useUserStore = defineStore('user', () => {
       const res = await $fetch<UserModel>('/api/auth', {
         method: 'GET',
         headers: { Authorization: cookie.value },
-        ignoreResponseError: true,
       })
       currentUser.value = res
       isAuthenticated.value = true
       alertStore.setAlert('Successfully authenticated user', 'success')
     } catch (error) {
-      if (error instanceof H3Error) {
-        alertStore.setAlert(error.data.statusMessage)
-        currentUser.value = null
-        isAuthenticated.value = false
-      }
+      alertStore.setAlert((error as H3Error).statusMessage!)
+      currentUser.value = null
+      isAuthenticated.value = false
+      cookie.value = null
     }
   }
   const loginWithCredential = async (payload: AuthInput) => {
-    const { data: res, error } = await useFetch<AuthToken>('/api/auth', {
-      method: 'POST',
-      body: payload,
-    })
-    if (error.value) {
-      alertStore.setAlert(error.value.data.statusMessage)
+    try {
+      const res = await $fetch<AuthToken>('/api/auth', {
+        method: 'POST',
+        body: payload,
+      })
+      cookie.value = res.access_token
+      await authUser()
+      alertStore.setAlert('Login Successful!', 'success')
+    } catch (error) {
+      alertStore.setAlert((error as H3Error).statusMessage!)
       currentUser.value = null
       isAuthenticated.value = false
-      return
     }
-    if (!res.value) {
-      alertStore.setAlert(
-        'Failed to get response from server, please try again'
-      )
-      currentUser.value = null
-      isAuthenticated.value = false
-      return
-    }
-    cookie.value = res.value.access_token
-    await authUser()
-    alertStore.setAlert('Login Successful!', 'success')
   }
   const signupUser = async (payload: UserInput) => {
-    const { data: res, error } = await useFetch<AuthToken>('/api/user', {
-      method: 'POST',
-      body: payload,
-    })
-    if (error.value) {
-      alertStore.setAlert(error.value.data.statusMessage)
+    try {
+      const res = await $fetch<AuthToken>('/api/user', {
+        method: 'POST',
+        body: payload,
+      })
+      cookie.value = res.access_token
+      await authUser()
+      alertStore.setAlert('Signup successful!', 'success')
+    } catch (error) {
+      alertStore.setAlert((error as H3Error).statusMessage!)
       currentUser.value = null
       isAuthenticated.value = false
-      return
     }
-    if (!res.value) {
-      alertStore.setAlert(
-        'Failed to get response from server, please try again'
-      )
-      return
-    }
-    cookie.value = res.value.access_token
-    await authUser()
-    alertStore.setAlert('Signup successful!', 'success')
   }
   const updateUsername = async (payload: NewUsernameInput) => {
-    if (!cookie.value) {
-      return
-    }
-    const { data: res, error } = await useFetch<UserModel>(
-      '/api/user/user-info/username',
-      {
+    if (!cookie.value) return
+    try {
+      await $fetch<UserModel>('/api/user/user-info/username', {
         method: 'PUT',
         headers: { Authorization: cookie.value },
         body: payload,
-      }
-    )
-    if (error.value) {
-      alertStore.setAlert(error.value.data.statusMessage)
-      return
+      })
+      await authUser()
+      alertStore.setAlert('Successfully updated username', 'success')
+    } catch (error) {
+      alertStore.setAlert((error as H3Error).statusMessage!)
     }
-    if (!res.value) {
-      alertStore.setAlert(
-        'Failed to get response from server, please try again'
-      )
-      return
-    }
-    await authUser()
-    alertStore.setAlert('Successfully updated username', 'success')
   }
   const updatePassword = async (payload: PwUpdateInput) => {
-    if (!cookie.value) {
-      return
-    }
-    const { data: res, error } = await useFetch(
-      '/api/user/user-info/password',
-      {
+    if (!cookie.value) return
+    try {
+      await $fetch('/api/user/user-info/password', {
         method: 'PUT',
         headers: { Authentication: cookie.value },
         body: payload,
-      }
-    )
-    if (error.value) {
-      alertStore.setAlert(error.value.data.statusMessage)
-      return
+      })
+      await authUser()
+      alertStore.setAlert('Successfully updated user password', 'success')
+    } catch (error) {
+      alertStore.setAlert((error as H3Error).statusMessage!)
     }
-    if (!res.value) {
-      alertStore.setAlert(
-        'Failed to get response from server, please try again'
-      )
-      return
-    }
-    await authUser()
-    alertStore.setAlert('Successfully updated user password', 'success')
   }
   const logoutUser = () => {
     cookie.value = null
@@ -168,29 +127,18 @@ export const useUserStore = defineStore('user', () => {
     alertStore.setAlert('Logout successful!', 'success')
   }
   const setAdmin = async (payload: SetAdminInput) => {
-    if (!cookie.value) {
-      return
-    }
-    const { data: res, error } = await useFetch<UserModel>(
-      '/api/user/user-role/admin',
-      {
+    if (!cookie.value) return
+    try {
+      await $fetch<UserModel>('/api/user/user-role/admin', {
         method: 'PUT',
         headers: { Authorization: cookie.value },
         body: payload,
-      }
-    )
-    if (error.value) {
-      alertStore.setAlert(error.value.data.statusMessage)
-      return
+      })
+      await authUser()
+      alertStore.setAlert('Successfully set user as an admin!', 'success')
+    } catch (error) {
+      alertStore.setAlert((error as H3Error).statusMessage!)
     }
-    if (!res.value) {
-      alertStore.setAlert(
-        'Failed to get response from server, please try again'
-      )
-      return
-    }
-    await authUser()
-    alertStore.setAlert('Successfully set user as an admin!', 'success')
   }
   return {
     currentUser,
