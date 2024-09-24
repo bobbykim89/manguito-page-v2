@@ -35,7 +35,9 @@ const onDelete = (e: Event) => {
 </script>
 
 <template>
-  <div class="bg-light-4 px-xs py-sm rounded-md overflow-x-hidden">
+  <div
+    class="bg-light-4 px-xs py-sm rounded-md overflow-x-hidden drop-shadow-md"
+  >
     <Transition name="page" mode="out-in">
       <div v-if="!isEditMode">
         <p>

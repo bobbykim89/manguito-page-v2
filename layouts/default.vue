@@ -3,15 +3,30 @@ import MclLogo from '@/assets/img/logo192.png'
 import AuthBlock from '@/components/layout-components/AuthBlock.vue'
 import UpdateUserInfo from '@/components/layout-components/UpdateUserInfo.vue'
 import { useAlertStore, useUserStore } from '@/stores'
-import { Alert, HeaderHorizontal, Sidebar } from '@bobbykim/manguito-theme'
+import {
+  Alert,
+  HeaderHorizontal,
+  Sidebar,
+  type ColorPalette,
+} from '@bobbykim/manguito-theme'
 import {
   MclFooterA,
   type MenuItemType,
   type SocialUrl,
 } from '@bobbykim/mcl-footer'
 import { storeToRefs } from 'pinia'
-import { reactive, ref } from 'vue'
+import { computed, reactive, ref } from 'vue'
 
+const props = withDefaults(
+  defineProps<{
+    color?: ColorPalette
+  }>(),
+  {
+    color: 'light-1',
+  }
+)
+
+const route = useRoute()
 const router = useRouter()
 const alertStore = useAlertStore()
 const userStore = useUserStore()
@@ -73,10 +88,17 @@ const onUsernameUpdateSubmit = (e: Event, name: string) => {
 const onPwUpdateSubmit = (e: Event, currentPw: string, newPw: string) => {
   console.log(currentPw, newPw)
 }
+const getLayoutBgColor = computed(() => {
+  const path = route.path
+  if (path !== '/' && path !== '/posts' && path !== '/about') {
+    return 'bg-light-4'
+  }
+  return 'bg-light-1'
+})
 </script>
 
 <template>
-  <div class="relative bg-light-1">
+  <div :class="[getLayoutBgColor, 'relative']">
     <HeaderHorizontal
       ref="headerRef"
       bg-color="light-1"

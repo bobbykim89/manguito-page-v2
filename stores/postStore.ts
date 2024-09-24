@@ -87,19 +87,6 @@ export const usePostStore = defineStore('post', () => {
     } catch (error) {
       alertStore.setAlert((error as H3Error).statusMessage!)
     }
-    // const { data: res } = await useFetch<PopulatedPostModel>('/api/post', {
-    //   method: 'POST',
-    //   headers: { Authorization: cookie.value },
-    //   body: payload,
-    // })
-    // if (!res.value) {
-    //   alertStore.setAlert(
-    //     'Failed to get response from server, please try again'
-    //   )
-    //   return
-    // }
-    // posts.value = [res.value, ...posts.value]
-    // alertStore.setAlert('Successfully created a new post', 'success')
   }
   const updatePost = async (postId: string, payload: UpdatePostInput) => {
     const { isAuthenticated, currentUser } = userStore.getCurrentAuthInfo
@@ -125,24 +112,6 @@ export const usePostStore = defineStore('post', () => {
     } catch (error) {
       alertStore.setAlert((error as H3Error).statusMessage!)
     }
-    // const { data: res } = await useFetch<PopulatedPostModel>(
-    //   `/api/post/${postId}`,
-    //   {
-    //     method: 'PUT',
-    //     headers: { Authorization: cookie.value },
-    //     body: payload,
-    //   }
-    // )
-    // if (!res.value) {
-    //   alertStore.setAlert(
-    //     'Failed to get response from server, please try again'
-    //   )
-    //   return
-    // }
-    // posts.value = posts.value.map((post) =>
-    //   post._id === postId ? res.value! : post
-    // )
-    // alertStore.setAlert('Successfully updated post!', 'success')
   }
   const deletePostById = async (postId: string) => {
     const { isAuthenticated, currentUser } = userStore.getCurrentAuthInfo
@@ -165,17 +134,6 @@ export const usePostStore = defineStore('post', () => {
     } catch (error) {
       alertStore.setAlert((error as H3Error).statusMessage!)
     }
-    // const { data: res } = await useFetch(`/api/post/${postId}`, {
-    //   method: 'DELETE',
-    //   headers: { Authorization: cookie.value },
-    // })
-    // if (!res.value) {
-    //   alertStore.setAlert(
-    //     'Failed to get response from server, please try again'
-    //   )
-    //   return
-    // }
-    // posts.value = posts.value.filter((post) => post._id !== postId)
   }
   return {
     posts,

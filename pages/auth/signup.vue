@@ -5,6 +5,10 @@ import { MclFormGroup, MclInputText } from '@bobbykim/mcl-forms'
 import { storeToRefs } from 'pinia'
 import { reactive, ref } from 'vue'
 
+definePageMeta({
+  middleware: ['guest-route'],
+})
+
 useHead({
   title: 'Signup | Manguito Page',
   meta: [
