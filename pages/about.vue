@@ -27,8 +27,10 @@ const socialUrls = {
 
 <template>
   <div class="container">
-    <div class="px-xs py-md flex justify-center items-center min-h-[75vh]">
-      <div class="p-md md:px-lg md:py-xl bg-light-3 rounded-md drop-shadow-md">
+    <div class="flex justify-center items-center min-h-[75vh]">
+      <div
+        class="p-md md:px-lg md:py-xl bg-light-3 max-w-screen-lg rounded-md drop-shadow-md"
+      >
         <div
           class="flex flex-col md:flex-row gap-lg items-center justify-center"
         >
