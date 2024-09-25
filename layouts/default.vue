@@ -68,11 +68,22 @@ const handleFooterMenuClick = (e: Event, item: MenuItemType) => {
 const handleUserBlockClick = () => {
   sidebarRef.value?.open()
 }
-const onUsernameUpdateSubmit = (e: Event, name: string) => {
-  console.log(name)
+const onUsernameUpdateSubmit = async (e: Event, name: string) => {
+  e.preventDefault()
+  if (import.meta.client && window.confirm('Please confirm username update')) {
+    await userStore.updateUsername({ username: name })
+  }
+  sidebarRef.value?.close()
 }
-const onPwUpdateSubmit = (e: Event, currentPw: string, newPw: string) => {
-  console.log(currentPw, newPw)
+const onPwUpdateSubmit = async (e: Event, currentPw: string, newPw: string) => {
+  e.preventDefault()
+  if (import.meta.client && window.confirm('Please confirm password update.')) {
+    await userStore.updatePassword({
+      currentPassword: currentPw,
+      newPassword: newPw,
+    })
+  }
+  sidebarRef.value?.close()
 }
 const getLayoutBgColor = computed(() => {
   const path = route.path

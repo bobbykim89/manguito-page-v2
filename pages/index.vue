@@ -9,6 +9,14 @@ import { usePostStore } from '@/stores'
 import { MclContainerA, MclContainerB } from '@bobbykim/mcl-container'
 import { defineAsyncComponent, reactive } from 'vue'
 
+useHead({
+  title: 'Home | Manguito Page',
+  meta: [
+    { name: 'description', content: 'Main page' },
+    { property: 'og:title', content: 'Home | Manguito Page' },
+  ],
+})
+
 const postStore = usePostStore()
 const heroContent = reactive<{
   heading: string

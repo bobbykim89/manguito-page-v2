@@ -1,10 +1,19 @@
 <script setup lang="ts">
 import { PopulatedCommentModel } from '@/server/models'
+
 definePageMeta({
   layout: 'admin',
-  layoutTransition: { name: 'page', mode: 'out-in' },
   middleware: ['admin-route'],
 })
+
+useHead({
+  title: 'Admin - Comments | Manguito Page',
+  meta: [
+    { name: 'description', content: 'Admin - Comments page' },
+    { property: 'og:title', content: 'Admin - Comments | Manguito Page' },
+  ],
+})
+
 const cookie = useAuthToken()
 const { data: res, refresh } = await useFetch<PopulatedCommentModel[]>(
   '/api/comment'

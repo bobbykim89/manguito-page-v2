@@ -2,8 +2,15 @@
 import { PopulatedPostModel } from '@/server/models'
 definePageMeta({
   layout: 'admin',
-  layoutTransition: { name: 'page', mode: 'out-in' },
   middleware: ['admin-route'],
+})
+
+useHead({
+  title: 'Admin - Posts | Manguito Page',
+  meta: [
+    { name: 'description', content: 'Admin - Posts page' },
+    { property: 'og:title', content: 'Admin - Posts | Manguito Page' },
+  ],
 })
 
 const cookie = useAuthToken()

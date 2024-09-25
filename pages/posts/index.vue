@@ -6,6 +6,14 @@ import { MclFormGroup, MclInputFile, MclTextArea } from '@bobbykim/mcl-forms'
 import { storeToRefs } from 'pinia'
 import { ref } from 'vue'
 
+useHead({
+  title: 'Posts | Manguito Page',
+  meta: [
+    { name: 'description', content: 'Posts page' },
+    { property: 'og:title', content: 'Posts | Manguito Page' },
+  ],
+})
+
 const postStore = usePostStore()
 const userStore = useUserStore()
 const { posts } = storeToRefs(postStore)

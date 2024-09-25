@@ -4,6 +4,18 @@ import { MclFormGroup, MclInputText } from '@bobbykim/mcl-forms'
 import { storeToRefs } from 'pinia'
 import { ref } from 'vue'
 
+definePageMeta({
+  middleware: ['auth-route'],
+})
+
+useHead({
+  title: 'Admin - Request | Manguito Page',
+  meta: [
+    { name: 'description', content: 'Admin - Request page' },
+    { property: 'og:title', content: 'Admin - Request | Manguito Page' },
+  ],
+})
+
 const router = useRouter()
 const userStore = useUserStore()
 const { currentUser } = storeToRefs(userStore)

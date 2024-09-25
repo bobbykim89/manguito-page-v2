@@ -4,8 +4,15 @@ import { useUserStore } from '@/stores'
 import { storeToRefs } from 'pinia'
 definePageMeta({
   layout: 'admin',
-  layoutTransition: { name: 'page', mode: 'out-in' },
   middleware: ['admin-route'],
+})
+
+useHead({
+  title: 'Admin | Manguito Page',
+  meta: [
+    { name: 'description', content: 'Admin page' },
+    { property: 'og:title', content: 'Admin | Manguito Page' },
+  ],
 })
 
 const userStore = useUserStore()
