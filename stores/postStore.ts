@@ -67,12 +67,12 @@ export const usePostStore = defineStore('post', () => {
     postIdx.value = 0
   }
   const createNewPost = async (payload: FormData) => {
-    const { currentUser, isAuthenticated } = userStore.getCurrentAuthInfo
+    const { isAuthenticated, role } = userStore.getCurrentAuthInfo
     if (!cookie.value || !isAuthenticated) {
       alertStore.setAlert('No user authentication found, please login')
       return
     }
-    if (!currentUser?.admin) {
+    if (role !== 'ADMIN' && role !== 'MANAGER') {
       alertStore.setAlert('Unauthorized action for current user')
       return
     }
@@ -95,7 +95,7 @@ export const usePostStore = defineStore('post', () => {
       return
     }
     const currentPost = posts.value.find((item) => item._id === postId)
-    if (currentPost?.author._id !== currentUser?._id || !currentUser?.admin) {
+    if (currentPost?.author._id !== currentUser?._id) {
       alertStore.setAlert('Unauthorized user')
       return
     }
@@ -114,13 +114,13 @@ export const usePostStore = defineStore('post', () => {
     }
   }
   const deletePostById = async (postId: string) => {
-    const { isAuthenticated, currentUser } = userStore.getCurrentAuthInfo
+    const { isAuthenticated, currentUser, role } = userStore.getCurrentAuthInfo
     if (!cookie.value || !isAuthenticated) {
       alertStore.setAlert('No user authentication found, please login')
       return
     }
     const currentPost = posts.value.find((item) => item._id === postId)
-    if (currentPost?.author._id !== currentUser?._id || !currentUser?.admin) {
+    if (currentPost?.author._id !== currentUser?._id && role !== 'ADMIN') {
       alertStore.setAlert('Unauthorized user')
       return
     }

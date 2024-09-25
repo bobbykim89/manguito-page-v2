@@ -16,6 +16,7 @@ import {
   newUsernameInputSchema,
   pwUpdateInputSchema,
   setAdminInputSchema,
+  setUserRoleInputSchema,
   userInputSchema,
 } from './dto'
 
@@ -138,10 +139,70 @@ export class UserController<T extends UserModel> {
         statusMessage: 'Access denied.',
       })
     }
+    const existingAdmins = await this.userModel
+      .find({ role: 'ADMIN' })
+      .select('-password')
+    if (existingAdmins.length > 0) {
+      throw createError({
+        status: 403,
+        message: 'Forbidden',
+        statusMessage: 'Access denied: admin already exists.',
+      })
+    }
     const updatedUser = await this.userModel
       .findByIdAndUpdate(
         user.id,
-        { admin: true },
+        { role: 'ADMIN' },
+        { new: true, returnDocument: 'after' }
+      )
+      .select('-password')
+    if (!updatedUser) {
+      throw createError({
+        status: 500,
+        message: 'Server error',
+        statusMessage: 'Unexpected error occurred, please try again.',
+      })
+    }
+    return updatedUser
+  }
+  public getUserList = async (
+    e: H3Event<EventHandlerRequest>
+  ): Promise<T[]> => {
+    const currentUser = await this.getRawCurrentUserData(e.context)
+    if (currentUser.role !== 'ADMIN') {
+      throw createError({
+        status: 401,
+        message: 'Access denied',
+        statusMessage: 'Access denied: only admin has access to user info.',
+      })
+    }
+    const allUser = await this.userModel
+      .find({ role: { $ne: 'ADMIN' } })
+      .select('-password')
+    if (!allUser) {
+      throw createError({
+        status: 404,
+        message: 'Not found',
+        statusMessage: 'Users not found',
+      })
+    }
+    return allUser
+  }
+  public setUserRole = async (e: H3Event<EventHandlerRequest>): Promise<T> => {
+    const userId = getRouterParam(e, 'id')
+    const user = await this.getRawCurrentUserData(e.context)
+    if (user.role !== 'ADMIN') {
+      throw createError({
+        status: 401,
+        message: 'Access denied',
+        statusMessage: 'Access denied: only admin has access to user info.',
+      })
+    }
+    const { role } = await readValidatedBody(e, setUserRoleInputSchema.parse)
+    const updatedUser = await this.userModel
+      .findByIdAndUpdate(
+        userId,
+        { role, updatedAt: new Date() },
         { new: true, returnDocument: 'after' }
       )
       .select('-password')

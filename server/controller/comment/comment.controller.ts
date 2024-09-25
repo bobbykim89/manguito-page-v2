@@ -86,7 +86,11 @@ export class CommentController<T extends CommentModel> {
         statusMessage: 'Not found: comment not found',
       })
     }
-    if (comment.author.toString() !== user.id || !user.admin) {
+    if (
+      comment.author.toString() !== user.id &&
+      user.role !== 'ADMIN' &&
+      user.role !== 'MANAGER'
+    ) {
       throw createError({
         status: 401,
         message: 'Unauthorized',
