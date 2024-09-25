@@ -119,7 +119,7 @@ export const useUserStore = defineStore('user', () => {
     try {
       await $fetch('/api/user/user-info/password', {
         method: 'PUT',
-        headers: { Authentication: cookie.value },
+        headers: { Authorization: cookie.value },
         body: payload,
       })
       await authUser()
@@ -138,7 +138,7 @@ export const useUserStore = defineStore('user', () => {
   const setAdmin = async (payload: SetAdminInput) => {
     if (!cookie.value) return
     try {
-      await $fetch<UserModel>('/api/user/user-role/admin', {
+      await $fetch<UserModel>('/api/user/admin', {
         method: 'PUT',
         headers: { Authorization: cookie.value },
         body: payload,

@@ -6,8 +6,15 @@ import { MclInputRadio } from '@bobbykim/mcl-forms'
 
 definePageMeta({
   layout: 'admin',
-  layoutTransition: { name: 'page', mode: 'out-in' },
   middleware: ['admin-route'],
+})
+
+useHead({
+  title: 'Admin - Users | Manguito Page',
+  meta: [
+    { name: 'description', content: 'Admin - Users page' },
+    { property: 'og:title', content: 'Admin - Users | Manguito Page' },
+  ],
 })
 
 const cookie = useAuthToken()

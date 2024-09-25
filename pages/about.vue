@@ -45,7 +45,7 @@ const socialUrls = {
             <h2 class="h2-md mb-xs">About Manguito Page</h2>
             <div class="font-bold text-lg mb-xs">
               <p>Photo blog for our little lovebird, Manguito.</p>
-              <p>Version: 0.2.1</p>
+              <p>Version: 0.1.1</p>
               <p>Maintainer: Bobby Kim</p>
             </div>
             <div class="flex items-center justify-center gap-xs">

@@ -64,6 +64,10 @@ const handleFooterMenuClick = (e: Event, item: MenuItemType) => {
   e.preventDefault()
   router.push({ path: item.url })
 }
+const onUserLogout = () => {
+  userStore.logoutUser()
+  router.push({ path: '/' })
+}
 const handleUserBlockClick = () => {
   sidebarRef.value?.open()
 }
@@ -123,7 +127,7 @@ const onPwUpdateSubmit = (e: Event, currentPw: string, newPw: string) => {
             signup-url="/auth/signup"
             :auth="isAuthenticated"
             :user="currentUser"
-            @logout-click="userStore.logoutUser"
+            @logout-click="onUserLogout"
             @user-click="handleUserBlockClick"
           />
         </div>
@@ -147,7 +151,7 @@ const onPwUpdateSubmit = (e: Event, currentPw: string, newPw: string) => {
           :auth="isAuthenticated"
           :user="currentUser"
           @link-click="headerClose"
-          @logout-click="userStore.logoutUser(), headerClose()"
+          @logout-click="onUserLogout(), headerClose()"
           @user-click="handleUserBlockClick(), headerClose()"
         />
       </template>

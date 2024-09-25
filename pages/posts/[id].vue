@@ -35,6 +35,18 @@ const resolveCardImage = (img: string) => {
   return imgUrl.getPostUrl()
 }
 
+useHead({
+  title: 'Post | Manguito Page',
+  meta: [
+    { name: 'description', content: 'Post page' },
+    { property: 'og:title', content: 'Post | Manguito Page' },
+    {
+      property: 'og:image',
+      content: resolveCardImage(currentPost.value?.imageId!),
+    },
+  ],
+})
+
 const handlePrevClick = () => {
   const prevPostUrl = postStore.setPrevPost()
   router.push({ path: prevPostUrl })
