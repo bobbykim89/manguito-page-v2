@@ -41,7 +41,7 @@ const handleUserBlockClick = (e: Event) => {
         </span>
         <!-- admin crown -->
         <svg
-          v-if="user?.admin"
+          v-if="user?.role === 'ADMIN'"
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 576 512"
           class="h-[12px] lg:h-xs aspect-square text-warning"

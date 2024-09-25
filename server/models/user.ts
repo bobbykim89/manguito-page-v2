@@ -2,12 +2,15 @@ import { Document, Schema, model } from 'mongoose'
 
 const modelName: string = 'user'
 
+export type UserRoleType = 'ADMIN' | 'MANAGER' | 'USER'
+
 export interface UserModel extends Document {
   name: string
   email: string
   password: string
-  admin: boolean
+  role: UserRoleType
   date: Date
+  updatedAt: Date
 }
 
 const userSchema: Schema<UserModel> = new Schema<UserModel>({
@@ -24,11 +27,15 @@ const userSchema: Schema<UserModel> = new Schema<UserModel>({
     type: String,
     required: true,
   },
-  admin: {
-    type: Boolean,
-    default: false,
+  role: {
+    type: String,
+    default: 'USER',
   },
   date: {
+    type: Date,
+    default: Date.now,
+  },
+  updatedAt: {
     type: Date,
     default: Date.now,
   },

@@ -19,7 +19,7 @@ const alertStore = useAlertStore()
 const postStore = usePostStore()
 const userStore = useUserStore()
 const { currentPost } = storeToRefs(postStore)
-const { currentUser, isAuthenticated } = storeToRefs(userStore)
+const { currentUser, role, isAuthenticated } = storeToRefs(userStore)
 const contentRef = ref<HTMLDivElement>()
 const { copy, isSupported } = useClipboard()
 
@@ -50,7 +50,15 @@ const copyUrl = () => {
 const isAdmin = computed<boolean>(() => {
   if (isAuthenticated.value === false) return false
   if (currentUser.value === null) return false
-  if (currentUser.value?.admin === false) return false
+  if (role.value === null) return false
+  if (role.value !== 'ADMIN') return false
+  return true
+})
+const isManagerOrUp = computed<boolean>(() => {
+  if (isAuthenticated.value === false) return false
+  if (currentUser.value === null) return false
+  if (role.value === null) return false
+  if (role.value !== 'ADMIN' && role.value !== 'MANAGER') return false
   return true
 })
 const isAuthor = computed<boolean>(() => {
@@ -71,7 +79,7 @@ const saveEdit = async (text: string) => {
 }
 const deletePost = async () => {
   if (typeof route.params.id !== 'string') return
-  if (isAdmin.value === false || isAuthor.value === false) return
+  if (isAdmin.value === false && isAuthor.value === false) return
   if (
     import.meta.client &&
     window.confirm('Please confirm to permanently delete this post')
@@ -91,6 +99,7 @@ const onCommentSubmit = async (text: string) => {
   refresh()
 }
 const onCommentDelete = async (id: string) => {
+  if (isManagerOrUp.value === false && isAuthor.value === false) return
   if (!cookie.value) return
   await $fetch(`/api/comment/${id}`, {
     method: 'DELETE',
@@ -193,7 +202,7 @@ const onCommentDelete = async (id: string) => {
               <CommentItem
                 v-for="(comment, idx) in comments"
                 :key="idx"
-                :is-admin="isAdmin"
+                :is-manager-or-up="isManagerOrUp"
                 :is-author="isAuthor"
                 :comment="comment"
                 @delete-click="onCommentDelete"

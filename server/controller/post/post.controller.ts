@@ -86,7 +86,7 @@ export class PostController<T extends PostModel> {
     const content = e.context.content
     const user = await this.userController.getCurrentUserData(e.context)
 
-    if (!user.admin) {
+    if (user.role !== 'ADMIN' && user.role !== 'MANAGER') {
       throw createError({
         status: 401,
         message: 'Access denied',
@@ -160,7 +160,7 @@ export class PostController<T extends PostModel> {
       })
     }
     // check if user is authorized
-    if (post.author.toString() !== user.id || !user.admin) {
+    if (post.author.toString() !== user.id && user.role !== 'ADMIN') {
       throw createError({
         status: 401,
         message: 'Unauthorized',

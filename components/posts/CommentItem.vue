@@ -2,7 +2,7 @@
 import { PopulatedCommentModel } from '@/server/models'
 
 const props = defineProps<{
-  isAdmin: boolean
+  isManagerOrUp: boolean
   isAuthor: boolean
   comment: PopulatedCommentModel
 }>()
@@ -27,7 +27,10 @@ const onDelete = () => {
       <ClientOnly>
         <p>{{ new Date(comment.date).toDateString() }}</p>
       </ClientOnly>
-      <div v-if="isAdmin || isAuthor" class="flex justify-end gap-2 mt-3xs">
+      <div
+        v-if="isManagerOrUp || isAuthor"
+        class="flex justify-end gap-2 mt-3xs"
+      >
         <!-- delete -->
         <button
           class="hover:opacity-65 duration-300 ease-linear"

@@ -9,7 +9,7 @@ import { ref } from 'vue'
 const postStore = usePostStore()
 const userStore = useUserStore()
 const { posts } = storeToRefs(postStore)
-const { currentUser, isAuthenticated } = storeToRefs(userStore)
+const { currentUser, isAuthenticated, role } = storeToRefs(userStore)
 const imageFileRef = ref<File | undefined>(undefined)
 const contentRef = ref<string>('')
 const modalRef = ref<InstanceType<typeof Modal>>()
@@ -27,7 +27,7 @@ const resolveLinkPath = (id: string) => {
 const isAuthorizedUser = computed<boolean>(() => {
   if (isAuthenticated.value === false) return false
   if (currentUser.value === null) return false
-  if (currentUser.value?.admin === false) return false
+  if (role.value !== 'ADMIN' && role.value !== 'MANAGER') return false
   return true
 })
 const displayedPost = computed(() => {

@@ -6,7 +6,7 @@ import type {
   SetAdminInput,
   UserInput,
 } from '@/server/controller/user/dto'
-import { UserModel } from '@/server/models'
+import { UserModel, UserRoleType } from '@/server/models'
 import { H3Error } from 'h3'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
@@ -22,11 +22,13 @@ export const useUserStore = defineStore('user', () => {
   // USERS: states
   const currentUser = ref<UserModel | null>(null)
   const isAuthenticated = ref<boolean>(false)
+  const role = ref<UserRoleType | null>(null)
   // USERS: getters
   const getCurrentAuthInfo = computed(() => {
     return {
       currentUser: currentUser.value,
       isAuthenticated: isAuthenticated.value,
+      role: role.value,
     }
   })
   // USERS: actions
@@ -39,10 +41,12 @@ export const useUserStore = defineStore('user', () => {
       })
       currentUser.value = res
       isAuthenticated.value = true
+      role.value = res.role
     } catch (error) {
       alertStore.setAlert((error as H3Error).statusMessage!)
       currentUser.value = null
       isAuthenticated.value = false
+      role.value = null
     }
   }
   const getCurrentUser = async () => {
@@ -54,11 +58,13 @@ export const useUserStore = defineStore('user', () => {
       })
       currentUser.value = res
       isAuthenticated.value = true
+      role.value = res.role
       alertStore.setAlert('Successfully authenticated user', 'success')
     } catch (error) {
       alertStore.setAlert((error as H3Error).statusMessage!)
       currentUser.value = null
       isAuthenticated.value = false
+      role.value = null
       cookie.value = null
     }
   }
@@ -75,6 +81,7 @@ export const useUserStore = defineStore('user', () => {
       alertStore.setAlert((error as H3Error).statusMessage!)
       currentUser.value = null
       isAuthenticated.value = false
+      role.value = null
     }
   }
   const signupUser = async (payload: UserInput) => {
@@ -90,6 +97,7 @@ export const useUserStore = defineStore('user', () => {
       alertStore.setAlert((error as H3Error).statusMessage!)
       currentUser.value = null
       isAuthenticated.value = false
+      role.value = null
     }
   }
   const updateUsername = async (payload: NewUsernameInput) => {
@@ -124,6 +132,7 @@ export const useUserStore = defineStore('user', () => {
     cookie.value = null
     currentUser.value = null
     isAuthenticated.value = false
+    role.value = null
     alertStore.setAlert('Logout successful!', 'success')
   }
   const setAdmin = async (payload: SetAdminInput) => {
@@ -143,6 +152,7 @@ export const useUserStore = defineStore('user', () => {
   return {
     currentUser,
     isAuthenticated,
+    role,
     getCurrentAuthInfo,
     getCurrentUser,
     loginWithCredential,

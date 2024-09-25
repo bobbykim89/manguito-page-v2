@@ -12,7 +12,7 @@ const phraseRef = ref<string>('')
 const onSubmit = async () => {
   await userStore.setAdmin({ phrase: phraseRef.value })
   phraseRef.value = ''
-  if (currentUser.value?.admin) {
+  if (currentUser.value?.role === 'ADMIN') {
     router.push({ path: '/posts' })
   }
 }
