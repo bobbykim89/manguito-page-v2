@@ -21,12 +21,14 @@ export default defineNuxtConfig({
       meta: [
         {
           name: 'description',
-          content: 'A photo blog for Manguito, a peachfaced lovebird',
+          content:
+            'A photo blog dedicated to Manguito, an adorable peach-faced lovebird, showcasing daily moments and charming antics.',
         },
         { property: 'og:title', content: 'Manguito Page' },
         {
           property: 'og:description',
-          content: 'A photo blog for Manguito, a peachfaced lovebird',
+          content:
+            'A photo blog dedicated to Manguito, an adorable peach-faced lovebird, showcasing daily moments and charming antics.',
         },
         { property: 'og:type', content: 'website' },
         {
@@ -35,19 +37,20 @@ export default defineNuxtConfig({
             'https://res.cloudinary.com/dwgni1x3t/image/upload/c_scale/f_auto/v1700694621/assets/logo192_meuats.png',
         },
         {
-          property: 'twitter:card',
+          name: 'twitter:card',
           content: 'summary_large_image',
         },
         {
-          property: 'twitter:title',
+          name: 'twitter:title',
           content: 'Manguito Page',
         },
         {
-          property: 'twitter:description',
-          content: 'A photo blog for Manguito, a peachfaced lovebird',
+          name: 'twitter:description',
+          content:
+            'A photo blog dedicated to Manguito, an adorable peach-faced lovebird, showcasing daily moments and charming antics.',
         },
         {
-          property: 'twitter:image',
+          name: 'twitter:image',
           content:
             'https://res.cloudinary.com/dwgni1x3t/image/upload/c_scale/f_auto/v1700694621/assets/logo192_meuats.png',
         },
