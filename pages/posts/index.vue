@@ -36,7 +36,7 @@ const numberOfLoads = ref<number>(0)
 postStore.resetCurrent()
 const formatPostUrl = (id: string) => {
   const imgUrl = new ImageUrl(id)
-  return imgUrl.getCardUrl()
+  return imgUrl.getNuxtImageCardUrl()
 }
 const resolveLinkPath = (id: string) => {
   return `/posts/${id}`
@@ -107,7 +107,8 @@ const onSubmit = async (): Promise<void> => {
         <!-- cards -->
         <div v-for="(post, idx) in displayedPost" :key="idx">
           <NuxtLink :to="resolveLinkPath(post._id as string)" class="relative">
-            <img
+            <NuxtImg
+              provider="cloudinary"
               :src="formatPostUrl(post.imageId)"
               alt="image card"
               class="absolute aspect-square w-full object-center object-cover"

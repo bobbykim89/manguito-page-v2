@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { PopulatedPostModel } from '@/server/models'
+
 definePageMeta({
   layout: 'admin',
   middleware: ['admin-route'],
@@ -16,7 +17,7 @@ const { data: res, refresh } = await useFetch<PopulatedPostModel[]>('/api/post')
 
 const formattedUrl = (id: string): string => {
   const imageUrl = new ImageUrl(id)
-  return imageUrl.getCardUrl()
+  return imageUrl.getNuxtImageCardUrl()
 }
 const onDelete = async (id: string) => {
   if (!cookie.value) return
@@ -42,7 +43,8 @@ const onDelete = async (id: string) => {
         :key="post._id!.toString()"
         class="bg-light-4 rounded-md overflow-x-hidden drop-shadow-md flex flex-col md:flex-row"
       >
-        <img
+        <NuxtImg
+          provider="cloudinary"
           :src="formattedUrl(post.imageId)"
           alt="post image"
           class="aspect-square h-3xl object-center object-cover rounded-t-md md:rounded-tr-none md:rounded-l-md"
