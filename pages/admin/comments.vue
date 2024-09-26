@@ -8,10 +8,7 @@ definePageMeta({
 
 useHead({
   title: 'Admin - Comments | Manguito Page',
-  meta: [
-    { name: 'description', content: 'Admin - Comments page' },
-    { property: 'og:title', content: 'Admin - Comments | Manguito Page' },
-  ],
+  meta: [{ property: 'og:title', content: 'Admin - Comments | Manguito Page' }],
 })
 
 const cookie = useAuthToken()

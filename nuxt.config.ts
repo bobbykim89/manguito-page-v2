@@ -1,8 +1,15 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+
 export default defineNuxtConfig({
   compatibilityDate: '2024-04-03',
   devtools: { enabled: true },
-  modules: ['@nuxtjs/tailwindcss', '@pinia/nuxt', '@nuxt/image', '@nuxt/fonts'],
+  modules: [
+    '@nuxtjs/tailwindcss',
+    '@pinia/nuxt',
+    '@nuxt/image',
+    '@nuxt/fonts',
+    '@vite-pwa/nuxt',
+  ],
   app: {
     pageTransition: { name: 'page', mode: 'out-in' },
     layoutTransition: { name: 'page', mode: 'out-in' },
@@ -18,7 +25,29 @@ export default defineNuxtConfig({
         },
         { property: 'og:title', content: 'Manguito Page' },
         {
+          property: 'og:description',
+          content: 'A photo blog for Manguito, a peachfaced lovebird',
+        },
+        { property: 'og:type', content: 'website' },
+        {
           property: 'og:image',
+          content:
+            'https://res.cloudinary.com/dwgni1x3t/image/upload/c_scale/f_auto/v1700694621/assets/logo192_meuats.png',
+        },
+        {
+          property: 'twitter:card',
+          content: 'summary_large_image',
+        },
+        {
+          property: 'twitter:title',
+          content: 'Manguito Page',
+        },
+        {
+          property: 'twitter:description',
+          content: 'A photo blog for Manguito, a peachfaced lovebird',
+        },
+        {
+          property: 'twitter:image',
           content:
             'https://res.cloudinary.com/dwgni1x3t/image/upload/c_scale/f_auto/v1700694621/assets/logo192_meuats.png',
         },
@@ -65,6 +94,79 @@ export default defineNuxtConfig({
     // plugins: ['~/server/plugin/connectDb.ts'],
     experimental: {
       openAPI: true,
+    },
+  },
+  pwa: {
+    strategies: 'generateSW',
+    manifest: {
+      short_name: 'ManguitoPage',
+      name: 'Manguito Page',
+      description: 'A photo blog for Manguito, a peachfaced lovebird',
+      icons: [
+        {
+          src: 'favicon.ico',
+          sizes: '48x48',
+          type: 'image/x-icon',
+        },
+        {
+          src: 'manguito_page_logo-192x192.png',
+          sizes: '192x192',
+          type: 'image/png',
+        },
+        {
+          src: 'manguito_page_logo-512x512.png',
+          sizes: '512x512',
+          type: 'image/png',
+          purpose: 'any',
+        },
+        {
+          src: 'manguito_page_maskable_512.png',
+          sizes: '512x512',
+          type: 'image/png',
+          purpose: 'maskable',
+        },
+      ],
+      display: 'standalone',
+      background_color: '#fafafa',
+      theme_color: '#ec489a',
+      lang: 'en-US',
+      start_url: '/',
+      screenshots: [
+        {
+          src: 'screenshot_desktop_1.png',
+          sizes: '1600x1000',
+          type: 'image/png',
+          form_factor: 'wide',
+        },
+        {
+          src: 'screenshot_desktop_2.png',
+          sizes: '1600x1000',
+          type: 'image/png',
+          form_factor: 'wide',
+        },
+        {
+          src: 'screenshot_mobile_1.png',
+          sizes: '425x680',
+          type: 'image/png',
+          form_factor: 'narrow',
+        },
+        {
+          src: 'screenshot_mobile_2.png',
+          sizes: '425x680',
+          type: 'image/png',
+          form_factor: 'narrow',
+        },
+      ],
+    },
+    workbox: {
+      globPatterns: ['**/*.{js,css,html,png,svg,ico}'],
+    },
+    registerType: 'autoUpdate',
+    devOptions: {
+      enabled: false,
+      // suppressWarnings: true,
+      // navigateFallback: '/',
+      // type: 'module',
     },
   },
 })

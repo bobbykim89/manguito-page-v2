@@ -11,10 +11,7 @@ definePageMeta({
 
 useHead({
   title: 'Admin - Users | Manguito Page',
-  meta: [
-    { name: 'description', content: 'Admin - Users page' },
-    { property: 'og:title', content: 'Admin - Users | Manguito Page' },
-  ],
+  meta: [{ property: 'og:title', content: 'Admin - Users | Manguito Page' }],
 })
 
 const cookie = useAuthToken()

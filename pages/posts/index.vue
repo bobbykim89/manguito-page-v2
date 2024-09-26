@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useRequestURL } from '#app'
 import { ImageUrl } from '@/composables/useImageUrl'
 import { usePostStore, useUserStore } from '@/stores'
 import { Modal, vToggle } from '@bobbykim/manguito-theme'
@@ -6,11 +7,15 @@ import { MclFormGroup, MclInputFile, MclTextArea } from '@bobbykim/mcl-forms'
 import { storeToRefs } from 'pinia'
 import { ref } from 'vue'
 
+const url = useRequestURL()
+
 useHead({
   title: 'Posts | Manguito Page',
   meta: [
-    { name: 'description', content: 'Posts page' },
     { property: 'og:title', content: 'Posts | Manguito Page' },
+    { property: 'og:url', content: url.href },
+    { property: 'twitter:domain', content: url.host },
+    { property: 'twitter:url', content: url.href },
   ],
 })
 

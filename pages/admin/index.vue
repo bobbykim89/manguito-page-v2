@@ -9,10 +9,7 @@ definePageMeta({
 
 useHead({
   title: 'Admin | Manguito Page',
-  meta: [
-    { name: 'description', content: 'Admin page' },
-    { property: 'og:title', content: 'Admin | Manguito Page' },
-  ],
+  meta: [{ property: 'og:title', content: 'Admin | Manguito Page' }],
 })
 
 const userStore = useUserStore()
