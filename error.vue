@@ -8,6 +8,10 @@ useHead({
   meta: [
     { property: 'og:title', content: '404 | Manguito Page' },
     { property: 'twitter:domain', content: url.host },
+    {
+      name: 'twitter:title',
+      content: '404 | Manguito Page',
+    },
   ],
 })
 </script>

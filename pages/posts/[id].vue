@@ -52,6 +52,10 @@ useHead({
       property: 'twitter:image',
       content: resolveCardImage(currentPost.value?.imageId!),
     },
+    {
+      name: 'twitter:title',
+      content: 'Post | Manguito Page',
+    },
   ],
 })
 

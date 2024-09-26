@@ -19,6 +19,10 @@ useHead({
     { property: 'og:url', content: url.href },
     { property: 'twitter:domain', content: url.host },
     { property: 'twitter:url', content: url.href },
+    {
+      name: 'twitter:title',
+      content: 'Login | Manguito Page',
+    },
   ],
 })
 
