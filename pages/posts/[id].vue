@@ -34,7 +34,7 @@ const { data: comments, refresh } = await useFetch<PopulatedCommentModel[]>(
 
 const resolveCardImage = (img: string) => {
   const imgUrl = new ImageUrl(img)
-  return imgUrl.getPostUrl()
+  return imgUrl.getNuxtImagePostUrl()
 }
 
 useHead({
@@ -158,7 +158,8 @@ const onCommentDelete = async (id: string) => {
             <!-- left side -->
             <div>
               <div class="relative">
-                <img
+                <NuxtImg
+                  provider="cloudinary"
                   :src="resolveCardImage(currentPost?.imageId!)"
                   alt="a picture of manguito"
                   class="relative object-center object-cover w-full rounded-md"

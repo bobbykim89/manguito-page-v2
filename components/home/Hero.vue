@@ -10,7 +10,9 @@ defineProps<{
 </script>
 
 <template>
-  <section class="grid grid-flow-row md:grid-cols-5 py-xs md:py-md font-inter">
+  <section
+    class="grid grid-flow-row md:grid-cols-5 py-xs md:py-md font-inter overflow-x-hidden"
+  >
     <div class="col-span-2 order-2 md:order-1 w-full">
       <div
         class="h-full flex flex-col items-center md:items-start justify-center md:pl-md max-w-screen-sm ml-auto"

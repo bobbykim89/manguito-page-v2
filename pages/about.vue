@@ -36,7 +36,7 @@ const socialUrls = {
 
 <template>
   <div class="container">
-    <div class="flex justify-center items-center min-h-[75vh]">
+    <div class="flex justify-center items-center min-h-[75vh] px-xs py-md">
       <div
         class="p-md md:px-lg md:py-xl bg-light-3 max-w-screen-lg rounded-md drop-shadow-md"
       >
@@ -45,7 +45,7 @@ const socialUrls = {
         >
           <div>
             <img
-              class="aspect-square rounded-full border-4 border-dark-4 max-h-[384px]"
+              class="aspect-square rounded-full border-4 border-dark-4 w-full min-w-[256px] max-w-[384px]"
               :src="AboutImage"
               alt="manguito sitting on monitor"
             />
@@ -53,7 +53,10 @@ const socialUrls = {
           <div class="text-dark-3">
             <h2 class="h2-md mb-xs">About Manguito Page</h2>
             <div class="font-bold text-lg mb-xs">
-              <p>Photo blog for our little lovebird, Manguito.</p>
+              <p>
+                A photo blog dedicated to Manguito, an adorable peach-faced
+                lovebird, showcasing daily moments and charming antics.
+              </p>
               <p>Version: 0.1.1</p>
               <p>Maintainer: Bobby Kim</p>
             </div>
@@ -101,7 +104,7 @@ const socialUrls = {
                 :href="socialUrls.email.url"
                 :target="socialUrls.email.target"
                 rel="noreferrer"
-                class="p-3xs rounded-md bg-dark-4 text-light-3 hover:bg-opacity-75 transition-colors duration-300 ease-linear"
+                class="p-3xs rounded-md bg-dark-3 text-light-3 hover:bg-opacity-75 transition-colors duration-300 ease-linear"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

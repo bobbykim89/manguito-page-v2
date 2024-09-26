@@ -1,41 +1,54 @@
-# Nuxt 3 Minimal Starter
+# Manguito Page v2
 
-Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+A repository for source code of [Manguito Page](https://manguito-page.vercel.app/) project. Reworked original [Manguito Page](https://github.com/bobbykim89/manguito-page) using Nuxt 3 and Typescript.
 
 ## Setup
 
-Make sure to install the dependencies:
+Install the dependencies:
 
 ```bash
-# npm
-npm install
-
 # pnpm
 pnpm install
 
 # yarn
 yarn install
-
-# bun
-bun install
 ```
 
-## Development Server
+## Local DB
+
+Start local database using docker compose (resets existing data on restart)
+
+```bash
+## pnpm
+pnpm db:local:restart
+
+## yarn
+yarn db:local:restart
+```
+
+## Dev Server
 
 Start the development server on `http://localhost:3000`:
 
 ```bash
-# npm
-npm run dev
+# local env
+## pnpm
+pnpm dev
 
-# pnpm
-pnpm run dev
-
-# yarn
+## yarn
 yarn dev
 
-# bun
-bun run dev
+# dev env
+## pnpn
+pnpm dev:dev
+yarn dev:dev
+
+# prod env
+## pnpm
+pnpm dev:prod
+
+## yarn
+yarn dev:prod
 ```
 
 ## Production
@@ -43,33 +56,53 @@ bun run dev
 Build the application for production:
 
 ```bash
-# npm
-npm run build
+# prod build
+## pnpm
+pnpm build
 
-# pnpm
-pnpm run build
-
-# yarn
+## yarn
 yarn build
 
-# bun
-bun run build
+# dev build
+## pnpm
+pnpm build:dev
+
+## yarn
+yarn build:dev
+
+# local build
+## pnpm
+pnpm build:local
+
+## yarn
+yarn build:local
 ```
 
 Locally preview production build:
 
 ```bash
-# npm
-npm run preview
-
 # pnpm
 pnpm run preview
 
 # yarn
 yarn preview
-
-# bun
-bun run preview
 ```
 
 Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+
+## Tech stack
+
+> Vue
+> Nuxt 3
+> Nitro (H3)
+> MongoDB
+> Mongoose
+> TailwindCSS
+> vueuse
+> Bcrypt
+> Json Web Token (JWT)
+> Manguito Component Library (MCL)
+> Docker Compose
+> Zod
+> Pinia
+> Progressive Web App (PWA)

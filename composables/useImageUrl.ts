@@ -25,4 +25,10 @@ export class ImageUrl {
   public getPostUrl = (): string => {
     return `${this.config.public.cloudinarySourceUrl}${this.imageType.POST}${this.imageId}`
   }
+  public getNuxtImageCardUrl = (): string => {
+    return `${this.imageType.CARD}${this.imageId}`
+  }
+  public getNuxtImagePostUrl = (): string => {
+    return `${this.imageType.POST}${this.imageId}`
+  }
 }

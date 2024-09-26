@@ -93,8 +93,12 @@ export default defineNuxtConfig({
     exposeConfig: false,
     viewer: true,
   },
+  image: {
+    cloudinary: {
+      baseURL: process.env.CLOUDINARY_SOURCE_URL,
+    },
+  },
   nitro: {
-    // plugins: ['~/server/plugin/connectDb.ts'],
     experimental: {
       openAPI: true,
     },
