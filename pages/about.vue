@@ -1,11 +1,16 @@
 <script setup lang="ts">
+import { useRequestURL } from '#app'
 import AboutImage from '@/assets/img/about.jpg'
+
+const url = useRequestURL()
 
 useHead({
   title: 'About | Manguito Page',
   meta: [
-    { name: 'description', content: 'About page' },
     { property: 'og:title', content: 'About | Manguito Page' },
+    { property: 'og:url', content: url.href },
+    { property: 'twitter:domain', content: url.host },
+    { property: 'twitter:url', content: url.href },
   ],
 })
 

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useRequestURL } from '#app'
 import ManguitoFlowers from '@/assets/img/home/manguito-flowers.jpg'
 import ManguitoGrid1 from '@/assets/img/home/manguito-grid-1.jpg'
 import ManguitoGrid2 from '@/assets/img/home/manguito-grid-2.jpg'
@@ -9,11 +10,15 @@ import { usePostStore } from '@/stores'
 import { MclContainerA, MclContainerB } from '@bobbykim/mcl-container'
 import { defineAsyncComponent, reactive } from 'vue'
 
+const url = useRequestURL()
+
 useHead({
   title: 'Home | Manguito Page',
   meta: [
-    { name: 'description', content: 'Main page' },
     { property: 'og:title', content: 'Home | Manguito Page' },
+    { property: 'og:url', content: url.href },
+    { property: 'twitter:domain', content: url.host },
+    { property: 'twitter:url', content: url.href },
   ],
 })
 

@@ -1,9 +1,12 @@
 <script setup lang="ts">
+import { useRequestURL } from '#app'
 import { UserInput } from '@/server/controller/user/dto'
 import { useUserStore } from '@/stores'
 import { MclFormGroup, MclInputText } from '@bobbykim/mcl-forms'
 import { storeToRefs } from 'pinia'
 import { reactive, ref } from 'vue'
+
+const url = useRequestURL()
 
 definePageMeta({
   middleware: ['guest-route'],
@@ -12,8 +15,10 @@ definePageMeta({
 useHead({
   title: 'Signup | Manguito Page',
   meta: [
-    { name: 'description', content: 'Signup page' },
     { property: 'og:title', content: 'Signup | Manguito Page' },
+    { property: 'og:url', content: url.href },
+    { property: 'twitter:domain', content: url.host },
+    { property: 'twitter:url', content: url.href },
   ],
 })
 

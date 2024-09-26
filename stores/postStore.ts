@@ -1,3 +1,4 @@
+import { navigateTo } from '#app'
 import { useAuthToken } from '@/composables/useAuthToken'
 import { type UpdatePostInput } from '@/server/controller/post/dto'
 import { PopulatedPostModel } from '@/server/models'
@@ -40,6 +41,12 @@ export const usePostStore = defineStore('post', () => {
         currentPost.value = posts.value[i]
         postIdx.value = i
       }
+    }
+    if (currentPost.value === null) {
+      alertStore.setAlert('Error: Invalid Post ID ')
+      setTimeout(() => {
+        return navigateTo('/posts')
+      }, 500)
     }
   }
   const setNextPost = (): string => {

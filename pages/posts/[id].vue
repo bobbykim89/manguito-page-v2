@@ -27,7 +27,9 @@ postStore.setCurrentPost(route.params.id as string)
 
 const { data: comments, refresh } = await useFetch<PopulatedCommentModel[]>(
   `/api/comment/${route.params.id}`,
-  { method: 'GET' }
+  {
+    method: 'GET',
+  }
 )
 
 const resolveCardImage = (img: string) => {
@@ -38,10 +40,16 @@ const resolveCardImage = (img: string) => {
 useHead({
   title: 'Post | Manguito Page',
   meta: [
-    { name: 'description', content: 'Post page' },
     { property: 'og:title', content: 'Post | Manguito Page' },
     {
       property: 'og:image',
+      content: resolveCardImage(currentPost.value?.imageId!),
+    },
+    { property: 'og:url', content: url.href },
+    { property: 'twitter:domain', content: url.host },
+    { property: 'twitter:url', content: url.href },
+    {
+      property: 'twitter:image',
       content: resolveCardImage(currentPost.value?.imageId!),
     },
   ],
@@ -132,6 +140,15 @@ const onCommentDelete = async (id: string) => {
           @click.stop
         >
           <div
+            v-if="currentPost === null"
+            class="w-full flex justify-center py-lg"
+          >
+            <div
+              class="aspect-square w-3xl rounded-full border-8 border-r-primary animate-spin"
+            ></div>
+          </div>
+          <div
+            v-else
             class="relative grid md:grid-cols-2 gap-6 px-xs pt-[40px] pb-sm md:pb-md"
           >
             <!-- left side -->

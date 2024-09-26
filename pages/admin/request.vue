@@ -10,10 +10,7 @@ definePageMeta({
 
 useHead({
   title: 'Admin - Request | Manguito Page',
-  meta: [
-    { name: 'description', content: 'Admin - Request page' },
-    { property: 'og:title', content: 'Admin - Request | Manguito Page' },
-  ],
+  meta: [{ property: 'og:title', content: 'Admin - Request | Manguito Page' }],
 })
 
 const router = useRouter()
