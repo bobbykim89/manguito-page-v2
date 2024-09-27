@@ -51,6 +51,7 @@ const resolveCardColor = (idx: number): ColorPalette => {
         v-for="(card, idx) in cards"
         :key="idx"
         :image-source="resolveImageUrl(card.imageId)"
+        :image-alt="`grid image ${idx}`"
         :card-color="resolveCardColor(idx)"
         @card-click="$router.push({ path: `/posts/${card._id}` })"
       ></MclCardC>

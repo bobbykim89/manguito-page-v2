@@ -67,6 +67,7 @@ const socialUrls = {
                 :target="socialUrls.github.target"
                 rel="noreferrer"
                 class="hover:opacity-75 transition-opacity duration-300 ease-linear"
+                aria-label="github link"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -85,6 +86,7 @@ const socialUrls = {
                 :href="socialUrls.linkedin.url"
                 :target="socialUrls.linkedin.target"
                 rel="noreferrer"
+                aria-label="linkedin link"
                 class="hover:opacity-75 transition-opacity duration-300 ease-linear"
               >
                 <svg
@@ -104,6 +106,7 @@ const socialUrls = {
                 :href="socialUrls.email.url"
                 :target="socialUrls.email.target"
                 rel="noreferrer"
+                aria-label="email link"
                 class="p-3xs rounded-md bg-dark-3 text-light-3 hover:bg-opacity-75 transition-colors duration-300 ease-linear"
               >
                 <svg
