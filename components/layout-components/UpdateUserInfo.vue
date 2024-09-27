@@ -62,7 +62,7 @@ const onPwUpdateSubmit = (e: Event) => {
         class="block w-full py-3xs px-xs bg-light-3 hover:bg-opacity-60 transition-colors duration-300 ease-linear text-left"
         v-collapse:update-password
       >
-        Update Username
+        Update Password
       </button>
       <Collapse
         id="update-password"

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import MclLogo from '@/assets/img/logo192.png'
 import AuthBlock from '@/components/layout-components/AuthBlock.vue'
+import ScrollToTop from '@/components/layout-components/ScrollToTop.vue'
 import UpdateUserInfo from '@/components/layout-components/UpdateUserInfo.vue'
 import { useAlertStore, useUserStore } from '@/stores'
 import { Alert, HeaderHorizontal, Sidebar } from '@bobbykim/manguito-theme'
@@ -9,6 +10,7 @@ import {
   type MenuItemType,
   type SocialUrl,
 } from '@bobbykim/mcl-footer'
+import { useWindowScroll } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 import { computed, reactive, ref } from 'vue'
 
@@ -20,6 +22,7 @@ const { alertMessage, alertColor } = storeToRefs(alertStore)
 const { currentUser, isAuthenticated, role } = storeToRefs(userStore)
 const headerRef = ref()
 const sidebarRef = ref<InstanceType<typeof Sidebar>>()
+const { y } = useWindowScroll({ behavior: 'smooth' })
 
 const footerMenuItems: MenuItemType[] = [
   {
@@ -67,6 +70,9 @@ const handleFooterMenuClick = (e: Event, item: MenuItemType) => {
 }
 const handleUserBlockClick = () => {
   sidebarRef.value?.open()
+}
+const onScrollToTop = () => {
+  y.value = 0
 }
 const onUsernameUpdateSubmit = async (e: Event, name: string) => {
   e.preventDefault()
@@ -255,6 +261,7 @@ const getLayoutBgColor = computed(() => {
         </div>
       </template>
     </Sidebar>
+    <ScrollToTop @scroll-click="onScrollToTop" />
   </div>
 </template>
 
