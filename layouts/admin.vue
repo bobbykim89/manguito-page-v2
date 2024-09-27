@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import MclLogo from '@/assets/img/logo192.png'
 import AuthBlock from '@/components/layout-components/AuthBlock.vue'
+import ScrollToTop from '@/components/layout-components/ScrollToTop.vue'
 import UpdateUserInfo from '@/components/layout-components/UpdateUserInfo.vue'
 import { useAlertStore, useUserStore } from '@/stores'
 import { Alert, HeaderHorizontal, Sidebar } from '@bobbykim/manguito-theme'
@@ -9,6 +10,7 @@ import {
   type MenuItemType,
   type SocialUrl,
 } from '@bobbykim/mcl-footer'
+import { useWindowScroll } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 import { reactive, ref } from 'vue'
 
@@ -19,6 +21,7 @@ const { alertMessage, alertColor } = storeToRefs(alertStore)
 const { currentUser, isAuthenticated, role } = storeToRefs(userStore)
 const headerRef = ref()
 const sidebarRef = ref<InstanceType<typeof Sidebar>>()
+const { y } = useWindowScroll({ behavior: 'smooth' })
 
 const footerMenuItems: MenuItemType[] = [
   {
@@ -71,11 +74,25 @@ const onUserLogout = () => {
 const handleUserBlockClick = () => {
   sidebarRef.value?.open()
 }
-const onUsernameUpdateSubmit = (e: Event, name: string) => {
-  console.log(name)
+const onScrollToTop = () => {
+  y.value = 0
 }
-const onPwUpdateSubmit = (e: Event, currentPw: string, newPw: string) => {
-  console.log(currentPw, newPw)
+const onUsernameUpdateSubmit = async (e: Event, name: string) => {
+  e.preventDefault()
+  if (import.meta.client && window.confirm('Please confirm username update')) {
+    await userStore.updateUsername({ username: name })
+  }
+  sidebarRef.value?.close()
+}
+const onPwUpdateSubmit = async (e: Event, currentPw: string, newPw: string) => {
+  e.preventDefault()
+  if (import.meta.client && window.confirm('Please confirm password update.')) {
+    await userStore.updatePassword({
+      currentPassword: currentPw,
+      newPassword: newPw,
+    })
+  }
+  sidebarRef.value?.close()
 }
 </script>
 
@@ -317,6 +334,7 @@ const onPwUpdateSubmit = (e: Event, currentPw: string, newPw: string) => {
         </div>
       </template>
     </Sidebar>
+    <ScrollToTop @scroll-click="onScrollToTop" />
   </div>
 </template>
 
