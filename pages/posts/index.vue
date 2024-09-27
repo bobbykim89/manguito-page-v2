@@ -89,6 +89,7 @@ const onSubmit = async (): Promise<void> => {
           v-if="isAuthorizedUser"
           class="bg-primary p-2xs rounded-full text-light-1 mt-sm hover:bg-opacity-70 transition-colors duration-300 ease-linear"
           v-toggle:new-post-modal
+          aria-label="new post"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
