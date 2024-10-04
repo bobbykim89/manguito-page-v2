@@ -1,10 +1,11 @@
-import { Document, Schema, model } from 'mongoose'
+import { Schema, model, type Document, type Types } from 'mongoose'
 import { PostModel } from './post'
 import { UserModel } from './user'
 
 const modelName: string = 'comment'
 
 export interface CommentModel extends Document {
+  _id: Types.ObjectId
   text: string
   author: Schema.Types.ObjectId
   post: Schema.Types.ObjectId
@@ -12,6 +13,7 @@ export interface CommentModel extends Document {
 }
 
 export interface PopulatedCommentModel extends Document {
+  _id: Types.ObjectId
   text: string
   author: UserModel
   post: PostModel
