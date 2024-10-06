@@ -14,11 +14,11 @@ import { resetPwInputSchema, tokenEmailInputSchema } from './dto'
 export class TokenController {
   private tokenModel: Model<TokenModel>
   private userModel: Model<UserModel>
-  private userController: UserController<UserModel>
+  private userController: UserController
   constructor() {
     this.tokenModel = Token
     this.userModel = User
-    this.userController = new UserController(User)
+    this.userController = new UserController()
   }
   public sentToken = async (e: H3Event<EventHandlerRequest>) => {
     const { email, url } = await readValidatedBody(
