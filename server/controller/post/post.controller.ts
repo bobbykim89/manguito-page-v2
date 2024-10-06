@@ -1,9 +1,8 @@
 import {
   Comment,
   type CommentModel,
+  Post,
   type PostModel,
-  User,
-  type UserModel,
 } from '@/server/models'
 import { deleteCloudinaryImage } from '@/server/utils'
 import type { EventHandlerRequest, H3Event } from 'h3'
@@ -20,18 +19,18 @@ import { Model } from 'mongoose'
 import { UserController } from '../user/user.controller'
 import { updatePostInputSchema } from './dto'
 
-export class PostController<T extends PostModel> {
-  private postModel: Model<T>
+export class PostController {
+  private postModel: Model<PostModel>
   private commentModel: Model<CommentModel>
-  private userController: UserController<UserModel>
+  private userController: UserController
 
-  constructor(postModel: Model<T>) {
-    this.postModel = postModel
+  constructor() {
+    this.postModel = Post
     this.commentModel = Comment
-    this.userController = new UserController(User)
+    this.userController = new UserController()
   }
 
-  public getAllPost = async (): Promise<T[]> => {
+  public getAllPost = async (): Promise<PostModel[]> => {
     const allPost = await this.postModel
       .find({})
       .populate('author', '-password -admin')
@@ -47,9 +46,9 @@ export class PostController<T extends PostModel> {
   }
   public getAllTrimmedPost = async (
     e: H3Event<EventHandlerRequest>
-  ): Promise<T[]> => {
+  ): Promise<PostModel[]> => {
     const query = getQuery(e)
-    let allPost: T[] = await this.postModel
+    let allPost: PostModel[] = await this.postModel
       .find({})
       .sort({ date: -1 })
       .select('id imageId')
@@ -65,7 +64,9 @@ export class PostController<T extends PostModel> {
     }
     return allPost
   }
-  public getPostById = async (e: H3Event<EventHandlerRequest>): Promise<T> => {
+  public getPostById = async (
+    e: H3Event<EventHandlerRequest>
+  ): Promise<PostModel> => {
     const postId = getRouterParam(e, 'id')
     const post = await this.postModel
       .findById(postId)
@@ -81,7 +82,7 @@ export class PostController<T extends PostModel> {
   }
   public createNewPost = async (
     e: H3Event<EventHandlerRequest>
-  ): Promise<T> => {
+  ): Promise<PostModel> => {
     const file = e.context.file
     const content = e.context.content
     const user = await this.userController.getCurrentUserData(e.context)
@@ -110,7 +111,9 @@ export class PostController<T extends PostModel> {
 
     return await savePost.populate('author', '-password -admin')
   }
-  public updatePost = async (e: H3Event<EventHandlerRequest>): Promise<T> => {
+  public updatePost = async (
+    e: H3Event<EventHandlerRequest>
+  ): Promise<PostModel> => {
     const postId = getRouterParam(e, 'id')
     const user = await this.userController.getCurrentUserData(e.context)
     // validate body

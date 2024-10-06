@@ -1,10 +1,11 @@
-import { Document, Schema, model } from 'mongoose'
+import { Schema, model, type Document, type Types } from 'mongoose'
 
 const modelName: string = 'user'
 
 export type UserRoleType = 'ADMIN' | 'MANAGER' | 'USER'
 
 export interface UserModel extends Document {
+  _id: Types.ObjectId
   name: string
   email: string
   password: string

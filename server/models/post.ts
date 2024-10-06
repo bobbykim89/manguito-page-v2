@@ -1,9 +1,10 @@
-import { Document, Schema, model } from 'mongoose'
+import { Schema, model, type Document, type Types } from 'mongoose'
 import { UserModel } from './user'
 
 const modelName: string = 'post'
 
 export interface PostModel extends Document {
+  _id: Types.ObjectId
   content: string
   imageId: string
   author: Schema.Types.ObjectId
@@ -11,6 +12,7 @@ export interface PostModel extends Document {
   updatedAt: Date
 }
 export interface PopulatedPostModel extends Document {
+  _id: Types.ObjectId
   content: string
   imageId: string
   author: UserModel

@@ -37,7 +37,7 @@ export const usePostStore = defineStore('post', () => {
   }
   const setCurrentPost = (postId: string) => {
     for (let i = 0; i < posts.value.length; i++) {
-      if (posts.value[i]._id === postId) {
+      if (posts.value[i]._id.toString() === postId) {
         currentPost.value = posts.value[i]
         postIdx.value = i
       }
@@ -52,20 +52,20 @@ export const usePostStore = defineStore('post', () => {
   const setNextPost = (): string => {
     let postId: string = '/posts'
     if (postIdx.value < posts.value.length - 1) {
-      postId = posts.value[postIdx.value + 1]._id as string
+      postId = posts.value[postIdx.value + 1]._id.toString()
     }
     if (postIdx.value === posts.value.length - 1) {
-      postId = posts.value[0]._id as string
+      postId = posts.value[0]._id.toString()
     }
     return `/posts/${postId}`
   }
   const setPrevPost = (): string => {
     let postId: string = '/posts'
     if (postIdx.value > 0) {
-      postId = posts.value[postIdx.value - 1]._id as string
+      postId = posts.value[postIdx.value - 1]._id.toString()
     }
     if (postIdx.value === 0) {
-      postId = posts.value[posts.value.length - 1]._id as string
+      postId = posts.value[posts.value.length - 1]._id.toString()
     }
     return `/posts/${postId}`
   }
@@ -101,7 +101,9 @@ export const usePostStore = defineStore('post', () => {
       alertStore.setAlert('No user authentication found, please login')
       return
     }
-    const currentPost = posts.value.find((item) => item._id === postId)
+    const currentPost = posts.value.find(
+      (item) => item._id.toString() === postId
+    )
     if (currentPost?.author._id !== currentUser?._id) {
       alertStore.setAlert('Unauthorized user')
       return
@@ -113,7 +115,7 @@ export const usePostStore = defineStore('post', () => {
         body: payload,
       })
       posts.value = posts.value.map((post) =>
-        post._id === postId ? res : post
+        post._id.toString() === postId ? res : post
       )
       alertStore.setAlert('Successfully updated post!', 'success')
     } catch (error) {
@@ -126,7 +128,9 @@ export const usePostStore = defineStore('post', () => {
       alertStore.setAlert('No user authentication found, please login')
       return
     }
-    const currentPost = posts.value.find((item) => item._id === postId)
+    const currentPost = posts.value.find(
+      (item) => item._id.toString() === postId
+    )
     if (currentPost?.author._id !== currentUser?._id && role !== 'ADMIN') {
       alertStore.setAlert('Unauthorized user')
       return
@@ -136,7 +140,7 @@ export const usePostStore = defineStore('post', () => {
         method: 'DELETE',
         headers: { Authorization: cookie.value },
       })
-      posts.value = posts.value.filter((post) => post._id !== postId)
+      posts.value = posts.value.filter((post) => post._id.toString() !== postId)
       alertStore.setAlert('Successfully deleted post!', 'success')
     } catch (error) {
       alertStore.setAlert((error as H3Error).statusMessage!)

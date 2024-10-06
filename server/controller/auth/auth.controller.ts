@@ -1,4 +1,4 @@
-import { type UserModel } from '@/server/models'
+import { User, type UserModel } from '@/server/models'
 import bcrypt from 'bcryptjs'
 import type { EventHandlerRequest, H3Event } from 'h3'
 import {
@@ -12,17 +12,17 @@ import { Model } from 'mongoose'
 import { UserController } from '../user/user.controller'
 import { authInputSchema } from './dto'
 
-export class AuthController<T extends UserModel> {
-  private userModel: Model<T>
-  private userController: UserController<T>
+export class AuthController {
+  private userModel: Model<UserModel>
+  private userController: UserController
 
-  constructor(userModel: Model<T>) {
-    this.userModel = userModel
-    this.userController = new UserController(userModel)
+  constructor() {
+    this.userModel = User
+    this.userController = new UserController()
   }
   public getCurrentUser = async (
     e: H3Event<EventHandlerRequest>
-  ): Promise<T> => {
+  ): Promise<UserModel> => {
     const user = await this.userModel
       .findById(e.context.user.id)
       .select('-password')
