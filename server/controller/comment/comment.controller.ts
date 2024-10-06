@@ -1,4 +1,4 @@
-import { type CommentModel, type UserModel, User } from '@/server/models'
+import { type CommentModel, Comment } from '@/server/models'
 import type { EventHandlerRequest, H3Event } from 'h3'
 import {
   createError,
@@ -12,15 +12,15 @@ import { Model } from 'mongoose'
 import { UserController } from '../user/user.controller'
 import { commentInputSchema } from './dto'
 
-export class CommentController<T extends CommentModel> {
-  private commentModel: Model<T>
-  private userController: UserController<UserModel>
+export class CommentController {
+  private commentModel: Model<CommentModel>
+  private userController: UserController
 
-  constructor(commentModel: Model<T>) {
-    this.commentModel = commentModel
-    this.userController = new UserController(User)
+  constructor() {
+    this.commentModel = Comment
+    this.userController = new UserController()
   }
-  public getAllComment = async (): Promise<T[]> => {
+  public getAllComment = async (): Promise<CommentModel[]> => {
     const comments = await this.commentModel.find({}).populate([
       { path: 'author', select: 'id name' },
       { path: 'post', select: 'id date updatedAt' },
@@ -36,7 +36,7 @@ export class CommentController<T extends CommentModel> {
   }
   public getCommentsByPostId = async (
     e: H3Event<EventHandlerRequest>
-  ): Promise<T[]> => {
+  ): Promise<CommentModel[]> => {
     const postId = getRouterParam(e, 'id')
     const comments = await this.commentModel.find({ post: postId }).populate([
       { path: 'author', select: 'id name' },
@@ -53,7 +53,7 @@ export class CommentController<T extends CommentModel> {
   }
   public createNewComment = async (
     e: H3Event<EventHandlerRequest>
-  ): Promise<T> => {
+  ): Promise<CommentModel> => {
     const postId = getRouterParam(e, 'id')
     const user = await this.userController.getCurrentUserData(e.context)
     const { text } = await readValidatedBody(e, commentInputSchema.parse)

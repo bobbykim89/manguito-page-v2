@@ -1,5 +1,5 @@
 import { useRuntimeConfig } from '#imports'
-import { type UserModel } from '@/server/models'
+import { User, type UserModel } from '@/server/models'
 import { type RuntimeConfig } from '@nuxt/schema'
 import bcrypt from 'bcryptjs'
 import type { EventHandlerRequest, H3Event, H3EventContext } from 'h3'
@@ -20,13 +20,13 @@ import {
   userInputSchema,
 } from './dto'
 
-export class UserController<T extends UserModel> {
+export class UserController {
   private config: RuntimeConfig
-  private userModel: Model<T>
+  private userModel: Model<UserModel>
 
-  constructor(userModel: Model<T>) {
+  constructor() {
     this.config = useRuntimeConfig()
-    this.userModel = userModel
+    this.userModel = User
   }
   public signupUser = async (e: H3Event<EventHandlerRequest>) => {
     // validate body
@@ -106,7 +106,7 @@ export class UserController<T extends UserModel> {
   }
   public updateUsername = async (
     e: H3Event<EventHandlerRequest>
-  ): Promise<T> => {
+  ): Promise<UserModel> => {
     const user = await this.getRawCurrentUserData(e.context)
     const { username } = await readValidatedBody(
       e,
@@ -129,7 +129,9 @@ export class UserController<T extends UserModel> {
     }
     return updatedUser
   }
-  public setAdmin = async (e: H3Event<EventHandlerRequest>): Promise<T> => {
+  public setAdmin = async (
+    e: H3Event<EventHandlerRequest>
+  ): Promise<UserModel> => {
     const user = await this.getRawCurrentUserData(e.context)
     const { phrase } = await readValidatedBody(e, setAdminInputSchema.parse)
     if (phrase !== this.config.adminSecretPhrase) {
@@ -167,7 +169,7 @@ export class UserController<T extends UserModel> {
   }
   public getUserList = async (
     e: H3Event<EventHandlerRequest>
-  ): Promise<T[]> => {
+  ): Promise<UserModel[]> => {
     const currentUser = await this.getRawCurrentUserData(e.context)
     if (currentUser.role !== 'ADMIN') {
       throw createError({
@@ -188,7 +190,9 @@ export class UserController<T extends UserModel> {
     }
     return allUser
   }
-  public setUserRole = async (e: H3Event<EventHandlerRequest>): Promise<T> => {
+  public setUserRole = async (
+    e: H3Event<EventHandlerRequest>
+  ): Promise<UserModel> => {
     const userId = getRouterParam(e, 'id')
     const user = await this.getRawCurrentUserData(e.context)
     if (user.role !== 'ADMIN') {
@@ -215,7 +219,7 @@ export class UserController<T extends UserModel> {
     }
     return updatedUser
   }
-  private hashPassword = async (password: string): Promise<string> => {
+  public hashPassword = async (password: string): Promise<string> => {
     const salt = await bcrypt.genSalt(10)
     const hashedPassword = await bcrypt.hash(password, salt)
     return hashedPassword
@@ -232,7 +236,9 @@ export class UserController<T extends UserModel> {
       })
     }
   }
-  public getRawCurrentUserData = async (ctx: H3EventContext): Promise<T> => {
+  public getRawCurrentUserData = async (
+    ctx: H3EventContext
+  ): Promise<UserModel> => {
     const user = await this.userModel.findById(ctx.user.id)
     if (!user) {
       throw createError({
@@ -243,7 +249,9 @@ export class UserController<T extends UserModel> {
     }
     return user
   }
-  public getCurrentUserData = async (ctx: H3EventContext): Promise<T> => {
+  public getCurrentUserData = async (
+    ctx: H3EventContext
+  ): Promise<UserModel> => {
     const user = await this.userModel.findById(ctx.user.id).select('-password')
     if (!user) {
       throw createError({
