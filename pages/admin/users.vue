@@ -23,10 +23,7 @@ const roleOptions: UserRoleType[] = ['MANAGER', 'USER']
 
 const { data: res, refresh } = await useFetch<UserModel[]>('/api/user/admin', {
   method: 'GET',
-  onRequest({ options }) {
-    if (!cookie.value) return
-    options.headers = { ...options.headers, Authorization: cookie.value }
-  },
+  headers: { Authorization: cookie.value ? cookie.value : '' },
 })
 const openEdit = (user: UserModel) => {
   selectedUser.value = user

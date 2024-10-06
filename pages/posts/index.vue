@@ -107,7 +107,7 @@ const onSubmit = async (): Promise<void> => {
       <div class="grid grid-cols-3 gap-1 lg:gap-2 px-3xs md:px-xs lg:px-md">
         <!-- cards -->
         <div v-for="(post, idx) in displayedPost" :key="idx">
-          <NuxtLink :to="resolveLinkPath(post._id as string)" class="relative">
+          <NuxtLink :to="resolveLinkPath(post._id.toString())" class="relative">
             <NuxtImg
               provider="cloudinary"
               :src="formatPostUrl(post.imageId)"
