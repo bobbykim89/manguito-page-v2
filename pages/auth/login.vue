@@ -80,6 +80,14 @@ const onSubmit = async () => {
           >SignUp</NuxtLink
         >
       </div>
+      <div class="mt-2xs text-dark-3 text-center">
+        <span>Forgot Password? Click</span>
+        <NuxtLink
+          to="/auth/request"
+          class="mx-3xs font-bold mcl-link text-primary"
+          >Here</NuxtLink
+        >
+      </div>
     </div>
   </div>
 </template>

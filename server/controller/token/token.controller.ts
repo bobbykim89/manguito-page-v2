@@ -43,7 +43,8 @@ export class TokenController {
         token: hashedToken,
       }).save()
     }
-    const message: string = `Dear ${user.name},\nWe received a request to reset your password. To proceed with resetting your password, please click the link below:\n${url}/auth/reset-password?user=${user.id}&token=${token.token}\nThis link will be active for the next 60 minutes. After that, you will need to request a new link if you still wish to reset your password.\nIf you did not request a password reset, you can safely ignore this email.\nThank you,\nBobby Kim`
+
+    const message: string = `Dear ${user.name},\n\nWe received a request to reset your password. To proceed with resetting your password, please click the link below:\n${url}/auth/reset-password?user=${user.id}&token=${token.token} \n\nThis link will be active for the next 60 minutes. After that, you will need to request a new link if you still wish to reset your password.\nIf you did not request a password reset, you can safely ignore this email.\n\nThank you,\nBobby Kim`
     await sendEmail(user.email, 'Password Reset Request', message)
 
     const status = getResponseStatus(e)
