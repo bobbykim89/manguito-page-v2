@@ -110,7 +110,8 @@ export default defineNuxtConfig({
     manifest: {
       short_name: 'ManguitoPage',
       name: 'Manguito Page',
-      description: 'A photo blog for Manguito, a peachfaced lovebird',
+      description:
+        'A photo blog dedicated to Manguito, an adorable peach-faced lovebird, showcasing daily moments and charming antics.',
       icons: [
         {
           src: 'favicon.ico',
