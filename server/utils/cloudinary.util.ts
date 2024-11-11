@@ -43,9 +43,21 @@ export const uploadCloudinary = async (
   const base64EncodedImage = Buffer.from(file.data).toString('base64')
   const dataUrl = `data:${file.type};base64,${base64EncodedImage}`
 
-  const { public_id } = await cloudinary.uploader.upload(dataUrl, {
-    folder: config.cloudinaryFolderName,
-  })
+  const { public_id } = await cloudinary.uploader.upload(
+    dataUrl,
+    {
+      folder: config.cloudinaryFolderName,
+    },
+    (err) => {
+      if (err) {
+        throw createError({
+          status: err.http_code,
+          message: err.message,
+          statusMessage: err.message,
+        })
+      }
+    }
+  )
 
   e.context.file = { imageId: public_id }
 }
