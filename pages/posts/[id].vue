@@ -22,8 +22,12 @@ const { currentPost } = storeToRefs(postStore)
 const { currentUser, role, isAuthenticated } = storeToRefs(userStore)
 const contentRef = ref<HTMLDivElement>()
 const { copy, isSupported } = useClipboard()
+const loading = ref<boolean>(true)
 
 postStore.setCurrentPost(route.params.id as string)
+setTimeout(() => {
+  loading.value = false
+}, 500)
 
 const { data: comments, refresh } = await useFetch<PopulatedCommentModel[]>(
   `/api/comment/${route.params.id}`,
@@ -62,13 +66,20 @@ useHead({
     },
   ],
 })
-
+const handleLoading = () => {
+  loading.value = true
+  setTimeout(() => {
+    loading.value = false
+  }, 500)
+}
 const handlePrevClick = () => {
   const prevPostUrl = postStore.setPrevPost()
+  handleLoading()
   router.push({ path: prevPostUrl })
 }
 const handleNextClick = () => {
   const nextPostUrl = postStore.setNextPost()
+  handleLoading()
   router.push({ path: nextPostUrl })
 }
 const copyUrl = () => {
@@ -162,12 +173,23 @@ const onCommentDelete = async (id: string) => {
             <!-- left side -->
             <div>
               <div class="relative">
-                <NuxtImg
-                  provider="cloudinary"
-                  :src="resolveCardImage(currentPost?.imageId!)"
-                  alt="a picture of manguito"
-                  class="relative object-center object-cover w-full rounded-md"
-                />
+                <Transition mode="out-in">
+                  <NuxtImg
+                    v-if="!loading"
+                    provider="cloudinary"
+                    :src="resolveCardImage(currentPost?.imageId!)"
+                    alt="a picture of manguito"
+                    class="relative object-center object-cover w-full rounded-md"
+                  />
+                  <div
+                    v-else
+                    class="relative aspect-[3/4] w-full bg-light-3 rounded-md flex flex-col justify-center items-center"
+                  >
+                    <div
+                      class="animate-spin rounded-full h-2xl w-2xl border-8 border-light-1 border-r-primary"
+                    ></div>
+                  </div>
+                </Transition>
                 <!-- share button -->
                 <button
                   v-if="isSupported"
@@ -271,4 +293,13 @@ const onCommentDelete = async (id: string) => {
   </section>
 </template>
 
-<style scoped></style>
+<style scoped>
+.v-enter-active,
+.v-leave-active {
+  transition: opacity 0.3s ease;
+}
+.v-enter-from,
+v-leave-to {
+  opacity: 0;
+}
+</style>
