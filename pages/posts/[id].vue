@@ -18,7 +18,7 @@ const url = useRequestURL()
 const alertStore = useAlertStore()
 const postStore = usePostStore()
 const userStore = useUserStore()
-const { currentPost } = storeToRefs(postStore)
+const { currentPost, postLoading } = storeToRefs(postStore)
 const { currentUser, role, isAuthenticated } = storeToRefs(userStore)
 const contentRef = ref<HTMLDivElement>()
 const { copy, isSupported } = useClipboard()
@@ -38,7 +38,7 @@ const resolveCardImage = (img: string) => {
 }
 const resolveMetaImage = (img: string) => {
   const imgUrl = new ImageUrl(img)
-  return imgUrl.getCardUrl
+  return imgUrl.getCardUrl()
 }
 
 useHead({
@@ -62,7 +62,6 @@ useHead({
     },
   ],
 })
-
 const handlePrevClick = () => {
   const prevPostUrl = postStore.setPrevPost()
   router.push({ path: prevPostUrl })
@@ -162,12 +161,23 @@ const onCommentDelete = async (id: string) => {
             <!-- left side -->
             <div>
               <div class="relative">
-                <NuxtImg
-                  provider="cloudinary"
-                  :src="resolveCardImage(currentPost?.imageId!)"
-                  alt="a picture of manguito"
-                  class="relative object-center object-cover w-full rounded-md"
-                />
+                <Transition mode="out-in">
+                  <NuxtImg
+                    v-if="!postLoading"
+                    provider="cloudinary"
+                    :src="resolveCardImage(currentPost?.imageId!)"
+                    alt="a picture of manguito"
+                    class="relative object-center object-cover w-full rounded-md"
+                  />
+                  <div
+                    v-else
+                    class="relative aspect-[3/4] w-full bg-light-3 rounded-md flex flex-col justify-center items-center"
+                  >
+                    <div
+                      class="animate-spin rounded-full h-2xl w-2xl border-8 border-light-1 border-r-primary"
+                    ></div>
+                  </div>
+                </Transition>
                 <!-- share button -->
                 <button
                   v-if="isSupported"
@@ -271,4 +281,13 @@ const onCommentDelete = async (id: string) => {
   </section>
 </template>
 
-<style scoped></style>
+<style scoped>
+.v-enter-active,
+.v-leave-active {
+  transition: opacity 0.3s ease;
+}
+.v-enter-from,
+v-leave-to {
+  opacity: 0;
+}
+</style>
