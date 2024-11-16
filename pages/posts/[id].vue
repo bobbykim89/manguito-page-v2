@@ -18,16 +18,12 @@ const url = useRequestURL()
 const alertStore = useAlertStore()
 const postStore = usePostStore()
 const userStore = useUserStore()
-const { currentPost } = storeToRefs(postStore)
+const { currentPost, postLoading } = storeToRefs(postStore)
 const { currentUser, role, isAuthenticated } = storeToRefs(userStore)
 const contentRef = ref<HTMLDivElement>()
 const { copy, isSupported } = useClipboard()
-const loading = ref<boolean>(true)
 
 postStore.setCurrentPost(route.params.id as string)
-setTimeout(() => {
-  loading.value = false
-}, 500)
 
 const { data: comments, refresh } = await useFetch<PopulatedCommentModel[]>(
   `/api/comment/${route.params.id}`,
@@ -42,7 +38,7 @@ const resolveCardImage = (img: string) => {
 }
 const resolveMetaImage = (img: string) => {
   const imgUrl = new ImageUrl(img)
-  return imgUrl.getCardUrl
+  return imgUrl.getCardUrl()
 }
 
 useHead({
@@ -66,20 +62,12 @@ useHead({
     },
   ],
 })
-const handleLoading = () => {
-  loading.value = true
-  setTimeout(() => {
-    loading.value = false
-  }, 500)
-}
 const handlePrevClick = () => {
   const prevPostUrl = postStore.setPrevPost()
-  handleLoading()
   router.push({ path: prevPostUrl })
 }
 const handleNextClick = () => {
   const nextPostUrl = postStore.setNextPost()
-  handleLoading()
   router.push({ path: nextPostUrl })
 }
 const copyUrl = () => {
@@ -175,7 +163,7 @@ const onCommentDelete = async (id: string) => {
               <div class="relative">
                 <Transition mode="out-in">
                   <NuxtImg
-                    v-if="!loading"
+                    v-if="!postLoading"
                     provider="cloudinary"
                     :src="resolveCardImage(currentPost?.imageId!)"
                     alt="a picture of manguito"
