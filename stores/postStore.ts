@@ -16,6 +16,7 @@ export const usePostStore = defineStore('post', () => {
   const posts = ref<PopulatedPostModel[]>([])
   const currentPost = ref<PopulatedPostModel | null>(null)
   const postIdx = ref<number>(0)
+  const postLoading = ref<boolean>(false)
 
   // POST: getters
   const getRecentPosts = computed<PopulatedPostModel[]>(() => {
@@ -23,6 +24,12 @@ export const usePostStore = defineStore('post', () => {
   })
 
   // POST: actions
+  const setPostLoadnigTimeout = () => {
+    postLoading.value = true
+    setTimeout(() => {
+      postLoading.value = false
+    }, 500)
+  }
   const getAllPosts = async () => {
     const { data: res } = await useFetch<PopulatedPostModel[]>('/api/post', {
       method: 'GET',
@@ -36,6 +43,7 @@ export const usePostStore = defineStore('post', () => {
     posts.value = res.value
   }
   const setCurrentPost = (postId: string) => {
+    setPostLoadnigTimeout()
     for (let i = 0; i < posts.value.length; i++) {
       if (posts.value[i]._id.toString() === postId) {
         currentPost.value = posts.value[i]
@@ -50,6 +58,7 @@ export const usePostStore = defineStore('post', () => {
     }
   }
   const setNextPost = (): string => {
+    setPostLoadnigTimeout()
     let postId: string = '/posts'
     if (postIdx.value < posts.value.length - 1) {
       postId = posts.value[postIdx.value + 1]._id.toString()
@@ -60,6 +69,7 @@ export const usePostStore = defineStore('post', () => {
     return `/posts/${postId}`
   }
   const setPrevPost = (): string => {
+    setPostLoadnigTimeout()
     let postId: string = '/posts'
     if (postIdx.value > 0) {
       postId = posts.value[postIdx.value - 1]._id.toString()
@@ -72,6 +82,7 @@ export const usePostStore = defineStore('post', () => {
   const resetCurrent = () => {
     currentPost.value = null
     postIdx.value = 0
+    postLoading.value = false
   }
   const createNewPost = async (payload: FormData) => {
     const { isAuthenticated, role } = userStore.getCurrentAuthInfo
@@ -151,6 +162,7 @@ export const usePostStore = defineStore('post', () => {
     currentPost,
     postIdx,
     getRecentPosts,
+    postLoading,
     getAllPosts,
     setCurrentPost,
     setNextPost,
