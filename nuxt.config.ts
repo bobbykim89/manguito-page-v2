@@ -104,6 +104,10 @@ export default defineNuxtConfig({
     experimental: {
       openAPI: true,
     },
+    compressPublicAssets: {
+      gzip: true,
+      brotli: true,
+    },
   },
   pwa: {
     strategies: 'generateSW',

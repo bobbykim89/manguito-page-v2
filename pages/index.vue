@@ -1,28 +1,18 @@
 <script setup lang="ts">
 import { useRequestURL } from '#app'
 import ManguitoFlowers from '@/assets/img/home/manguito-flowers.jpg'
-import ManguitoGrid1 from '@/assets/img/home/manguito-grid-1.jpg'
-import ManguitoGrid2 from '@/assets/img/home/manguito-grid-2.jpg'
-import ManguitoGrid3 from '@/assets/img/home/manguito-grid-3.jpg'
-import ManguitoGrid4 from '@/assets/img/home/manguito-grid-4.jpg'
 import Hero from '@/components/home/Hero.vue'
 import { usePostStore } from '@/stores'
-import { MclContainerA, MclContainerB } from '@bobbykim/mcl-container'
+import { MclContainerA } from '@bobbykim/mcl-container'
 import { defineAsyncComponent, reactive } from 'vue'
 
 const url = useRequestURL()
 
 useHead({
-  title: 'Home | Manguito Page',
   meta: [
-    { property: 'og:title', content: 'Home | Manguito Page' },
     { property: 'og:url', content: url.href },
     { property: 'twitter:domain', content: url.host },
     { property: 'twitter:url', content: url.href },
-    {
-      name: 'twitter:title',
-      content: 'Home | Manguito Page',
-    },
   ],
 })
 
@@ -49,10 +39,10 @@ const containerContent = reactive<{
 }>({
   title: "Manguito's Story",
   desc: "We found Manguito in late May. He was barely a baby bird, looking really fragile, cant even chew banana. Honestly I didn't think he will make it over night. Luckily he survived the night and he got more active. These days he is almost grown up bird, chirping and flying around the house, glued to my wife mostly and bothering her doing her work and stealing our food!!",
-  img1: ManguitoGrid1,
-  img2: ManguitoGrid2,
-  img3: ManguitoGrid3,
-  img4: ManguitoGrid4,
+  img1: '/img/home/manguito-grid-1.webp',
+  img2: '/img/home/manguito-grid-2.webp',
+  img3: '/img/home/manguito-grid-3.webp',
+  img4: '/img/home/manguito-grid-4.webp',
 })
 
 const AsyncGrid = defineAsyncComponent({
@@ -68,6 +58,10 @@ const thankYouComponentContent = reactive<{
   imgAlt: 'Manguito is perching among flowers',
   title: 'Do you like lovebirds?',
   desc: "Lovebirds are small, vibrant parrots known for their bright feathers and affectionate personalities. Native to Africa, these charming birds are famous for forming strong bonds with their companions, often seen cuddling closely together. Whether you're captivated by their playful nature or the deep connection they share, lovebirds bring joy and companionship to any home. Their lively energy and colorful presence make them a favorite among bird lovers everywhere.",
+})
+const AsyncParallax = defineAsyncComponent({
+  loader: () =>
+    import('@bobbykim/mcl-container').then((module) => module.MclContainerB),
 })
 </script>
 
@@ -88,37 +82,49 @@ const thankYouComponentContent = reactive<{
           <div
             class="aspect-square -translate-y-1/4 justify-self-end drop-shadow-lg overflow-hidden rounded-full border-4"
           >
-            <img
+            <NuxtImg
               :src="containerContent.img1"
-              alt=""
+              alt="picture of manguito looking cheeky"
               class="relative h-[196px] object-center object-cover aspect-square hover:grayscale transition-[filter] duration-300 ease-linear"
+              height="196"
+              width="196"
+              loading="lazy"
             />
           </div>
           <div
             class="aspect-square translate-y-1/4 justify-self-start overflow-hidden border-4 rounded-full drop-shadow-lg"
           >
-            <img
+            <NuxtImg
               :src="containerContent.img2"
-              alt=""
+              alt="a picture of manguito perching on the branch"
               class="relative h-[196px] object-center object-cover aspect-square hover:grayscale transition-[filter] duration-300 ease-linear"
+              height="196"
+              width="196"
+              loading="lazy"
             />
           </div>
           <div
             class="aspect-square -translate-y-1/4 justify-self-end overflow-hidden border-4 rounded-full drop-shadow-lg"
           >
-            <img
+            <NuxtImg
               :src="containerContent.img3"
-              alt=""
+              alt="a picture of manguito hiding in flowers"
               class="relative h-[196px] object-center object-cover aspect-square hover:grayscale transition-[filter] duration-300 ease-linear"
+              height="196"
+              width="196"
+              loading="lazy"
             />
           </div>
           <div
             class="aspect-square translate-y-1/4 justify-self-start overflow-hidden border-4 rounded-full drop-shadow-lg"
           >
-            <img
+            <NuxtImg
               :src="containerContent.img4"
-              alt=""
+              alt="a picture of manguito perching on the fridge magnet"
               class="relative h-[196px] object-center object-cover aspect-square hover:grayscale transition-[filter] duration-300 ease-linear"
+              height="196"
+              width="196"
+              loading="lazy"
             />
           </div>
         </div>
@@ -138,7 +144,7 @@ const thankYouComponentContent = reactive<{
       </template>
     </MclContainerA>
     <AsyncGrid :cards="postStore.getRecentPosts" />
-    <MclContainerB
+    <AsyncParallax
       :image-source="thankYouComponentContent.imgSrc"
       :image-alt="thankYouComponentContent.imgAlt"
       :title="thankYouComponentContent.title"
@@ -148,7 +154,7 @@ const thankYouComponentContent = reactive<{
           <div class="md:text-lg" v-html="thankYouComponentContent.desc"></div>
         </div>
       </template>
-    </MclContainerB>
+    </AsyncParallax>
   </main>
 </template>
 
