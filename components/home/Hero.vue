@@ -49,19 +49,12 @@ defineProps<{
       <div
         class="absolute left-8 lg:left-1/4 -bottom-4 w-72 h-72 lg:w-96 lg:h-96 bg-red-300 rounded-full mix-blend-multiply filter blur-xl opacity-50 animate-balls animation-delay-4000"
       />
-      <!-- <img
-        :src="BannerImg"
-        class="relative w-4/5 lg:w-1/2 mx-auto object-contain"
-        alt="manguito banner"
-      /> -->
       <NuxtImg
         src="/img/home/banner.webp"
         class="relative w-4/5 lg:w-1/2 mx-auto object-contain"
-        sizes="80vw lg:50vw"
+        sizes="80vw lg:30vw"
         alt="manguito banner"
       />
     </div>
   </section>
 </template>
-
-<style scoped></style>
