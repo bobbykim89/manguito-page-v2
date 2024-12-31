@@ -39,7 +39,7 @@ defineProps<{
         </div>
       </div>
     </div>
-    <div class="col-span-3 order1 relative md:order-2">
+    <div class="col-span-3 order1 relative md:order-2 min-h-[300px]">
       <div
         class="absolute top-0 -left-4 lg:left-[10%] w-72 h-72 lg:w-96 lg:h-96 bg-[#a2d918] rounded-full mix-blend-multiply filter blur-xl opacity-50 animate-balls"
       />
