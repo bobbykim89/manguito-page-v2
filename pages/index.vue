@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useRequestURL } from '#app'
-import ManguitoFlowers from '@/assets/img/home/manguito-flowers.jpg'
 import Hero from '@/components/home/Hero.vue'
 import { usePostStore } from '@/stores'
 import { MclContainerA } from '@bobbykim/mcl-container'
@@ -54,7 +53,7 @@ const thankYouComponentContent = reactive<{
   title: string
   desc: string
 }>({
-  imgSrc: ManguitoFlowers,
+  imgSrc: '/img/home/manguito-flowers.webp',
   imgAlt: 'Manguito is perching among flowers',
   title: 'Do you like lovebirds?',
   desc: "Lovebirds are small, vibrant parrots known for their bright feathers and affectionate personalities. Native to Africa, these charming birds are famous for forming strong bonds with their companions, often seen cuddling closely together. Whether you're captivated by their playful nature or the deep connection they share, lovebirds bring joy and companionship to any home. Their lively energy and colorful presence make them a favorite among bird lovers everywhere.",
@@ -157,5 +156,3 @@ const AsyncParallax = defineAsyncComponent({
     </AsyncParallax>
   </main>
 </template>
-
-<style scoped></style>

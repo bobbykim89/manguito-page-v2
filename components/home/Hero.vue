@@ -53,6 +53,7 @@ defineProps<{
         src="/img/home/banner.webp"
         class="relative w-4/5 lg:w-1/2 mx-auto object-contain"
         sizes="80vw lg:30vw"
+        height="400"
         alt="manguito banner"
       />
     </div>
