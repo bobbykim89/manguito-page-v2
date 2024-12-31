@@ -111,7 +111,9 @@ const onPwUpdateSubmit = async (e: Event, currentPw: string, newPw: string) => {
               <NuxtImg
                 :src="menuItemData.logo"
                 :alt="menuItemData.logoAlt"
-                class="h-full inline-block"
+                class="h-full w-full inline-block"
+                width="32"
+                height="32"
               />
             </NuxtLink>
           </div>
