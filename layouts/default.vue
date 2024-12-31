@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import MclLogo from '@/assets/img/logo192.png'
 import AuthBlock from '@/components/layout-components/AuthBlock.vue'
 import ScrollToTop from '@/components/layout-components/ScrollToTop.vue'
 import UpdateUserInfo from '@/components/layout-components/UpdateUserInfo.vue'
@@ -50,7 +49,7 @@ const menuItemData = reactive<{
   menu: MenuItemType[]
 }>({
   title: 'MANGU<span class="text-primary">IT</span>O',
-  logo: MclLogo,
+  logo: '/img/logo192.webp',
   logoAlt: 'Manguito Page layout',
   logoLink: '/',
   menu: footerMenuItems,
@@ -113,10 +112,12 @@ const getLayoutBgColor = computed(() => {
         <div class="flex flex-shrink-0 items-center self-center md:py-3xs">
           <div class="h-md md:h-lg mr-2xs md:mr-xs align-middle">
             <NuxtLink :to="menuItemData.logoLink">
-              <img
+              <NuxtImg
                 :src="menuItemData.logo"
                 :alt="menuItemData.logoAlt"
-                class="h-full inline-block"
+                class="h-full w-full inline-block"
+                width="32"
+                height="32"
               />
             </NuxtLink>
           </div>
@@ -229,6 +230,7 @@ const getLayoutBgColor = computed(() => {
       v-if="currentUser !== null"
       ref="sidebarRef"
       :title="currentUser?.name"
+      placement="right"
     >
       <template #body>
         <div class="px-2xs pt-xs">
@@ -264,5 +266,3 @@ const getLayoutBgColor = computed(() => {
     <ScrollToTop @scroll-click="onScrollToTop" />
   </div>
 </template>
-
-<style scoped></style>

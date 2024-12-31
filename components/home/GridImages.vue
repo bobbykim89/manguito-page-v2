@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import ArrowImg from '@/assets/img/home/arrow.png'
 import { ImageUrl } from '@/composables/useImageUrl'
 import { PopulatedPostModel } from '@/server/models'
 import { type ColorPalette } from '@bobbykim/manguito-theme'
@@ -41,8 +40,8 @@ const resolveCardColor = (idx: number): ColorPalette => {
         class="row-start-2 col-start-2 md:col-start-1 md:col-span-2 self-center md:pr-md text-right font-marker transition ease-in duration-150 animate-bounce"
       >
         <span class="h3-lg mr-xs">Flip me over!!</span>
-        <img
-          :src="ArrowImg"
+        <NuxtImg
+          src="/img/home/arrow.webp"
           class="inline-block w-20 rotate-180 md:rotate-[55deg] mr-lg md:mr-sm mt-xs"
           alt="arrow image"
         />
@@ -58,5 +57,3 @@ const resolveCardColor = (idx: number): ColorPalette => {
     </div>
   </section>
 </template>
-
-<style scoped></style>

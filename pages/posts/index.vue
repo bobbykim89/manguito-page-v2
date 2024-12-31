@@ -113,6 +113,7 @@ const onSubmit = async (): Promise<void> => {
               :src="formatPostUrl(post.imageId)"
               alt="image card"
               class="absolute aspect-square w-full object-center object-cover"
+              loading="lazy"
             />
             <div
               class="aspect-square w-full h-full relative bg-primary opacity-0 hover:opacity-30 transition-opacity duration-300 ease-linear"
@@ -183,5 +184,3 @@ const onSubmit = async (): Promise<void> => {
     </Modal>
   </div>
 </template>
-
-<style scoped></style>

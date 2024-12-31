@@ -19,26 +19,26 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "@bobbykim/manguito-theme": "^0.22.1",
-    "@bobbykim/mcl-cards": "0.7.5",
-    "@bobbykim/mcl-container": "0.7.1",
-    "@bobbykim/mcl-footer": "0.8.0",
-    "@bobbykim/mcl-forms": "^0.8.2",
-    "@bobbykim/mcl-hero": "^0.7.0",
-    "@nuxt/fonts": "0.9.2",
+    "@bobbykim/manguito-theme": "0.23.1",
+    "@bobbykim/mcl-cards": "0.8.1",
+    "@bobbykim/mcl-container": "0.8.1",
+    "@bobbykim/mcl-footer": "0.9.1",
+    "@bobbykim/mcl-forms": "0.9.1",
+    "@nuxt/fonts": "0.10.3",
     "@nuxt/image": "^1.8.0",
+    "@nuxtjs/robots": "^5.1.0",
     "@nuxtjs/tailwindcss": "^6.12.1",
-    "@pinia/nuxt": "^0.5.4",
-    "@vueuse/core": "^11.0.1",
+    "@pinia/nuxt": "0.9.0",
+    "@vueuse/core": "12.2.0",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^2.4.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.5.3",
     "nodemailer": "^6.9.15",
     "nuxt": "3.13.1",
-    "pinia": "^2.2.2",
+    "pinia": "2.3.0",
     "vue": "latest",
-    "zod": "^3.23.8"
+    "zod": "3.24.1"
   },
   "packageManager": "pnpm@9.5.0+sha512.140036830124618d624a2187b50d04289d5a087f326c9edfc0ccd733d76c4f52c3a313d4fc148794a2a9d81553016004e6742e8cf850670268a7387fc220c903",
   "devDependencies": {
@@ -46,11 +46,11 @@
     "@types/jsonwebtoken": "^9.0.6",
     "@types/node": "^22.5.0",
     "@types/nodemailer": "^6.4.16",
-    "@vite-pwa/nuxt": "^0.10.5",
+    "@vite-pwa/nuxt": "0.10.6",
     "sass": "^1.77.8",
     "tailwindcss": "^3.4.10",
     "typescript": "^5.5.4",
-    "vite": "^5.4.2",
+    "vite": "5.4.11",
     "vue-tsc": "2.1.6"
   }
 }
