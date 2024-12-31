@@ -49,6 +49,7 @@ const socialUrls = {
               alt="manguito sitting on monitor"
               width="256"
               height="256"
+              :placeholder="256"
             />
           </div>
           <div class="text-dark-3">

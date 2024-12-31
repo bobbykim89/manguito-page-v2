@@ -55,6 +55,7 @@ defineProps<{
         sizes="80vw lg:30vw"
         height="400"
         alt="manguito banner"
+        :placeholder="[340, 400]"
       />
     </div>
   </section>
