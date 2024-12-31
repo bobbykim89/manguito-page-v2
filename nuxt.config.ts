@@ -9,6 +9,7 @@ export default defineNuxtConfig({
     '@nuxt/image',
     '@nuxt/fonts',
     '@vite-pwa/nuxt',
+    '@nuxtjs/robots',
   ],
   app: {
     pageTransition: { name: 'page', mode: 'out-in' },
@@ -109,6 +110,10 @@ export default defineNuxtConfig({
       brotli: true,
     },
   },
+  robots: {
+    blockNonSeoBots: true,
+    disallow: ['/admin', '/auth', '/posts/*'],
+  },
   pwa: {
     strategies: 'generateSW',
     manifest: {
@@ -174,6 +179,7 @@ export default defineNuxtConfig({
     },
     workbox: {
       globPatterns: ['**/*.{js,css,html,png,svg,ico}'],
+      navigateFallback: undefined,
     },
     registerType: 'autoUpdate',
     devOptions: {
