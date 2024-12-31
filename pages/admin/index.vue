@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import AboutImage from '@/assets/img/about.jpg'
 import { useUserStore } from '@/stores'
 import { storeToRefs } from 'pinia'
+
 definePageMeta({
   layout: 'admin',
   middleware: ['admin-route'],
@@ -21,10 +21,12 @@ const { currentUser } = storeToRefs(userStore)
     <div
       class="max-w-screen-md bg-light-4 rounded-lg px-sm py-md md:px-md md:py-lg"
     >
-      <img
-        :src="AboutImage"
+      <NuxtImg
+        src="/img/about.webp"
         alt="inspector pollo"
         class="aspect-square rounded-full border-4 border-dark-1 max-h-[256px] mb-sm"
+        width="256"
+        height="256"
       />
       <h2 class="h2-md mb-xs text-center">Admin Page</h2>
       <p class="text-lg">Current user info</p>
@@ -101,5 +103,3 @@ const { currentUser } = storeToRefs(userStore)
     </div>
   </div>
 </template>
-
-<style scoped></style>

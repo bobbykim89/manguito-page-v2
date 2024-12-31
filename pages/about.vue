@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useRequestURL } from '#app'
-import AboutImage from '@/assets/img/about.jpg'
 
 const url = useRequestURL()
 
@@ -44,10 +43,13 @@ const socialUrls = {
           class="flex flex-col md:flex-row gap-lg items-center justify-center"
         >
           <div>
-            <img
+            <NuxtImg
               class="aspect-square rounded-full border-4 border-dark-4 w-full min-w-[256px] max-w-[384px]"
-              :src="AboutImage"
+              src="/img/about.webp"
               alt="manguito sitting on monitor"
+              width="256"
+              height="256"
+              :placeholder="256"
             />
           </div>
           <div class="text-dark-3">
@@ -128,5 +130,3 @@ const socialUrls = {
     </div>
   </div>
 </template>
-
-<style scoped></style>

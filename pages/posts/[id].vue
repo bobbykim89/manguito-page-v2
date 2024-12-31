@@ -32,10 +32,6 @@ const { data: comments, refresh } = await useFetch<PopulatedCommentModel[]>(
   }
 )
 
-const resolveCardImage = (img: string) => {
-  const imgUrl = new ImageUrl(img)
-  return imgUrl.getNuxtImagePostUrl()
-}
 const resolveMetaImage = (img: string) => {
   const imgUrl = new ImageUrl(img)
   return imgUrl.getCardUrl()
@@ -165,9 +161,14 @@ const onCommentDelete = async (id: string) => {
                   <NuxtImg
                     v-if="!postLoading"
                     provider="cloudinary"
-                    :src="resolveCardImage(currentPost?.imageId!)"
+                    :src="currentPost?.imageId"
                     alt="a picture of manguito"
                     class="relative object-center object-cover w-full rounded-md"
+                    :placeholder="[484, 645]"
+                    placeholder-class="img-placeholder"
+                    width="484"
+                    height="645"
+                    fit="cover"
                   />
                   <div
                     v-else
@@ -282,6 +283,10 @@ const onCommentDelete = async (id: string) => {
 </template>
 
 <style scoped>
+.img-placeholder {
+  background-color: #e8e8e8;
+}
+
 .v-enter-active,
 .v-leave-active {
   transition: opacity 0.3s ease;

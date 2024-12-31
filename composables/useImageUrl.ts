@@ -11,9 +11,9 @@ export class ImageUrl {
     this.imageId = id
     this.config = useRuntimeConfig()
     this.imageType = {
-      THUMB: '/c_scale,w_320/f_auto/v1700694621/',
-      CARD: '/c_scale,w_480/f_auto/v1700694621/',
-      POST: '/c_scale,w_1200/q_auto/v1700694621/',
+      THUMB: '/c_scale,w_320/',
+      CARD: '/c_scale,w_480/',
+      POST: '/c_scale,w_800/',
     }
   }
   public getThumbUrl = (): string => {

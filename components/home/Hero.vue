@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import BannerImg from '@/assets/img/home/banner.png'
-
 defineProps<{
   hadingText: string
   heroParagraph: string
@@ -41,7 +39,7 @@ defineProps<{
         </div>
       </div>
     </div>
-    <div class="col-span-3 order1 relative md:order-2">
+    <div class="col-span-3 order1 relative md:order-2 min-h-[300px]">
       <div
         class="absolute top-0 -left-4 lg:left-[10%] w-72 h-72 lg:w-96 lg:h-96 bg-[#a2d918] rounded-full mix-blend-multiply filter blur-xl opacity-50 animate-balls"
       />
@@ -51,13 +49,14 @@ defineProps<{
       <div
         class="absolute left-8 lg:left-1/4 -bottom-4 w-72 h-72 lg:w-96 lg:h-96 bg-red-300 rounded-full mix-blend-multiply filter blur-xl opacity-50 animate-balls animation-delay-4000"
       />
-      <img
-        :src="BannerImg"
+      <NuxtImg
+        src="/img/home/banner.webp"
         class="relative w-4/5 lg:w-1/2 mx-auto object-contain"
+        sizes="80vw lg:30vw"
+        height="400"
         alt="manguito banner"
+        :placeholder="[340, 400]"
       />
     </div>
   </section>
 </template>
-
-<style scoped></style>

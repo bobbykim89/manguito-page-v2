@@ -48,6 +48,7 @@ const onDelete = async (id: string) => {
           :src="formattedUrl(post.imageId)"
           alt="post image"
           class="aspect-square h-3xl object-center object-cover rounded-t-md md:rounded-tr-none md:rounded-l-md"
+          loading="lazy"
         />
         <div
           class="flex flex-col md:flex-row justify-between w-full px-xs py-sm gap-4"
@@ -88,5 +89,3 @@ const onDelete = async (id: string) => {
     </div>
   </div>
 </template>
-
-<style scoped></style>
