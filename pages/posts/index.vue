@@ -184,5 +184,3 @@ const onSubmit = async (): Promise<void> => {
     </Modal>
   </div>
 </template>
-
-<style scoped></style>

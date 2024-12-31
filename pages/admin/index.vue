@@ -103,5 +103,3 @@ const { currentUser } = storeToRefs(userStore)
     </div>
   </div>
 </template>
-
-<style scoped></style>
