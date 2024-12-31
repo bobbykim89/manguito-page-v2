@@ -9,23 +9,20 @@ importers:
   .:
     dependencies:
       '@bobbykim/manguito-theme':
-        specifier: 0.23.0
-        version: 0.23.0(typescript@5.7.2)
+        specifier: 0.23.1
+        version: 0.23.1(typescript@5.7.2)
       '@bobbykim/mcl-cards':
-        specifier: 0.8.0
-        version: 0.8.0(typescript@5.7.2)
+        specifier: 0.8.1
+        version: 0.8.1(typescript@5.7.2)
       '@bobbykim/mcl-container':
-        specifier: 0.8.0
-        version: 0.8.0(typescript@5.7.2)
+        specifier: 0.8.1
+        version: 0.8.1(typescript@5.7.2)
       '@bobbykim/mcl-footer':
-        specifier: 0.9.0
-        version: 0.9.0(typescript@5.7.2)
+        specifier: 0.9.1
+        version: 0.9.1(typescript@5.7.2)
       '@bobbykim/mcl-forms':
-        specifier: 0.9.0
-        version: 0.9.0(typescript@5.7.2)
-      '@bobbykim/mcl-hero':
-        specifier: 0.8.0
-        version: 0.8.0(typescript@5.7.2)
+        specifier: 0.9.1
+        version: 0.9.1(typescript@5.7.2)
       '@nuxt/fonts':
         specifier: 0.10.3
         version: 0.10.3(db0@0.2.1)(ioredis@5.4.2)(magicast@0.3.5)(rollup@4.29.1)(vite@5.4.11(@types/node@22.10.2)(sass@1.83.0)(terser@5.37.0))
@@ -643,23 +640,20 @@ packages:
     resolution: {integrity: sha512-vN5p+1kl59GVKMvTHt55NzzmYVxprfJD+ql7U9NFIfKCBkYE55LYtS+WtPlaYOyzydrKI8Nezd+aZextrd+FMA==}
     engines: {node: '>=6.9.0'}
 
-  '@bobbykim/manguito-theme@0.23.0':
-    resolution: {integrity: sha512-7dhNvXorjJ8m3mJu4/WDo4zLm7zRt7Ot8+Bj//njaAlH5PbExY2rgm7hdnSUu1pV0IqvLd9SI/Y9YfFExx/6wg==}
+  '@bobbykim/manguito-theme@0.23.1':
+    resolution: {integrity: sha512-W+mGynv3H5uhTMasRXC8c0uFiOQRkhIowAo664fMDdHMZJ98XbPiwkzC6mu2kLBhoC6+apsUsb1qSdqf2notxg==}
 
-  '@bobbykim/mcl-cards@0.8.0':
-    resolution: {integrity: sha512-KxY80nWKY1gpH8Lf3YkjfYruLIiOlGF2iZdKe3D8k2yD5ourMbDdATGA7C5TcDGBarfaDBs5j67bV+f5Yi7J6Q==}
+  '@bobbykim/mcl-cards@0.8.1':
+    resolution: {integrity: sha512-JSO6yMf4yWJ64LvVqIMqDplQkbKUEtWTfL7TKyFFIXfSG9iOGND+GoqNMCTzLvUAVtiw+Fxf58lJ5HvQbMQOXA==}
 
-  '@bobbykim/mcl-container@0.8.0':
-    resolution: {integrity: sha512-R/biyHlVpNXYbCkkhZZ1f4FIlUc15KWoa4c22syiOtx2aq8v0/JE2nEoYeTtqr/NOM+XqIJl10H4py7FlkWKjw==}
+  '@bobbykim/mcl-container@0.8.1':
+    resolution: {integrity: sha512-PPkKdapBnsYjuRn0d9XN4ElLiEKUSpiz/PfoPx8noPDro7av89ts9obRHOs56hOhTiKkLhB6h2ECvE71afhmNw==}
 
-  '@bobbykim/mcl-footer@0.9.0':
-    resolution: {integrity: sha512-LCewPL/bep0I4Ki7XmiWT+4232NlRtwa/YGkJbaqBgaAx8sXGFF6r+RQV0QZ1Bm9LT0uMgknPxaRdOr9iEiqXw==}
+  '@bobbykim/mcl-footer@0.9.1':
+    resolution: {integrity: sha512-nP2+IObCWIT4UCSCn9ccztL/3mdZzkH/6K50ZjN72x+baD01u4CBLsNUbjISLjDF387Ds8ryTcXw4lH/Di4CtA==}
 
-  '@bobbykim/mcl-forms@0.9.0':
-    resolution: {integrity: sha512-mt1OwvS1UPNq1nKtOQXfS0wvBMD/Y6Q5WD8Mx7V08yAJPZzsfI+JvdM3RwZMyRvFoyypNeVDc6XXfM+DP/aMfw==}
-
-  '@bobbykim/mcl-hero@0.8.0':
-    resolution: {integrity: sha512-BuWFAjUyJ+UOf39Ezi0Dd8oCEyvbKpP7NPq5DFFVS9Pr8BW7X8jaiLpmgrqIY4t1aF1aC2UeLLVijtRuWIxuSA==}
+  '@bobbykim/mcl-forms@0.9.1':
+    resolution: {integrity: sha512-elvNT1m7TzR9FuYsJhpt40xM9rJJIx+KgxVr/VrHfyZwcVJgK4Ow9BUs3GqxzfHNS6KkdmkYGIBtPU/xHvvfLA==}
 
   '@capsizecss/metrics@2.2.0':
     resolution: {integrity: sha512-DkFIser1KbGxWyG2hhQQeCit72TnOQDx5pr9bkA7+XlIy7qv+4lYtslH3bidVxm2qkY2guAgypSIPYuQQuk70A==}
@@ -5817,50 +5811,43 @@ snapshots:
       '@babel/helper-string-parser': 7.25.9
       '@babel/helper-validator-identifier': 7.25.9
 
-  '@bobbykim/manguito-theme@0.23.0(typescript@5.7.2)':
+  '@bobbykim/manguito-theme@0.23.1(typescript@5.7.2)':
     dependencies:
       '@vueuse/core': 12.2.0(typescript@5.7.2)
       vue: 3.5.13(typescript@5.7.2)
     transitivePeerDependencies:
       - typescript
 
-  '@bobbykim/mcl-cards@0.8.0(typescript@5.7.2)':
+  '@bobbykim/mcl-cards@0.8.1(typescript@5.7.2)':
     dependencies:
-      '@bobbykim/manguito-theme': 0.23.0(typescript@5.7.2)
+      '@bobbykim/manguito-theme': 0.23.1(typescript@5.7.2)
       vue: 3.5.13(typescript@5.7.2)
     transitivePeerDependencies:
       - typescript
 
-  '@bobbykim/mcl-container@0.8.0(typescript@5.7.2)':
+  '@bobbykim/mcl-container@0.8.1(typescript@5.7.2)':
     dependencies:
-      '@bobbykim/manguito-theme': 0.23.0(typescript@5.7.2)
+      '@bobbykim/manguito-theme': 0.23.1(typescript@5.7.2)
       '@vueuse/core': 12.2.0(typescript@5.7.2)
       vue: 3.5.13(typescript@5.7.2)
     transitivePeerDependencies:
       - typescript
 
-  '@bobbykim/mcl-footer@0.9.0(typescript@5.7.2)':
+  '@bobbykim/mcl-footer@0.9.1(typescript@5.7.2)':
     dependencies:
-      '@bobbykim/manguito-theme': 0.23.0(typescript@5.7.2)
+      '@bobbykim/manguito-theme': 0.23.1(typescript@5.7.2)
       vue: 3.5.13(typescript@5.7.2)
     transitivePeerDependencies:
       - typescript
 
-  '@bobbykim/mcl-forms@0.9.0(typescript@5.7.2)':
+  '@bobbykim/mcl-forms@0.9.1(typescript@5.7.2)':
     dependencies:
-      '@bobbykim/manguito-theme': 0.23.0(typescript@5.7.2)
+      '@bobbykim/manguito-theme': 0.23.1(typescript@5.7.2)
       '@floating-ui/vue': 1.1.5(vue@3.5.13(typescript@5.7.2))
       '@vueuse/core': 12.2.0(typescript@5.7.2)
       vue: 3.5.13(typescript@5.7.2)
     transitivePeerDependencies:
       - '@vue/composition-api'
-      - typescript
-
-  '@bobbykim/mcl-hero@0.8.0(typescript@5.7.2)':
-    dependencies:
-      '@bobbykim/manguito-theme': 0.23.0(typescript@5.7.2)
-      vue: 3.5.13(typescript@5.7.2)
-    transitivePeerDependencies:
       - typescript
 
   '@capsizecss/metrics@2.2.0': {}

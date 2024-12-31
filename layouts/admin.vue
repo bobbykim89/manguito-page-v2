@@ -297,47 +297,43 @@ const onPwUpdateSubmit = async (e: Event, currentPw: string, newPw: string) => {
         >
       </ClientOnly>
     </MclFooterA>
-    <ClientOnly>
-      <Sidebar
-        v-if="currentUser !== null"
-        ref="sidebarRef"
-        :title="currentUser?.name"
-        placement="right"
-      >
-        <template #body>
-          <div class="px-2xs pt-xs">
-            <UpdateUserInfo
-              @on-username-update="onUsernameUpdateSubmit"
-              @on-pw-update="onPwUpdateSubmit"
-            />
-            <div
-              v-if="role === 'ADMIN'"
-              class="px-2xs py-xs rounded-md bg-light-4 drop-shadow-md mt-xs"
+    <Sidebar
+      v-if="currentUser !== null"
+      ref="sidebarRef"
+      :title="currentUser?.name"
+      placement="right"
+    >
+      <template #body>
+        <div class="px-2xs pt-xs">
+          <UpdateUserInfo
+            @on-username-update="onUsernameUpdateSubmit"
+            @on-pw-update="onPwUpdateSubmit"
+          />
+          <div
+            v-if="role === 'ADMIN'"
+            class="px-2xs py-xs rounded-md bg-light-4 drop-shadow-md mt-xs"
+          >
+            <NuxtLink
+              to="/admin"
+              class="flex gap-2 items-center justify-center px-2xs py-3xs bg-light-2 drop-shadow-md rounded-md hover:opacity-60 duration-300 ease-linear"
             >
-              <NuxtLink
-                to="/admin"
-                class="flex gap-2 items-center justify-center px-2xs py-3xs bg-light-2 drop-shadow-md rounded-md hover:opacity-60 duration-300 ease-linear"
+              <p>Admin Page</p>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 448 512"
+                fill="currentColor"
+                class="w-xs aspect-square"
               >
-                <p>Admin Page</p>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 448 512"
-                  fill="currentColor"
-                  class="w-xs aspect-square"
-                >
-                  <!-- !Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                  <path
-                    d="M144 144l0 48 160 0 0-48c0-44.2-35.8-80-80-80s-80 35.8-80 80zM80 192l0-48C80 64.5 144.5 0 224 0s144 64.5 144 144l0 48 16 0c35.3 0 64 28.7 64 64l0 192c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 256c0-35.3 28.7-64 64-64l16 0z"
-                  />
-                </svg>
-              </NuxtLink>
-            </div>
+                <!-- !Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                <path
+                  d="M144 144l0 48 160 0 0-48c0-44.2-35.8-80-80-80s-80 35.8-80 80zM80 192l0-48C80 64.5 144.5 0 224 0s144 64.5 144 144l0 48 16 0c35.3 0 64 28.7 64 64l0 192c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 256c0-35.3 28.7-64 64-64l16 0z"
+                />
+              </svg>
+            </NuxtLink>
           </div>
-        </template>
-      </Sidebar>
-    </ClientOnly>
+        </div>
+      </template>
+    </Sidebar>
     <ScrollToTop @scroll-click="onScrollToTop" />
   </div>
 </template>
-
-<style scoped></style>

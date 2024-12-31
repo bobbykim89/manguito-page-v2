@@ -89,5 +89,3 @@ const onDelete = async (id: string) => {
     </div>
   </div>
 </template>
-
-<style scoped></style>

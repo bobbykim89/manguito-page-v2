@@ -129,5 +129,3 @@ const socialUrls = {
     </div>
   </div>
 </template>
-
-<style scoped></style>
