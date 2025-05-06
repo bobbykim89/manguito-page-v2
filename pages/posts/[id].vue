@@ -134,7 +134,7 @@ const onCommentDelete = async (id: string) => {
 </script>
 
 <template>
-  <section class="py-md" @click="router.push({ path: '/posts' })">
+  <section class="py-md min-h-[90dvh]" @click="router.push({ path: '/posts' })">
     <div class="container">
       <div class="px-xs">
         <div
