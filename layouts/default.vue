@@ -42,6 +42,7 @@ const footerMenuItems: MenuItemType[] = [
 ]
 const menuItemData = reactive<{
   title: string
+  logoMobile: string
   logo: string
   logoAlt: string
   logoLink: string
@@ -49,6 +50,7 @@ const menuItemData = reactive<{
   menu: MenuItemType[]
 }>({
   title: 'MANGU<span class="text-primary">IT</span>O',
+  logoMobile: '/img/logo64.webp',
   logo: '/img/logo192.webp',
   logoAlt: 'Manguito Page layout',
   logoLink: '/',
@@ -110,14 +112,21 @@ const getLayoutBgColor = computed(() => {
     >
       <template #content>
         <div class="flex flex-shrink-0 items-center self-center md:py-3xs">
-          <div class="h-md md:h-lg mr-2xs md:mr-xs align-middle">
+          <div class="h-md md:h-xl mr-2xs md:mr-xs align-middle">
             <NuxtLink :to="menuItemData.logoLink">
+              <NuxtImg
+                :src="menuItemData.logoMobile"
+                :alt="menuItemData.logoAlt"
+                class="md:hidden h-full w-full inline-block"
+                width="32"
+                height="32"
+              />
               <NuxtImg
                 :src="menuItemData.logo"
                 :alt="menuItemData.logoAlt"
-                class="h-full w-full inline-block"
-                width="32"
-                height="32"
+                class="hidden h-full w-full md:inline-block"
+                width="192"
+                height="192"
               />
             </NuxtLink>
           </div>
