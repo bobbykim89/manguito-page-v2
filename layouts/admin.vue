@@ -125,7 +125,6 @@ const onPwUpdateSubmit = async (e: Event, currentPw: string, newPw: string) => {
                 height="192"
               />
             </NuxtLink>
-            </NuxtLink>
           </div>
           <div class="flex flex-col justify-center ml-2">
             <NuxtLink :to="menuItemData.logoLink">
