@@ -4,6 +4,7 @@ import { ImageUrl } from '@/composables/useImageUrl'
 import { usePostStore, useUserStore } from '@/stores'
 import { Modal, vToggle } from '@bobbykim/manguito-theme'
 import { MclFormGroup, MclInputFile, MclTextArea } from '@bobbykim/mcl-forms'
+import imageCompression from 'browser-image-compression'
 import { storeToRefs } from 'pinia'
 import { ref } from 'vue'
 
@@ -68,7 +69,12 @@ const onSubmit = async (): Promise<void> => {
   const fileFormData = new FormData()
   if (isAuthorizedUser.value === false) return
   if (typeof imageFileRef.value === 'undefined') return
-  fileFormData.append('image', imageFileRef.value)
+  const compressedFile = await imageCompression(imageFileRef.value, {
+    maxSizeMB: 1,
+    maxWidthOrHeight: 1200,
+    useWebWorker: true,
+  })
+  fileFormData.append('image', compressedFile)
   fileFormData.append('content', contentRef.value)
   await postStore.createNewPost(fileFormData)
   // reset ref data
@@ -107,17 +113,17 @@ const onSubmit = async (): Promise<void> => {
       <div class="grid grid-cols-3 gap-1 lg:gap-2 px-3xs md:px-xs lg:px-md">
         <!-- cards -->
         <div v-for="(post, idx) in displayedPost" :key="idx">
-          <NuxtLink :to="resolveLinkPath(post._id.toString())" class="relative">
+          <NuxtLink
+            :to="resolveLinkPath(post._id.toString())"
+            class="relative aspect-square w-full h-auto overflow-hidden after:absolute after:inset-0 after:bg-primary after:opacity-0 hover:after:opacity-30 after:transition-opacity after:duration-300 after:ease-linear"
+          >
             <NuxtImg
               provider="cloudinary"
               :src="formatPostUrl(post.imageId)"
               alt="image card"
-              class="absolute aspect-square w-full object-center object-cover"
+              class="relative aspect-square w-full object-center object-cover z-0"
               loading="lazy"
             />
-            <div
-              class="aspect-square w-full h-full relative bg-primary opacity-0 hover:opacity-30 transition-opacity duration-300 ease-linear"
-            ></div>
           </NuxtLink>
         </div>
         <div v-if="showLoadMore" class="col-span-3">

@@ -34,6 +34,7 @@
   },
   "tailwindCSS.experimental.configFile": "./tailwind.config.ts",
   "tailwindCSS.validate": false,
+  "tailwindCSS.experimental.classRegex": [],
   // "editor.quickSuggestions": {
   //   "strings": true
   // },
