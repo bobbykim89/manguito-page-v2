@@ -35,7 +35,7 @@ export default defineNuxtConfig({
         {
           property: 'og:image',
           content:
-            'https://res.cloudinary.com/dwgni1x3t/image/upload/c_scale/f_auto/v1700694621/assets/logo192_meuats.png',
+            'https://res.cloudinary.com/dwgni1x3t/image/upload/c_scale/f_auto/v1700694621/assets/manguito_page_logo192.png',
         },
         {
           name: 'twitter:card',
@@ -53,7 +53,7 @@ export default defineNuxtConfig({
         {
           name: 'twitter:image',
           content:
-            'https://res.cloudinary.com/dwgni1x3t/image/upload/c_scale/f_auto/v1700694621/assets/logo192_meuats.png',
+            'https://res.cloudinary.com/dwgni1x3t/image/upload/c_scale/f_auto/v1700694621/assets/manguito_page_logo192.png',
         },
       ],
       link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
