@@ -88,11 +88,12 @@ const onSubmit = async (): Promise<void> => {
     // reset ref data
     imageFileRef.value = undefined
     contentRef.value = ''
-  } catch (err: any) {
-    alertStore.setAlert(
-      // 'An error occurred while uploading image, please try again'
-      err.message
-    )
+  } catch (err) {
+    if (typeof err === 'string') {
+      alertStore.setAlert(err.toUpperCase())
+    } else if (err instanceof Error) {
+      alertStore.setAlert(err.message)
+    }
     console.error(err)
   }
   // close modal
