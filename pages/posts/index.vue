@@ -83,13 +83,15 @@ const onSubmit = async (): Promise<void> => {
     }
     fileFormData.append('image', compressedFile)
     fileFormData.append('content', contentRef.value)
+    console.info(postCompressionFileInfo)
     await postStore.createNewPost(fileFormData)
     // reset ref data
     imageFileRef.value = undefined
     contentRef.value = ''
   } catch (err) {
     alertStore.setAlert(
-      'An error occurred while uploading image, please try again'
+      // 'An error occurred while uploading image, please try again'
+      err as string
     )
     console.error(err)
   }
