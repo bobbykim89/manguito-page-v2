@@ -89,11 +89,8 @@ const onSubmit = async (): Promise<void> => {
     imageFileRef.value = undefined
     contentRef.value = ''
   } catch (err) {
-    if (typeof err === 'string') {
-      alertStore.setAlert(err.toUpperCase())
-    } else if (err instanceof Error) {
-      alertStore.setAlert(err.message)
-    }
+    const error = err as Error
+    alertStore.setAlert(error.message)
     console.error(err)
   }
   // close modal
