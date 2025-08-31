@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useRequestURL } from '#app'
 import { ImageUrl } from '@/composables/useImageUrl'
-import { usePostStore, useUserStore } from '@/stores'
+import { useAlertStore, usePostStore, useUserStore } from '@/stores'
 import { Modal, vToggle } from '@bobbykim/manguito-theme'
 import { MclFormGroup, MclInputFile, MclTextArea } from '@bobbykim/mcl-forms'
 import imageCompression from 'browser-image-compression'
@@ -26,6 +26,7 @@ useHead({
 
 const postStore = usePostStore()
 const userStore = useUserStore()
+const alertStore = useAlertStore()
 const { posts } = storeToRefs(postStore)
 const { currentUser, isAuthenticated, role } = storeToRefs(userStore)
 const imageFileRef = ref<File | undefined>(undefined)
@@ -69,17 +70,29 @@ const onSubmit = async (): Promise<void> => {
   const fileFormData = new FormData()
   if (isAuthorizedUser.value === false) return
   if (typeof imageFileRef.value === 'undefined') return
-  const compressedFile = await imageCompression(imageFileRef.value, {
-    maxSizeMB: 1,
-    maxWidthOrHeight: 1200,
-    useWebWorker: true,
-  })
-  fileFormData.append('image', compressedFile)
-  fileFormData.append('content', contentRef.value)
-  await postStore.createNewPost(fileFormData)
-  // reset ref data
-  imageFileRef.value = undefined
-  contentRef.value = ''
+  try {
+    const compressedFile = await imageCompression(imageFileRef.value, {
+      maxSizeMB: 2,
+      maxWidthOrHeight: 1200,
+      useWebWorker: true,
+    })
+    const postCompressionFileInfo = {
+      fileName: compressedFile.name,
+      size: compressedFile.size / 1024 / 1024,
+      type: compressedFile.type,
+    }
+    fileFormData.append('image', compressedFile)
+    fileFormData.append('content', contentRef.value)
+    await postStore.createNewPost(fileFormData)
+    // reset ref data
+    imageFileRef.value = undefined
+    contentRef.value = ''
+  } catch (err) {
+    alertStore.setAlert(
+      'An error occurred while uploading image, please try again'
+    )
+    console.error(err)
+  }
   // close modal
   modalRef.value?.close()
 }
