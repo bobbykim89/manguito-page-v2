@@ -3,8 +3,10 @@
 export default defineNuxtConfig({
   compatibilityDate: '2024-04-03',
   devtools: { enabled: true },
+  future: {
+    compatibilityVersion: 4,
+  },
   modules: [
-    '@nuxtjs/tailwindcss',
     '@pinia/nuxt',
     '@nuxt/image',
     '@nuxt/fonts',
@@ -60,7 +62,7 @@ export default defineNuxtConfig({
     },
   },
   typescript: {
-    typeCheck: true,
+    typeCheck: 'build',
     strict: true,
     tsConfig: {
       compilerOptions: {
@@ -90,11 +92,11 @@ export default defineNuxtConfig({
       cloudinarySourceUrl: process.env.CLOUDINARY_SOURCE_URL,
     },
   },
-  css: ['~/assets/css/page_transition.scss'],
-  tailwindcss: {
-    configPath: 'tailwind.config.ts',
-    exposeConfig: false,
-    viewer: true,
+  css: ['~/assets/css/page_transition.scss', '~/assets/css/styles.css'],
+  postcss: {
+    plugins: {
+      '@tailwindcss/postcss': {},
+    },
   },
   image: {
     cloudinary: {
