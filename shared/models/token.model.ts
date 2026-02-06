@@ -1,0 +1,31 @@
+import { type HydratedDocument, model, Schema, type Types } from 'mongoose'
+
+const modelName: string = 'token'
+
+export interface TokenModel {
+  _id: Types.ObjectId
+  userId: Schema.Types.ObjectId
+  token: string
+  createdAt: Date
+}
+
+export type TokenDocument = HydratedDocument<TokenModel>
+
+const tokenSchema = new Schema<TokenModel>({
+  userId: {
+    type: Schema.Types.ObjectId,
+    required: true,
+    ref: 'user',
+  },
+  token: {
+    type: String,
+    required: true,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+    expires: 3600,
+  },
+})
+
+export const Token = model<TokenModel>(modelName, tokenSchema)
