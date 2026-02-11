@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { useRequestURL } from '#app'
+import type { CommentType } from '#shared/types'
 import CommentInput from '@/components/posts/CommentInput.vue'
 import CommentItem from '@/components/posts/CommentItem.vue'
 import ContentBlock from '@/components/posts/ContentBlock.vue'
-import { PopulatedCommentModel } from '@/server/models'
+import { useAuthToken } from '@/composables/useAuthToken'
+import { ImageUrl } from '@/composables/useImageUrl'
+import { useAlertStore, usePostStore, useUserStore } from '@/stores'
 import { useClipboard } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 import { computed, ref } from 'vue'
-import { useAuthToken } from '~/app/composables/useAuthToken'
-import { ImageUrl } from '~/app/composables/useImageUrl'
-import { useAlertStore, usePostStore, useUserStore } from '~/app/stores'
 
 const route = useRoute()
 const router = useRouter()
@@ -25,7 +25,7 @@ const { copy, isSupported } = useClipboard()
 
 postStore.setCurrentPost(route.params.id as string)
 
-const { data: comments, refresh } = await useFetch<PopulatedCommentModel[]>(
+const { data: comments, refresh } = await useFetch<CommentType[]>(
   `/api/comment/${route.params.id}`,
   {
     method: 'GET',

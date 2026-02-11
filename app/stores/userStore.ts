@@ -1,15 +1,16 @@
-import { type AuthInput } from '@/server/controller/auth/dto'
+import { type AuthInput } from '#shared/dto/auth'
 import type {
   NewUsernameInput,
   PwUpdateInput,
   SetAdminInput,
   UserInput,
-} from '@/server/controller/user/dto'
-import { UserModel, UserRoleType } from '@/server/models'
+} from '#shared/dto/user'
+import type { UserRoleType } from '#shared/models'
+import type { UserType } from '#shared/types'
+import { useAuthToken } from '@/composables/useAuthToken'
 import { H3Error } from 'h3'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
-import { useAuthToken } from '~/app/composables/useAuthToken'
 import { useAlertStore } from './alertStore'
 
 interface AuthToken {
@@ -20,7 +21,7 @@ export const useUserStore = defineStore('user', () => {
   const alertStore = useAlertStore()
   const cookie = useAuthToken()
   // USERS: states
-  const currentUser = ref<UserModel | null>(null)
+  const currentUser = ref<UserType | null>(null)
   const isAuthenticated = ref<boolean>(false)
   const role = ref<UserRoleType | null>(null)
   // USERS: getters
@@ -35,7 +36,7 @@ export const useUserStore = defineStore('user', () => {
   const authUser = async () => {
     if (!cookie.value) return
     try {
-      const res = await $fetch<UserModel>('/api/auth', {
+      const res = await $fetch<UserType>('/api/auth', {
         method: 'GET',
         headers: { Authorization: cookie.value },
       })
@@ -52,7 +53,7 @@ export const useUserStore = defineStore('user', () => {
   const getCurrentUser = async () => {
     if (!cookie.value) return
     try {
-      const res = await $fetch<UserModel>('/api/auth', {
+      const res = await $fetch<UserType>('/api/auth', {
         method: 'GET',
         headers: { Authorization: cookie.value },
       })
@@ -103,7 +104,7 @@ export const useUserStore = defineStore('user', () => {
   const updateUsername = async (payload: NewUsernameInput) => {
     if (!cookie.value) return
     try {
-      await $fetch<UserModel>('/api/user/user-info/username', {
+      await $fetch<UserType>('/api/user/user-info/username', {
         method: 'PUT',
         headers: { Authorization: cookie.value },
         body: payload,
@@ -138,7 +139,7 @@ export const useUserStore = defineStore('user', () => {
   const setAdmin = async (payload: SetAdminInput) => {
     if (!cookie.value) return
     try {
-      await $fetch<UserModel>('/api/user/admin', {
+      await $fetch<UserType>('/api/user/admin', {
         method: 'PUT',
         headers: { Authorization: cookie.value },
         body: payload,

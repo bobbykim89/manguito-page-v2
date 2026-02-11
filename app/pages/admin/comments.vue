@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { PopulatedCommentModel } from '@/server/models'
+import type { CommentType } from '#shared/types'
 
 definePageMeta({
   layout: 'admin',
@@ -12,9 +12,7 @@ useHead({
 })
 
 const cookie = useAuthToken()
-const { data: res, refresh } = await useFetch<PopulatedCommentModel[]>(
-  '/api/comment'
-)
+const { data: res, refresh } = await useFetch<CommentType[]>('/api/comment')
 
 const onDelete = async (id: string) => {
   if (!cookie.value) return

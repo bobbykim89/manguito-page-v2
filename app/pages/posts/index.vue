@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { useRequestURL } from '#app'
-import { Modal, vToggle } from '@bobbykim/manguito-theme'
+import { ImageUrl } from '@/composables/useImageUrl'
+import { useAlertStore, usePostStore, useUserStore } from '@/stores'
+import { Modal } from '@bobbykim/manguito-theme'
+import { vToggle } from '@bobbykim/manguito-theme/directives'
 import { MclFormGroup, MclInputFile, MclTextArea } from '@bobbykim/mcl-forms'
 import imageCompression from 'browser-image-compression'
 import { storeToRefs } from 'pinia'
 import { ref } from 'vue'
-import { ImageUrl } from '~/app/composables/useImageUrl'
-import { useAlertStore, usePostStore, useUserStore } from '~/app/stores'
 
 const url = useRequestURL()
 

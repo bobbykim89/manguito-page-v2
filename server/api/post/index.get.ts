@@ -1,4 +1,4 @@
-import { postController } from '@/server/controller'
+import { postController } from '../../controller'
 
 export default defineEventHandler({
   handler: eventHandler(postController.getAllPost),

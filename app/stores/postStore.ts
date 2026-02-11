@@ -1,10 +1,10 @@
 import { navigateTo } from '#app'
-import { type UpdatePostInput } from '@/server/controller/post/dto'
-import { PopulatedPostModel } from '@/server/models'
+import { type UpdatePostInput } from '#shared/dto/post'
+import { PostType } from '#shared/types'
+import { useAuthToken } from '@/composables/useAuthToken'
 import { H3Error } from 'h3'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
-import { useAuthToken } from '~/app/composables/useAuthToken'
 import { useAlertStore } from './alertStore'
 import { useUserStore } from './userStore'
 
@@ -13,13 +13,13 @@ export const usePostStore = defineStore('post', () => {
   const userStore = useUserStore()
   const cookie = useAuthToken()
   // POST: states
-  const posts = ref<PopulatedPostModel[]>([])
-  const currentPost = ref<PopulatedPostModel | null>(null)
+  const posts = ref<PostType[]>([])
+  const currentPost = ref<PostType | null>(null)
   const postIdx = ref<number>(0)
   const postLoading = ref<boolean>(false)
 
   // POST: getters
-  const getRecentPosts = computed<PopulatedPostModel[]>(() => {
+  const getRecentPosts = computed<PostType[]>(() => {
     return posts.value.slice(0, 7)
   })
 
@@ -31,7 +31,7 @@ export const usePostStore = defineStore('post', () => {
     }, 500)
   }
   const getAllPosts = async () => {
-    const { data: res } = await useFetch<PopulatedPostModel[]>('/api/post', {
+    const { data: res } = await useFetch<PostType[]>('/api/post', {
       method: 'GET',
     })
     if (!res.value) {
@@ -44,9 +44,11 @@ export const usePostStore = defineStore('post', () => {
   }
   const setCurrentPost = (postId: string) => {
     setPostLoadnigTimeout()
+
     for (let i = 0; i < posts.value.length; i++) {
-      if (posts.value[i]._id.toString() === postId) {
-        currentPost.value = posts.value[i]
+      const post = posts.value[i]
+      if (post && post._id === postId) {
+        currentPost.value = post
         postIdx.value = i
       }
     }
@@ -59,25 +61,42 @@ export const usePostStore = defineStore('post', () => {
   }
   const setNextPost = (): string => {
     setPostLoadnigTimeout()
-    let postId: string = '/posts'
-    if (postIdx.value < posts.value.length - 1) {
-      postId = posts.value[postIdx.value + 1]._id.toString()
-    }
-    if (postIdx.value === posts.value.length - 1) {
-      postId = posts.value[0]._id.toString()
-    }
-    return `/posts/${postId}`
+
+    const basePath: string = '/posts'
+    if (posts.value.length === 0) return basePath
+    const nextIdx = (postIdx.value + 1) % posts.value.length
+    const targetPost = posts.value[nextIdx]
+    return targetPost ? `${basePath}/${targetPost._id}` : basePath
+    // let postId: string = ''
+    // if (postIdx.value < posts.value.length - 1) {
+    //   const targetPost = posts.value[postIdx.value + 1]
+    //   postId = targetPost ? targetPost._id : ''
+    // }
+    // if (postIdx.value === posts.value.length - 1) {
+    //   const targetPost = posts.value[0]
+    //   postId = targetPost ? targetPost._id : ''
+    // }
+    // return `/posts/${postId}`
   }
   const setPrevPost = (): string => {
     setPostLoadnigTimeout()
-    let postId: string = '/posts'
-    if (postIdx.value > 0) {
-      postId = posts.value[postIdx.value - 1]._id.toString()
-    }
-    if (postIdx.value === 0) {
-      postId = posts.value[posts.value.length - 1]._id.toString()
-    }
-    return `/posts/${postId}`
+    const basePath: string = '/posts'
+    if (posts.value.length === 0) return basePath
+
+    const prevIdx =
+      (postIdx.value - 1 + posts.value.length) % posts.value.length
+    const targetPost = posts.value[prevIdx]
+    return targetPost ? `${basePath}/${targetPost._id}` : basePath
+    // let postId: string = ''
+    // if (postIdx.value > 0) {
+    //   const targetPost = posts.value[postIdx.value - 1]
+    //   postId = targetPost ? targetPost._id : ''
+    // }
+    // if (postIdx.value === 0) {
+    //   const targetPost = posts.value[posts.value.length - 1]
+    //   postId = targetPost ? targetPost._id : ''
+    // }
+    // return `/posts/${postId}`
   }
   const resetCurrent = () => {
     currentPost.value = null
@@ -95,7 +114,7 @@ export const usePostStore = defineStore('post', () => {
       return
     }
     try {
-      const res = await $fetch<PopulatedPostModel>('/api/post', {
+      const res = await $fetch<PostType>('/api/post', {
         method: 'POST',
         headers: { Authorization: cookie.value },
         body: payload,
@@ -120,7 +139,7 @@ export const usePostStore = defineStore('post', () => {
       return
     }
     try {
-      const res = await $fetch<PopulatedPostModel>(`/api/post/${postId}`, {
+      const res = await $fetch<PostType>(`/api/post/${postId}`, {
         method: 'PUT',
         headers: { Authorization: cookie.value },
         body: payload,

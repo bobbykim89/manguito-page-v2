@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { useRequestURL } from '#app'
-import { UserInput } from '@/server/controller/user/dto'
+import { UserInput } from '#shared/dto/user'
+import { useUserStore } from '@/stores'
 import { MclFormGroup, MclInputText } from '@bobbykim/mcl-forms'
 import { storeToRefs } from 'pinia'
 import { reactive, ref } from 'vue'
-import { useUserStore } from '~/app/stores'
 
 const url = useRequestURL()
 

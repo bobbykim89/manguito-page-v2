@@ -1,10 +1,10 @@
+import { updatePostInputSchema } from '#shared/dto/post'
 import {
   Comment,
   type CommentModel,
   Post,
   type PostModel,
-} from '@/server/models'
-import { deleteCloudinaryImage } from '@/server/utils'
+} from '#shared/models'
 import type { EventHandlerRequest, H3Event } from 'h3'
 import {
   createError,
@@ -16,8 +16,8 @@ import {
   setResponseStatus,
 } from 'h3'
 import { Model } from 'mongoose'
+import { deleteCloudinaryImage } from '../../utils'
 import { UserController } from '../user/user.controller'
-import { updatePostInputSchema } from './dto'
 
 export class PostController {
   private postModel: Model<PostModel>
@@ -45,7 +45,7 @@ export class PostController {
     return allPost
   }
   public getAllTrimmedPost = async (
-    e: H3Event<EventHandlerRequest>
+    e: H3Event<EventHandlerRequest>,
   ): Promise<PostModel[]> => {
     const query = getQuery(e)
     let allPost: PostModel[] = await this.postModel
@@ -65,9 +65,16 @@ export class PostController {
     return allPost
   }
   public getPostById = async (
-    e: H3Event<EventHandlerRequest>
+    e: H3Event<EventHandlerRequest>,
   ): Promise<PostModel> => {
     const postId = getRouterParam(e, 'id')
+    if (!postId) {
+      throw createError({
+        status: 400,
+        message: 'Bad Request',
+        statusMessage: 'Missing required route parameter: id',
+      })
+    }
     const post = await this.postModel
       .findById(postId)
       .populate('author', '-password -admin')
@@ -81,7 +88,7 @@ export class PostController {
     return post
   }
   public createNewPost = async (
-    e: H3Event<EventHandlerRequest>
+    e: H3Event<EventHandlerRequest>,
   ): Promise<PostModel> => {
     const file = e.context.file
     const content = e.context.content
@@ -97,7 +104,7 @@ export class PostController {
     const newPost = new this.postModel({
       imageId: file.imageId,
       content,
-      author: user.id,
+      author: user._id,
     })
     const savePost = await newPost.save()
 
@@ -112,7 +119,7 @@ export class PostController {
     return await savePost.populate('author', '-password -admin')
   }
   public updatePost = async (
-    e: H3Event<EventHandlerRequest>
+    e: H3Event<EventHandlerRequest>,
   ): Promise<PostModel> => {
     const postId = getRouterParam(e, 'id')
     const user = await this.userController.getCurrentUserData(e.context)
@@ -126,7 +133,7 @@ export class PostController {
         statusMessage: 'Post not found',
       })
     }
-    if (post.author.toString() !== user.id) {
+    if (post.author !== user._id) {
       throw createError({
         status: 401,
         message: 'Access denied',
@@ -138,7 +145,7 @@ export class PostController {
       .findByIdAndUpdate(
         postId,
         { content, updatedAt: new Date() },
-        { new: true, returnDocument: 'after' }
+        { new: true, returnDocument: 'after' },
       )
       .populate('author', '-password -admin')
 
@@ -163,7 +170,7 @@ export class PostController {
       })
     }
     // check if user is authorized
-    if (post.author.toString() !== user.id && user.role !== 'ADMIN') {
+    if (post.author !== user._id && user.role !== 'ADMIN') {
       throw createError({
         status: 401,
         message: 'Unauthorized',

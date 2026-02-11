@@ -1,5 +1,5 @@
+import { useAlertStore, useInitStore, useUserStore } from '@/stores'
 import { storeToRefs } from 'pinia'
-import { useAlertStore, useInitStore, useUserStore } from '~/app/stores'
 
 export default defineNuxtRouteMiddleware(async () => {
   const userStore = useUserStore()

@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { PopulatedPostModel } from '@/server/models'
+import type { PostType } from '#shared/types'
+import { ImageUrl } from '@/composables/useImageUrl'
 import { type ColorPalette } from '@bobbykim/manguito-theme'
 import { MclCardC } from '@bobbykim/mcl-cards'
-import { ImageUrl } from '~/app/composables/useImageUrl'
 
 defineProps<{
-  cards: PopulatedPostModel[]
+  cards: PostType[]
 }>()
 
 const resolveImageUrl = (id: string): string => {

@@ -1,5 +1,5 @@
 import { useRuntimeConfig } from '#imports'
-import { User, type UserModel } from '@/server/models'
+import { User, type UserModel } from '#shared/models'
 import { type RuntimeConfig } from '@nuxt/schema'
 import bcrypt from 'bcryptjs'
 import type { EventHandlerRequest, H3Event, H3EventContext } from 'h3'
@@ -32,7 +32,7 @@ export class UserController {
     // validate body
     const { name, email, password } = await readValidatedBody(
       e,
-      userInputSchema.parse
+      userInputSchema.parse,
     )
     let user = await this.userModel.findOne({ email })
     if (user) {
@@ -71,7 +71,7 @@ export class UserController {
     // validate body
     const { currentPassword, newPassword } = await readValidatedBody(
       e,
-      pwUpdateInputSchema.parse
+      pwUpdateInputSchema.parse,
     )
     // check if current password matches
     const isMatch = await bcrypt.compare(currentPassword, user.password)
@@ -84,9 +84,9 @@ export class UserController {
     }
     const hashedNewPw = await this.hashPassword(newPassword)
     const updatedUser = await this.userModel.findByIdAndUpdate(
-      user.id,
+      user._id,
       { password: hashedNewPw },
-      { new: true, returnDocument: 'after' }
+      { new: true, returnDocument: 'after' },
     )
     if (!updatedUser) {
       throw createError({
@@ -105,19 +105,19 @@ export class UserController {
     }
   }
   public updateUsername = async (
-    e: H3Event<EventHandlerRequest>
+    e: H3Event<EventHandlerRequest>,
   ): Promise<UserModel> => {
     const user = await this.getRawCurrentUserData(e.context)
     const { username } = await readValidatedBody(
       e,
-      newUsernameInputSchema.parse
+      newUsernameInputSchema.parse,
     )
     await this.checkUniqueUsername(username)
     const updatedUser = await this.userModel
       .findByIdAndUpdate(
-        user.id,
+        user._id,
         { name: username },
-        { new: true, returnDocument: 'after' }
+        { new: true, returnDocument: 'after' },
       )
       .select('-password')
     if (!updatedUser) {
@@ -130,7 +130,7 @@ export class UserController {
     return updatedUser
   }
   public setAdmin = async (
-    e: H3Event<EventHandlerRequest>
+    e: H3Event<EventHandlerRequest>,
   ): Promise<UserModel> => {
     const user = await this.getRawCurrentUserData(e.context)
     const { phrase } = await readValidatedBody(e, setAdminInputSchema.parse)
@@ -153,9 +153,9 @@ export class UserController {
     }
     const updatedUser = await this.userModel
       .findByIdAndUpdate(
-        user.id,
+        user._id,
         { role: 'ADMIN' },
-        { new: true, returnDocument: 'after' }
+        { new: true, returnDocument: 'after' },
       )
       .select('-password')
     if (!updatedUser) {
@@ -168,7 +168,7 @@ export class UserController {
     return updatedUser
   }
   public getUserList = async (
-    e: H3Event<EventHandlerRequest>
+    e: H3Event<EventHandlerRequest>,
   ): Promise<UserModel[]> => {
     const currentUser = await this.getRawCurrentUserData(e.context)
     if (currentUser.role !== 'ADMIN') {
@@ -191,7 +191,7 @@ export class UserController {
     return allUser
   }
   public setUserRole = async (
-    e: H3Event<EventHandlerRequest>
+    e: H3Event<EventHandlerRequest>,
   ): Promise<UserModel> => {
     const userId = getRouterParam(e, 'id')
     const user = await this.getRawCurrentUserData(e.context)
@@ -207,7 +207,7 @@ export class UserController {
       .findByIdAndUpdate(
         userId,
         { role, updatedAt: new Date() },
-        { new: true, returnDocument: 'after' }
+        { new: true, returnDocument: 'after' },
       )
       .select('-password')
     if (!updatedUser) {
@@ -237,7 +237,7 @@ export class UserController {
     }
   }
   public getRawCurrentUserData = async (
-    ctx: H3EventContext
+    ctx: H3EventContext,
   ): Promise<UserModel> => {
     const user = await this.userModel.findById(ctx.user.id)
     if (!user) {
@@ -250,7 +250,7 @@ export class UserController {
     return user
   }
   public getCurrentUserData = async (
-    ctx: H3EventContext
+    ctx: H3EventContext,
   ): Promise<UserModel> => {
     const user = await this.userModel.findById(ctx.user.id).select('-password')
     if (!user) {

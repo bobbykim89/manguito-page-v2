@@ -1,24 +1,22 @@
 import { Schema, model, type HydratedDocument, type Types } from 'mongoose'
-import { PostModel } from './post.model'
-import { UserModel } from './user.model'
 
 const modelName: string = 'comment'
 
 export interface CommentModel {
   _id: Types.ObjectId
   text: string
-  author: Schema.Types.ObjectId
-  post: Schema.Types.ObjectId
+  author: Types.ObjectId
+  post: Types.ObjectId
   date: Date
 }
 
-export interface PopulatedCommentModel {
-  _id: Types.ObjectId
-  text: string
-  author: UserModel
-  post: PostModel
-  date: Date
-}
+// export interface PopulatedCommentModel {
+//   _id: Types.ObjectId
+//   text: string
+//   author: UserModel
+//   post: PostModel
+//   date: Date
+// }
 
 export type CommentDocument = HydratedDocument<CommentModel>
 

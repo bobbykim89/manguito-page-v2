@@ -1,4 +1,5 @@
-import { type CommentModel, Comment } from '@/server/models'
+import { commentInputSchema } from '#shared/dto/comment'
+import { type CommentModel, Comment } from '#shared/models'
 import type { EventHandlerRequest, H3Event } from 'h3'
 import {
   createError,
@@ -8,9 +9,8 @@ import {
   readValidatedBody,
   setResponseStatus,
 } from 'h3'
-import { Model } from 'mongoose'
+import { Model, Types } from 'mongoose'
 import { UserController } from '../user/user.controller'
-import { commentInputSchema } from './dto'
 
 export class CommentController {
   private commentModel: Model<CommentModel>
@@ -35,13 +35,22 @@ export class CommentController {
     return comments
   }
   public getCommentsByPostId = async (
-    e: H3Event<EventHandlerRequest>
+    e: H3Event<EventHandlerRequest>,
   ): Promise<CommentModel[]> => {
     const postId = getRouterParam(e, 'id')
-    const comments = await this.commentModel.find({ post: postId }).populate([
-      { path: 'author', select: 'id name' },
-      { path: 'post', select: 'id date updatedAt' },
-    ])
+    if (!postId) {
+      throw createError({
+        status: 400,
+        message: 'Bad Request',
+        statusMessage: 'Missing required route parameter: id',
+      })
+    }
+    const comments = await this.commentModel
+      .find({ post: new Types.ObjectId(postId) })
+      .populate([
+        { path: 'author', select: 'id name' },
+        { path: 'post', select: 'id date updatedAt' },
+      ])
     if (!comments) {
       throw createError({
         status: 404,
@@ -52,14 +61,14 @@ export class CommentController {
     return comments
   }
   public createNewComment = async (
-    e: H3Event<EventHandlerRequest>
+    e: H3Event<EventHandlerRequest>,
   ): Promise<CommentModel> => {
     const postId = getRouterParam(e, 'id')
     const user = await this.userController.getCurrentUserData(e.context)
     const { text } = await readValidatedBody(e, commentInputSchema.parse)
     const newComment = new this.commentModel({
       text,
-      author: user.id,
+      author: user._id,
       post: postId,
     })
     const comment = await newComment.save()
@@ -87,7 +96,7 @@ export class CommentController {
       })
     }
     if (
-      comment.author.toString() !== user.id &&
+      comment.author !== user._id &&
       user.role !== 'ADMIN' &&
       user.role !== 'MANAGER'
     ) {

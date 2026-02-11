@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { Collapse, vCollapse } from '@bobbykim/manguito-theme'
+import { Collapse } from '@bobbykim/manguito-theme'
+import { vCollapse } from '@bobbykim/manguito-theme/directives'
 import { MclFormGroup, MclInputText } from '@bobbykim/mcl-forms'
 import { ref } from 'vue'
 

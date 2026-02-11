@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { useRequestURL } from '#app'
 import Hero from '@/components/home/Hero.vue'
+import { usePostStore } from '@/stores'
 import { MclContainerA } from '@bobbykim/mcl-container'
 import { defineAsyncComponent, reactive } from 'vue'
-import { usePostStore } from '~/app/stores'
 
 const url = useRequestURL()
 
@@ -79,7 +79,7 @@ const AsyncParallax = defineAsyncComponent({
             class="absolute w-[280px] md:w-[320px] bg-warning rounded-full aspect-square top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 drop-shadow-lg"
           ></div>
           <div
-            class="aspect-square -translate-y-1/4 justify-self-end drop-shadow-lg overflow-hidden rounded-full border-4"
+            class="aspect-square -translate-y-1/4 justify-self-end drop-shadow-lg overflow-hidden rounded-full border-4 border-light-1"
           >
             <NuxtImg
               :src="containerContent.img1"
@@ -91,7 +91,7 @@ const AsyncParallax = defineAsyncComponent({
             />
           </div>
           <div
-            class="aspect-square translate-y-1/4 justify-self-start overflow-hidden border-4 rounded-full drop-shadow-lg"
+            class="aspect-square translate-y-1/4 justify-self-start overflow-hidden border-4 border-light-1 rounded-full drop-shadow-lg"
           >
             <NuxtImg
               :src="containerContent.img2"
@@ -103,7 +103,7 @@ const AsyncParallax = defineAsyncComponent({
             />
           </div>
           <div
-            class="aspect-square -translate-y-1/4 justify-self-end overflow-hidden border-4 rounded-full drop-shadow-lg"
+            class="aspect-square -translate-y-1/4 justify-self-end overflow-hidden border-4 border-light-1 rounded-full drop-shadow-lg"
           >
             <NuxtImg
               :src="containerContent.img3"
@@ -115,7 +115,7 @@ const AsyncParallax = defineAsyncComponent({
             />
           </div>
           <div
-            class="aspect-square translate-y-1/4 justify-self-start overflow-hidden border-4 rounded-full drop-shadow-lg"
+            class="aspect-square translate-y-1/4 justify-self-start overflow-hidden border-4 border-light-1 rounded-full drop-shadow-lg"
           >
             <NuxtImg
               :src="containerContent.img4"

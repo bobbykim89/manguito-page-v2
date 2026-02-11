@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { useRequestURL } from '#app'
+import { useAlertStore } from '@/stores'
 import { MclFormGroup, MclInputText } from '@bobbykim/mcl-forms'
 import type { H3Error } from 'h3'
-import { useAlertStore } from '~/app/stores'
 
 const url = useRequestURL()
 

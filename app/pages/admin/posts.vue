@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { PopulatedPostModel } from '@/server/models'
+import type { PostType } from '#shared/types'
 
 definePageMeta({
   layout: 'admin',
@@ -13,7 +13,7 @@ useHead({
 
 const cookie = useAuthToken()
 
-const { data: res, refresh } = await useFetch<PopulatedPostModel[]>('/api/post')
+const { data: res, refresh } = await useFetch<PostType[]>('/api/post')
 
 const formattedUrl = (id: string): string => {
   const imageUrl = new ImageUrl(id)
