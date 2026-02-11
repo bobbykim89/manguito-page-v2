@@ -1,5 +1,5 @@
-import { Token, type TokenModel, User, type UserModel } from '@/server/models'
-import { sendEmail } from '@/server/utils'
+import { resetPwInputSchema, tokenEmailInputSchema } from '#shared/dto/token'
+import { Token, type TokenModel, User, type UserModel } from '#shared/models'
 import type { EventHandlerRequest, H3Event } from 'h3'
 import {
   createError,
@@ -7,9 +7,9 @@ import {
   getResponseStatusText,
   readValidatedBody,
 } from 'h3'
-import { Model } from 'mongoose'
+import { Model, Types } from 'mongoose'
+import { sendEmail } from '../../utils'
 import { UserController } from '../user/user.controller'
-import { resetPwInputSchema, tokenEmailInputSchema } from './dto'
 
 export class TokenController {
   private tokenModel: Model<TokenModel>
@@ -23,7 +23,7 @@ export class TokenController {
   public sentToken = async (e: H3Event<EventHandlerRequest>) => {
     const { email, url } = await readValidatedBody(
       e,
-      tokenEmailInputSchema.parse
+      tokenEmailInputSchema.parse,
     )
     const user = await this.userModel.findOne({ email })
     if (!user) {
@@ -34,7 +34,9 @@ export class TokenController {
           'Bad Request: user with following email address is not found',
       })
     }
-    let token = await this.tokenModel.findOne({ userId: user.id })
+    let token = await this.tokenModel.findOne({
+      userId: new Types.ObjectId(user.id),
+    })
     if (!token) {
       const tempPassword = Math.random().toString(36).slice(-8)
       const hashedToken = await this.userController.hashPassword(tempPassword)
@@ -57,7 +59,7 @@ export class TokenController {
   public resetPasswordWithToken = async (e: H3Event<EventHandlerRequest>) => {
     const { password, token, userId } = await readValidatedBody(
       e,
-      resetPwInputSchema.parse
+      resetPwInputSchema.parse,
     )
     const user = await this.userModel.findById(userId)
     if (!user) {

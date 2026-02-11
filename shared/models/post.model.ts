@@ -7,7 +7,7 @@ export interface PostModel {
   _id: Types.ObjectId
   content: string
   imageId: string
-  author: Schema.Types.ObjectId
+  author: Types.ObjectId
   date: Date
   updatedAt: Date
 }

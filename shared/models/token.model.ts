@@ -4,7 +4,7 @@ const modelName: string = 'token'
 
 export interface TokenModel {
   _id: Types.ObjectId
-  userId: Schema.Types.ObjectId
+  userId: Types.ObjectId
   token: string
   createdAt: Date
 }

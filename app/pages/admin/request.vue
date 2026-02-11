@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import { useUserStore } from '@/stores'
 import { MclFormGroup, MclInputText } from '@bobbykim/mcl-forms'
 import { storeToRefs } from 'pinia'
 import { ref } from 'vue'
-import { useUserStore } from '~/app/stores'
 
 definePageMeta({
   middleware: ['auth-route'],

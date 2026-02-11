@@ -1,4 +1,4 @@
-import { commentController } from '@/server/controller'
+import { commentController } from '../../controller'
 
 export default defineEventHandler({
   handler: eventHandler(commentController.getAllComment),

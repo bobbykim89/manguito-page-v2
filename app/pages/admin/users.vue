@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { UserModel, UserRoleType } from '@/server/models'
+import { UserRoleType } from '#shared/models'
+import { UserType } from '#shared/types'
+import { useAlertStore } from '@/stores'
 import { Modal } from '@bobbykim/manguito-theme'
 import { MclInputRadio } from '@bobbykim/mcl-forms'
-import { useAlertStore } from '~/app/stores'
 
 definePageMeta({
   layout: 'admin',
@@ -17,15 +18,15 @@ useHead({
 const cookie = useAuthToken()
 const alertStore = useAlertStore()
 const modalRef = ref<InstanceType<typeof Modal>>()
-const selectedUser = ref<UserModel | null>(null)
+const selectedUser = ref<UserType | null>(null)
 const selectedRole = ref<UserRoleType>('USER')
 const roleOptions: UserRoleType[] = ['MANAGER', 'USER']
 
-const { data: res, refresh } = await useFetch<UserModel[]>('/api/user/admin', {
+const { data: res, refresh } = await useFetch<UserType[]>('/api/user/admin', {
   method: 'GET',
   headers: { Authorization: cookie.value ? cookie.value : '' },
 })
-const openEdit = (user: UserModel) => {
+const openEdit = (user: UserType) => {
   selectedUser.value = user
   selectedRole.value = user.role
   modalRef.value?.open()

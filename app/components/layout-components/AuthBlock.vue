@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { UserModel } from '@/server/models'
+import { UserType } from '#shared/types'
 const props = defineProps<{
   loginUrl: string
   signupUrl: string
   auth: boolean
-  user?: UserModel | null
+  user?: UserType | null
 }>()
 
 const emit = defineEmits<{

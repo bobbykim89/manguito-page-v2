@@ -17,7 +17,7 @@ export const passwordSchema = z
   })
 
 export const userInputSchema = z.object({
-  email: z.string().email({ message: 'Invalid email address' }),
+  email: z.email({ message: 'Invalid email address' }),
   name: z.string(),
   password: passwordSchema,
 })

@@ -14,6 +14,7 @@ export default defineNuxtConfig({
     '@nuxtjs/robots',
   ],
   app: {
+    baseURL: '/',
     pageTransition: { name: 'page', mode: 'out-in' },
     layoutTransition: { name: 'page', mode: 'out-in' },
     head: {

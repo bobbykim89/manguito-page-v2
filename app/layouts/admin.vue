@@ -2,6 +2,7 @@
 import AuthBlock from '@/components/layout-components/AuthBlock.vue'
 import ScrollToTop from '@/components/layout-components/ScrollToTop.vue'
 import UpdateUserInfo from '@/components/layout-components/UpdateUserInfo.vue'
+import { useAlertStore, useUserStore } from '@/stores'
 import { Alert, HeaderHorizontal, Sidebar } from '@bobbykim/manguito-theme'
 import {
   MclFooterA,
@@ -11,7 +12,6 @@ import {
 import { useWindowScroll } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 import { reactive, ref } from 'vue'
-import { useAlertStore, useUserStore } from '~/app/stores'
 
 const router = useRouter()
 const alertStore = useAlertStore()
