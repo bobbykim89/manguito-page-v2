@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { PopulatedCommentModel } from '@/server/models'
+import type { CommentType } from '#shared/types'
 
 const props = defineProps<{
   isManagerOrUp: boolean
   isAuthor: boolean
-  comment: PopulatedCommentModel
+  comment: CommentType
 }>()
 const emit = defineEmits<{
   (e: 'delete-click', id: string): void

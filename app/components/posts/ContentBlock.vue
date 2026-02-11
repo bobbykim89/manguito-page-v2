@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { PopulatedPostModel } from '@/server/models'
+import type { PostType } from '#shared/types'
 import { MclFormGroup, MclTextArea } from '@bobbykim/mcl-forms'
 import { Transition, ref } from 'vue'
 
 const props = defineProps<{
   isAdmin: boolean
   isAuthor: boolean
-  post: PopulatedPostModel
+  post: PostType
 }>()
 const emit = defineEmits<{
   (e: 'on-toggle', event: Event): void
