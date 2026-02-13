@@ -8,7 +8,6 @@ import type {
 import type { UserRoleType } from '#shared/models'
 import type { UserType } from '#shared/types'
 import { useAuthToken } from '@/composables/useAuthToken'
-import { H3Error } from 'h3'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { useAlertStore } from './alertStore'
@@ -18,12 +17,14 @@ interface AuthToken {
 }
 
 export const useUserStore = defineStore('user', () => {
+  const errorCheck = useErrorCheck()
   const alertStore = useAlertStore()
   const cookie = useAuthToken()
   // USERS: states
   const currentUser = ref<UserType | null>(null)
   const isAuthenticated = ref<boolean>(false)
   const role = ref<UserRoleType | null>(null)
+
   // USERS: getters
   const getCurrentAuthInfo = computed(() => {
     return {
@@ -32,10 +33,13 @@ export const useUserStore = defineStore('user', () => {
       role: role.value,
     }
   })
+
   // USERS: actions
   const authUser = async () => {
-    if (!cookie.value) return
     try {
+      if (!cookie.value)
+        throw new Error('No user authentication found, please login')
+
       const res = await $fetch<UserType>('/api/auth', {
         method: 'GET',
         headers: { Authorization: cookie.value },
@@ -44,15 +48,14 @@ export const useUserStore = defineStore('user', () => {
       isAuthenticated.value = true
       role.value = res.role
     } catch (error) {
-      alertStore.setAlert((error as H3Error).statusMessage!)
-      currentUser.value = null
-      isAuthenticated.value = false
-      role.value = null
+      handleAuthError(error)
     }
   }
   const getCurrentUser = async () => {
-    if (!cookie.value) return
     try {
+      if (!cookie.value)
+        throw new Error('No user authentication found, please login')
+
       const res = await $fetch<UserType>('/api/auth', {
         method: 'GET',
         headers: { Authorization: cookie.value },
@@ -62,10 +65,7 @@ export const useUserStore = defineStore('user', () => {
       role.value = res.role
       alertStore.setAlert('Successfully authenticated user', 'success')
     } catch (error) {
-      alertStore.setAlert((error as H3Error).statusMessage!)
-      currentUser.value = null
-      isAuthenticated.value = false
-      role.value = null
+      handleAuthError(error)
       cookie.value = null
     }
   }
@@ -79,10 +79,7 @@ export const useUserStore = defineStore('user', () => {
       await authUser()
       alertStore.setAlert('Login Successful!', 'success')
     } catch (error) {
-      alertStore.setAlert((error as H3Error).statusMessage!)
-      currentUser.value = null
-      isAuthenticated.value = false
-      role.value = null
+      handleAuthError(error)
     }
   }
   const signupUser = async (payload: UserInput) => {
@@ -95,15 +92,14 @@ export const useUserStore = defineStore('user', () => {
       await authUser()
       alertStore.setAlert('Signup successful!', 'success')
     } catch (error) {
-      alertStore.setAlert((error as H3Error).statusMessage!)
-      currentUser.value = null
-      isAuthenticated.value = false
-      role.value = null
+      handleAuthError(error)
     }
   }
   const updateUsername = async (payload: NewUsernameInput) => {
-    if (!cookie.value) return
     try {
+      if (!cookie.value)
+        throw new Error('No user authentication found, please login')
+
       await $fetch<UserType>('/api/user/user-info/username', {
         method: 'PUT',
         headers: { Authorization: cookie.value },
@@ -112,12 +108,14 @@ export const useUserStore = defineStore('user', () => {
       await authUser()
       alertStore.setAlert('Successfully updated username', 'success')
     } catch (error) {
-      alertStore.setAlert((error as H3Error).statusMessage!)
+      handleAuthError(error)
     }
   }
   const updatePassword = async (payload: PwUpdateInput) => {
-    if (!cookie.value) return
     try {
+      if (!cookie.value)
+        throw new Error('No user authentication found, please login')
+
       await $fetch('/api/user/user-info/password', {
         method: 'PUT',
         headers: { Authorization: cookie.value },
@@ -126,7 +124,7 @@ export const useUserStore = defineStore('user', () => {
       await authUser()
       alertStore.setAlert('Successfully updated user password', 'success')
     } catch (error) {
-      alertStore.setAlert((error as H3Error).statusMessage!)
+      handleAuthError(error)
     }
   }
   const logoutUser = () => {
@@ -137,8 +135,10 @@ export const useUserStore = defineStore('user', () => {
     alertStore.setAlert('Logout successful!', 'success')
   }
   const setAdmin = async (payload: SetAdminInput) => {
-    if (!cookie.value) return
     try {
+      if (!cookie.value)
+        throw new Error('No user authentication found, please login')
+
       await $fetch<UserType>('/api/user/admin', {
         method: 'PUT',
         headers: { Authorization: cookie.value },
@@ -147,8 +147,19 @@ export const useUserStore = defineStore('user', () => {
       await authUser()
       alertStore.setAlert('Successfully set user as an admin!', 'success')
     } catch (error) {
-      alertStore.setAlert((error as H3Error).statusMessage!)
+      handleAuthError(error)
     }
+  }
+  const handleAuthError = (err: unknown) => {
+    const errorMessage: string = errorCheck.extractMessage(err)
+    const checkAuthError: boolean = errorCheck.isAuthError(err)
+    if (checkAuthError) {
+      currentUser.value = null
+      isAuthenticated.value = false
+      role.value = null
+    }
+    console.error(errorMessage)
+    alertStore.setAlert(errorMessage)
   }
   return {
     currentUser,

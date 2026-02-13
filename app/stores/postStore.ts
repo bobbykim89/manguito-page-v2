@@ -2,13 +2,13 @@ import { navigateTo } from '#app'
 import { type UpdatePostInput } from '#shared/dto/post'
 import { PostType } from '#shared/types'
 import { useAuthToken } from '@/composables/useAuthToken'
-import { H3Error } from 'h3'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { useAlertStore } from './alertStore'
 import { useUserStore } from './userStore'
 
 export const usePostStore = defineStore('post', () => {
+  const errorCheck = useErrorCheck()
   const alertStore = useAlertStore()
   const userStore = useUserStore()
   const cookie = useAuthToken()
@@ -31,16 +31,17 @@ export const usePostStore = defineStore('post', () => {
     }, 500)
   }
   const getAllPosts = async () => {
-    const { data: res } = await useFetch<PostType[]>('/api/post', {
-      method: 'GET',
-    })
-    if (!res.value) {
-      alertStore.setAlert(
-        'Failed to get response from server, please try again',
-      )
-      return
+    try {
+      const { data: res } = await useFetch<PostType[]>('/api/post', {
+        method: 'GET',
+      })
+      if (!res.value)
+        throw new Error('Failed to get response from server, please try again')
+
+      posts.value = res.value
+    } catch (error) {
+      handlePostError(error)
     }
-    posts.value = res.value
   }
   const setCurrentPost = (postId: string) => {
     setPostLoadnigTimeout()
@@ -104,16 +105,14 @@ export const usePostStore = defineStore('post', () => {
     postLoading.value = false
   }
   const createNewPost = async (payload: FormData) => {
-    const { isAuthenticated, role } = userStore.getCurrentAuthInfo
-    if (!cookie.value || !isAuthenticated) {
-      alertStore.setAlert('No user authentication found, please login')
-      return
-    }
-    if (role !== 'ADMIN' && role !== 'MANAGER') {
-      alertStore.setAlert('Unauthorized action for current user')
-      return
-    }
     try {
+      const { isAuthenticated, role } = userStore.getCurrentAuthInfo
+      if (!cookie.value || !isAuthenticated)
+        throw new Error('No user authentication found, please login')
+
+      if (role !== 'ADMIN' && role !== 'MANAGER')
+        throw new Error('Unauthorized action for current user')
+
       const res = await $fetch<PostType>('/api/post', {
         method: 'POST',
         headers: { Authorization: cookie.value },
@@ -122,23 +121,21 @@ export const usePostStore = defineStore('post', () => {
       posts.value = [res, ...posts.value]
       alertStore.setAlert('Successfully created a new post', 'success')
     } catch (error) {
-      alertStore.setAlert((error as H3Error).statusMessage!)
+      handlePostError(error)
     }
   }
   const updatePost = async (postId: string, payload: UpdatePostInput) => {
-    const { isAuthenticated, currentUser } = userStore.getCurrentAuthInfo
-    if (!cookie.value || !isAuthenticated) {
-      alertStore.setAlert('No user authentication found, please login')
-      return
-    }
-    const currentPost = posts.value.find(
-      (item) => item._id.toString() === postId,
-    )
-    if (currentPost?.author._id !== currentUser?._id) {
-      alertStore.setAlert('Unauthorized user')
-      return
-    }
     try {
+      const { isAuthenticated, currentUser } = userStore.getCurrentAuthInfo
+      if (!cookie.value || !isAuthenticated)
+        throw new Error('No user authentication found, please login')
+
+      const currentPost = posts.value.find(
+        (item) => item._id.toString() === postId,
+      )
+      if (currentPost?.author._id !== currentUser?._id)
+        throw new Error('Unauthorized user')
+
       const res = await $fetch<PostType>(`/api/post/${postId}`, {
         method: 'PUT',
         headers: { Authorization: cookie.value },
@@ -149,23 +146,22 @@ export const usePostStore = defineStore('post', () => {
       )
       alertStore.setAlert('Successfully updated post!', 'success')
     } catch (error) {
-      alertStore.setAlert((error as H3Error).statusMessage!)
+      handlePostError(error)
     }
   }
   const deletePostById = async (postId: string) => {
-    const { isAuthenticated, currentUser, role } = userStore.getCurrentAuthInfo
-    if (!cookie.value || !isAuthenticated) {
-      alertStore.setAlert('No user authentication found, please login')
-      return
-    }
-    const currentPost = posts.value.find(
-      (item) => item._id.toString() === postId,
-    )
-    if (currentPost?.author._id !== currentUser?._id && role !== 'ADMIN') {
-      alertStore.setAlert('Unauthorized user')
-      return
-    }
     try {
+      const { isAuthenticated, currentUser, role } =
+        userStore.getCurrentAuthInfo
+      if (!cookie.value || !isAuthenticated)
+        throw new Error('No user authentication found, please login')
+
+      const currentPost = posts.value.find(
+        (item) => item._id.toString() === postId,
+      )
+      if (currentPost?.author._id !== currentUser?._id && role !== 'ADMIN')
+        throw new Error('Unauthorized user')
+
       await $fetch(`/api/post/${postId}`, {
         method: 'DELETE',
         headers: { Authorization: cookie.value },
@@ -173,8 +169,14 @@ export const usePostStore = defineStore('post', () => {
       posts.value = posts.value.filter((post) => post._id.toString() !== postId)
       alertStore.setAlert('Successfully deleted post!', 'success')
     } catch (error) {
-      alertStore.setAlert((error as H3Error).statusMessage!)
+      handlePostError(error)
     }
+  }
+  const handlePostError = (err: unknown) => {
+    const errorMessage: string = errorCheck.extractMessage(err)
+
+    console.error(errorMessage)
+    alertStore.setAlert(errorMessage)
   }
   return {
     posts,
