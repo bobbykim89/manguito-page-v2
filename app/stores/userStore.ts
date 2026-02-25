@@ -53,8 +53,7 @@ export const useUserStore = defineStore('user', () => {
   }
   const getCurrentUser = async () => {
     try {
-      if (!cookie.value)
-        throw new Error('No user authentication found, please login')
+      if (!cookie.value) return
 
       const res = await $fetch<UserType>('/api/auth', {
         method: 'GET',
