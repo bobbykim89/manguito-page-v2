@@ -1,5 +1,5 @@
 import { H3Event } from 'h3'
-import { postController } from '@/server/controller'
+import { postController } from '../../controller'
 
 export default defineEventHandler({
   onRequest: [
