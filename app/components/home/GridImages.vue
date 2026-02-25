@@ -42,7 +42,7 @@ const resolveCardColor = (idx: number): ColorPalette => {
         <span class="h3-lg mr-xs">Flip me over!!</span>
         <NuxtImg
           src="/img/home/arrow.webp"
-          class="inline-block w-20 rotate-180 md:rotate-[55deg] mr-lg md:mr-sm mt-xs"
+          class="inline-block w-20 rotate-180 md:rotate-55 mr-lg md:mr-sm mt-xs"
           alt="arrow image"
         />
       </div>
