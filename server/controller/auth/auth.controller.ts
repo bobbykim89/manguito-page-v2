@@ -1,4 +1,5 @@
-import { User, type UserModel } from '@/server/models'
+import { authInputSchema } from '#shared/dto/auth'
+import { User, type UserModel } from '#shared/models'
 import bcrypt from 'bcryptjs'
 import type { EventHandlerRequest, H3Event } from 'h3'
 import {
@@ -10,7 +11,6 @@ import {
 } from 'h3'
 import { Model } from 'mongoose'
 import { UserController } from '../user/user.controller'
-import { authInputSchema } from './dto'
 
 export class AuthController {
   private userModel: Model<UserModel>
@@ -21,7 +21,7 @@ export class AuthController {
     this.userController = new UserController()
   }
   public getCurrentUser = async (
-    e: H3Event<EventHandlerRequest>
+    e: H3Event<EventHandlerRequest>,
   ): Promise<UserModel> => {
     const user = await this.userModel
       .findById(e.context.user.id)
@@ -39,7 +39,7 @@ export class AuthController {
     // validate body
     const { email, password } = await readValidatedBody(
       e,
-      authInputSchema.parse
+      authInputSchema.parse,
     )
     let user = await this.userModel.findOne({ email })
     if (!user) {
