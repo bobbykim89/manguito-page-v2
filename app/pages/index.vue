@@ -76,7 +76,7 @@ const AsyncParallax = defineAsyncComponent({
       <template #left-column>
         <div class="grid grid-cols-2 gap-y-4 py-lg relative">
           <div
-            class="absolute w-[280px] md:w-[320px] bg-warning rounded-full aspect-square top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 drop-shadow-lg"
+            class="absolute w-70 md:w-80 bg-warning rounded-full aspect-square top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 drop-shadow-lg"
           ></div>
           <div
             class="aspect-square -translate-y-1/4 justify-self-end drop-shadow-lg overflow-hidden rounded-full border-4 border-light-1"
@@ -84,7 +84,7 @@ const AsyncParallax = defineAsyncComponent({
             <NuxtImg
               :src="containerContent.img1"
               alt="picture of manguito looking cheeky"
-              class="relative h-[196px] object-center object-cover aspect-square hover:grayscale transition-[filter] duration-300 ease-linear"
+              class="relative h-49 object-center object-cover aspect-square hover:grayscale transition-[filter] duration-300 ease-linear"
               height="196"
               width="196"
               loading="lazy"
@@ -96,7 +96,7 @@ const AsyncParallax = defineAsyncComponent({
             <NuxtImg
               :src="containerContent.img2"
               alt="a picture of manguito perching on the branch"
-              class="relative h-[196px] object-center object-cover aspect-square hover:grayscale transition-[filter] duration-300 ease-linear"
+              class="relative h-49 object-center object-cover aspect-square hover:grayscale transition-[filter] duration-300 ease-linear"
               height="196"
               width="196"
               loading="lazy"
@@ -108,7 +108,7 @@ const AsyncParallax = defineAsyncComponent({
             <NuxtImg
               :src="containerContent.img3"
               alt="a picture of manguito hiding in flowers"
-              class="relative h-[196px] object-center object-cover aspect-square hover:grayscale transition-[filter] duration-300 ease-linear"
+              class="relative h-49 object-center object-cover aspect-square hover:grayscale transition-[filter] duration-300 ease-linear"
               height="196"
               width="196"
               loading="lazy"
@@ -120,7 +120,7 @@ const AsyncParallax = defineAsyncComponent({
             <NuxtImg
               :src="containerContent.img4"
               alt="a picture of manguito perching on the fridge magnet"
-              class="relative h-[196px] object-center object-cover aspect-square hover:grayscale transition-[filter] duration-300 ease-linear"
+              class="relative h-49 object-center object-cover aspect-square hover:grayscale transition-[filter] duration-300 ease-linear"
               height="196"
               width="196"
               loading="lazy"
