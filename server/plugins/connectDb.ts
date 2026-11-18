@@ -10,9 +10,7 @@ class DatabaseConfig {
   }
 
   private setMongoUrl = (): string => {
-    return this.config.workBranch === 'LOCAL'
-      ? `mongodb://${this.config.mongoId}:${this.config.mongoPw}@localhost:8080`
-      : `mongodb+srv://${this.config.mongoId}:${this.config.mongoPw}@${this.config.mongoClusterName}.${this.config.mongoUrl}.mongodb.net/${this.config.mongoDBName}?retryWrites=true&w=majority`
+    return resolveMongoUrl(this.config)
   }
   private disconnectDb = async (): Promise<void> => {
     console.log('disconnecting from db..')
