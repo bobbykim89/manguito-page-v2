@@ -19,7 +19,7 @@ const onDelete = () => {
 
 <template>
   <div
-    class="bg-light-4 px-xs py-sm rounded-md overflow-x-hidden drop-shadow-md"
+    class="overflow-x-hidden rounded-md bg-light-4 px-xs py-sm drop-shadow-md"
   >
     <p>{{ comment.text }}</p>
     <div class="text-end text-sm text-dark-1">
@@ -29,11 +29,11 @@ const onDelete = () => {
       </ClientOnly>
       <div
         v-if="isManagerOrUp || isAuthor"
-        class="flex justify-end gap-2 mt-3xs"
+        class="mt-3xs flex justify-end gap-2"
       >
         <!-- delete -->
         <button
-          class="hover:opacity-65 duration-300 ease-linear"
+          class="duration-300 ease-linear hover:opacity-65"
           aria-label="delete post"
           @click="onDelete"
         >
@@ -41,7 +41,7 @@ const onDelete = () => {
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 448 512"
             fill="currentColor"
-            class="w-[20px] aspect-square"
+            class="aspect-square w-[20px]"
           >
             <!-- !Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
             <path

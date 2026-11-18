@@ -102,14 +102,14 @@ const onSubmit = async (): Promise<void> => {
 </script>
 
 <template>
-  <div class="container font-inter">
-    <div class="max-w-screen-lg mx-auto pt-md pb-lg">
-      <div class="flex flex-col justify-center items-center mb-md">
-        <h2 class="h2-md font-light text-center">Enjoy the gallery!</h2>
+  <div class="font-inter container">
+    <div class="mx-auto max-w-screen-lg pt-md pb-lg">
+      <div class="mb-md flex flex-col items-center justify-center">
+        <h2 class="h2-md text-center font-light">Enjoy the gallery!</h2>
         <!-- toggle modal -->
         <button
           v-if="isAuthorizedUser"
-          class="bg-primary p-2xs rounded-full text-light-1 mt-sm hover:bg-opacity-70 transition-colors duration-300 ease-linear"
+          class="mt-sm rounded-full bg-primary p-2xs text-light-1 transition-colors duration-300 ease-linear hover:bg-opacity-70"
           v-toggle:new-post-modal
           aria-label="new post"
         >
@@ -117,7 +117,7 @@ const onSubmit = async (): Promise<void> => {
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 448 512"
             fill="currentColor"
-            class="w-sm aspect-square"
+            class="aspect-square w-sm"
           >
             <!-- !Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
             <path
@@ -126,25 +126,25 @@ const onSubmit = async (): Promise<void> => {
           </svg>
         </button>
       </div>
-      <div class="grid grid-cols-3 gap-1 lg:gap-2 px-3xs md:px-xs lg:px-md">
+      <div class="grid grid-cols-3 gap-1 px-3xs md:px-xs lg:gap-2 lg:px-md">
         <!-- cards -->
         <div v-for="(post, idx) in displayedPost" :key="idx">
           <NuxtLink
             :to="resolveLinkPath(post._id.toString())"
-            class="relative aspect-square w-full h-auto overflow-hidden after:absolute after:inset-0 after:bg-primary after:opacity-0 hover:after:opacity-30 after:transition-opacity after:duration-300 after:ease-linear"
+            class="relative aspect-square h-auto w-full overflow-hidden after:absolute after:inset-0 after:bg-primary after:opacity-0 after:transition-opacity after:duration-300 after:ease-linear hover:after:opacity-30"
           >
             <NuxtImg
               provider="cloudinary"
               :src="formatPostUrl(post.imageId)"
               alt="image card"
-              class="relative aspect-square w-full object-center object-cover z-0"
+              class="relative z-0 aspect-square w-full object-cover object-center"
               loading="lazy"
             />
           </NuxtLink>
         </div>
         <div v-if="showLoadMore" class="col-span-3">
           <button
-            class="px-xs py-2xs w-full bg-primary hover:bg-opacity-60 text-light-1 font-semibold transition-colors duration-300 ease-linear"
+            class="w-full bg-primary px-xs py-2xs font-semibold text-light-1 transition-colors duration-300 ease-linear hover:bg-opacity-60"
             @click="onLoadMore"
           >
             Load More
@@ -184,17 +184,17 @@ const onSubmit = async (): Promise<void> => {
                 display-border
               />
             </MclFormGroup>
-            <div class="flex justify-end items-center gap-2 mt-xs">
+            <div class="mt-xs flex items-center justify-end gap-2">
               <button
                 type="submit"
                 role="button"
-                class="btn btn-primary text-light-1"
+                class="btn text-light-1 btn-primary"
               >
                 Save
               </button>
               <button
                 type="reset"
-                class="btn btn-warning text-light-1"
+                class="btn text-light-1 btn-warning"
                 @click="close"
               >
                 Cancel

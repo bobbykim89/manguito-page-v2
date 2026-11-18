@@ -36,7 +36,7 @@ const onDelete = (e: Event) => {
 
 <template>
   <div
-    class="bg-light-4 px-xs py-sm rounded-md overflow-x-hidden drop-shadow-md"
+    class="overflow-x-hidden rounded-md bg-light-4 px-xs py-sm drop-shadow-md"
   >
     <Transition name="page" mode="out-in">
       <div v-if="!isEditMode">
@@ -48,11 +48,11 @@ const onDelete = (e: Event) => {
           <ClientOnly>
             <p>{{ new Date(post.date).toDateString() }}</p>
           </ClientOnly>
-          <div v-if="isAdmin || isAuthor" class="flex justify-end gap-2 mt-3xs">
+          <div v-if="isAdmin || isAuthor" class="mt-3xs flex justify-end gap-2">
             <!-- edit -->
             <button
               v-if="isAuthor"
-              class="hover:opacity-65 duration-300 ease-linear"
+              class="duration-300 ease-linear hover:opacity-65"
               aria-label="edit-post"
               @click="onToggle"
             >
@@ -60,7 +60,7 @@ const onDelete = (e: Event) => {
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 512 512"
                 fill="currentColor"
-                class="w-[20px] aspect-square"
+                class="aspect-square w-[20px]"
               >
                 <!-- !Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                 <path
@@ -70,7 +70,7 @@ const onDelete = (e: Event) => {
             </button>
             <!-- delete -->
             <button
-              class="hover:opacity-65 duration-300 ease-linear"
+              class="duration-300 ease-linear hover:opacity-65"
               aria-label="delete post"
               @click="onDelete"
             >
@@ -78,7 +78,7 @@ const onDelete = (e: Event) => {
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 448 512"
                 fill="currentColor"
-                class="w-[20px] aspect-square"
+                class="aspect-square w-[20px]"
               >
                 <!-- !Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                 <path
@@ -100,10 +100,10 @@ const onDelete = (e: Event) => {
               v-model="contentTextRef"
             />
           </MclFormGroup>
-          <div class="flex justify-end gap-2 mt-3xs text-dark-1">
+          <div class="mt-3xs flex justify-end gap-2 text-dark-1">
             <!-- cancel -->
             <button
-              class="hover:opacity-65 duration-300 ease-linear"
+              class="duration-300 ease-linear hover:opacity-65"
               type="reset"
               aria-label="cancel edit"
               @click="onToggle"
@@ -112,7 +112,7 @@ const onDelete = (e: Event) => {
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 512 512"
                 fill="currentColor"
-                class="w-[20px] aspect-square"
+                class="aspect-square w-[20px]"
               >
                 <!-- !Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                 <path
@@ -122,7 +122,7 @@ const onDelete = (e: Event) => {
             </button>
             <!-- save -->
             <button
-              class="hover:opacity-65 duration-300 ease-linear"
+              class="duration-300 ease-linear hover:opacity-65"
               type="submit"
               role="button"
               aria-label="save changes"
@@ -131,7 +131,7 @@ const onDelete = (e: Event) => {
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 448 512"
                 fill="currentColor"
-                class="w-[20px] aspect-square"
+                class="aspect-square w-[20px]"
               >
                 <!-- !Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                 <path

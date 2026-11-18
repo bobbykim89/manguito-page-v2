@@ -5,7 +5,7 @@ import nodemailer from 'nodemailer'
 export const sendEmail = async (
   email: string,
   subject: string,
-  text: string
+  text: string,
 ) => {
   const config = useRuntimeConfig()
   try {

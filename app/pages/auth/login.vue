@@ -44,11 +44,11 @@ const onSubmit = async () => {
 </script>
 
 <template>
-  <div class="container py-xl lg:py-2xl px-xs">
+  <div class="container px-xs py-xl lg:py-2xl">
     <div
-      class="rounded-lg bg-light-3 py-md px-xs md:px-sm max-w-md mx-auto drop-shadow-md"
+      class="mx-auto max-w-md rounded-lg bg-light-3 px-xs py-md drop-shadow-md md:px-sm"
     >
-      <h2 class="h2-md text-center mb-sm">Login</h2>
+      <h2 class="h2-md mb-sm text-center">Login</h2>
       <form @submit.prevent="onSubmit">
         <MclFormGroup label-for="login-email" label="Email:" class="mb-xs">
           <MclInputText
@@ -68,23 +68,23 @@ const onSubmit = async () => {
             v-model="loginCred.password"
           />
         </MclFormGroup>
-        <button role="submit" class="btn btn-primary btn-full text-light-3">
+        <button role="submit" class="btn btn-full text-light-3 btn-primary">
           Submit
         </button>
       </form>
-      <div class="mt-sm text-dark-3 text-center">
+      <div class="mt-sm text-center text-dark-3">
         <span>Don't have accout? Click</span>
         <NuxtLink
           to="/auth/signup"
-          class="mx-3xs font-bold mcl-link text-primary"
+          class="mcl-link mx-3xs font-bold text-primary"
           >SignUp</NuxtLink
         >
       </div>
-      <div class="mt-2xs text-dark-3 text-center">
+      <div class="mt-2xs text-center text-dark-3">
         <span>Forgot Password? Click</span>
         <NuxtLink
           to="/auth/request"
-          class="mx-3xs font-bold mcl-link text-primary"
+          class="mcl-link mx-3xs font-bold text-primary"
           >Here</NuxtLink
         >
       </div>

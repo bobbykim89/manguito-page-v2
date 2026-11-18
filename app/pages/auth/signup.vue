@@ -49,11 +49,11 @@ const onSubmit = async () => {
 </script>
 
 <template>
-  <div class="container py-xl lg:py-2xl px-xs">
+  <div class="container px-xs py-xl lg:py-2xl">
     <div
-      class="rounded-lg bg-light-3 py-md px-xs md:px-sm max-w-md mx-auto drop-shadow-md"
+      class="mx-auto max-w-md rounded-lg bg-light-3 px-xs py-md drop-shadow-md md:px-sm"
     >
-      <h2 class="h2-md text-center mb-sm">Signup</h2>
+      <h2 class="h2-md mb-sm text-center">Signup</h2>
       <form @submit.prevent="onSubmit">
         <MclFormGroup label-for="signup-name" label="Name:" class="mb-xs">
           <MclInputText
@@ -96,7 +96,7 @@ const onSubmit = async () => {
             v-model="confirmPassword"
           />
         </MclFormGroup>
-        <button role="submit" class="btn btn-primary btn-full text-light-3">
+        <button role="submit" class="btn btn-full text-light-3 btn-primary">
           Submit
         </button>
       </form>

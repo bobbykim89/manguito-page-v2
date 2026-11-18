@@ -45,19 +45,19 @@ This is the foundation for the rest of the backlog (#22, #12, #13, #15, #16, …
 
 ## Approaches considered
 
-| | Approach | Trade-off |
-|---|---|---|
+|                | Approach                                                                                                                  | Trade-off                                                                                                                           |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
 | **A (picked)** | Full mango-planner-v2 test harness now: `api` project (build + in-memory MongoDB) and `unit` project, with starter tests. | Bigger #11, CI a few minutes slower per run. The next two issues (#22, #15) need API tests, so the harness exists before they land. |
-| B | Unit project + one smoke test now; build the API harness inside #22. | Smaller #11, but #22 grows and becomes a harness project as well as a bug fix. |
+| B              | Unit project + one smoke test now; build the API harness inside #22.                                                      | Smaller #11, but #22 grows and becomes a harness project as well as a bug fix.                                                      |
 
 Picked A for the reason above.
 
 How Vercel picks pnpm 12:
 
-| | Approach | Trade-off |
-|---|---|---|
-| **A (picked)** | `ENABLE_EXPERIMENTAL_COREPACK=1` in Vercel project settings. | One-time dashboard step; the pnpm version lives only in `package.json`. |
-| B | `vercel.json` with `installCommand: "npx pnpm@12.x install --frozen-lockfile"`. | In the repo and reviewable, but the pnpm version is pinned in two places. |
+|                | Approach                                                                        | Trade-off                                                                 |
+| -------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| **A (picked)** | `ENABLE_EXPERIMENTAL_COREPACK=1` in Vercel project settings.                    | One-time dashboard step; the pnpm version lives only in `package.json`.   |
+| B              | `vercel.json` with `installCommand: "npx pnpm@12.x install --frozen-lockfile"`. | In the repo and reviewable, but the pnpm version is pinned in two places. |
 
 Lint scope was settled from data: mango-planner-v2's ESLint config reports 13 problems in 9 files (7 `no-unused-vars`, 2 `no-non-null-asserted-optional-chain`, 1 each of `no-unused-expressions`, `no-explicit-any`, `prefer-const`, `no-empty-object-type`). `nuxt typecheck` already passes. So all violations get fixed and nothing is relaxed.
 
@@ -67,16 +67,16 @@ Lint scope was settled from data: mango-planner-v2's ESLint config reports 13 pr
 
 Copy from `/mnt/projects/mango-planner-v2` and adapt; don't invent:
 
-| This repo | Source in mango-planner-v2 |
-|---|---|
-| `CLAUDE.md` | `CLAUDE.md` (structure and tone; content rewritten for this app) |
-| `.claude/settings.json` | `.claude/settings.json` (verbatim) |
-| `eslint.config.mjs` | `eslint.config.mjs` (verbatim; drop ignores for dirs that don't exist only if ESLint complains) |
-| `.prettierrc`, `.prettierignore` | same files; `tailwindStylesheet` pointed at this repo's main CSS file |
-| `vitest.config.ts` | `vitest.config.ts` |
-| `test/setup/global.ts`, `test/utils/api.ts`, `test/utils/db.ts`, `test/unit/helpers.ts` | same paths, trimmed to what this app needs |
-| `.github/workflows/ci.yml` | `.github/workflows/ci.yml` (verbatim, including its comments) |
-| `.git-blame-ignore-revs` | same file format |
+| This repo                                                                               | Source in mango-planner-v2                                                                      |
+| --------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `CLAUDE.md`                                                                             | `CLAUDE.md` (structure and tone; content rewritten for this app)                                |
+| `.claude/settings.json`                                                                 | `.claude/settings.json` (verbatim)                                                              |
+| `eslint.config.mjs`                                                                     | `eslint.config.mjs` (verbatim; drop ignores for dirs that don't exist only if ESLint complains) |
+| `.prettierrc`, `.prettierignore`                                                        | same files; `tailwindStylesheet` pointed at this repo's main CSS file                           |
+| `vitest.config.ts`                                                                      | `vitest.config.ts`                                                                              |
+| `test/setup/global.ts`, `test/utils/api.ts`, `test/utils/db.ts`, `test/unit/helpers.ts` | same paths, trimmed to what this app needs                                                      |
+| `.github/workflows/ci.yml`                                                              | `.github/workflows/ci.yml` (verbatim, including its comments)                                   |
+| `.git-blame-ignore-revs`                                                                | same file format                                                                                |
 
 ### Database connection override (production code change)
 

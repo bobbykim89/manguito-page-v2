@@ -12,7 +12,7 @@ cloudinary.config({
 
 export const uploadCloudinary = async (
   e: H3Event,
-  key: string = 'image'
+  key: string = 'image',
 ): Promise<void> => {
   const body = await readMultipartFormData(e)
   if (!body) {
@@ -56,7 +56,7 @@ export const uploadCloudinary = async (
           statusMessage: err.message,
         })
       }
-    }
+    },
   )
 
   e.context.file = { imageId: public_id }

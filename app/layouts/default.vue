@@ -112,12 +112,12 @@ const getLayoutBgColor = computed(() => {
     >
       <template #content>
         <div class="flex flex-shrink-0 items-center self-center md:py-3xs">
-          <div class="h-md md:h-xl mr-2xs md:mr-xs align-middle">
+          <div class="mr-2xs h-md align-middle md:mr-xs md:h-xl">
             <NuxtLink :to="menuItemData.logoLink">
               <NuxtImg
                 :src="menuItemData.logoMobile"
                 :alt="menuItemData.logoAlt"
-                class="md:hidden h-full w-full inline-block"
+                class="inline-block h-full w-full md:hidden"
                 width="32"
                 height="32"
               />
@@ -130,21 +130,21 @@ const getLayoutBgColor = computed(() => {
               />
             </NuxtLink>
           </div>
-          <div class="flex flex-col justify-center ml-2">
+          <div class="ml-2 flex flex-col justify-center">
             <NuxtLink :to="menuItemData.logoLink">
               <h2
-                class="inline-block align-middle tracking-wider h2-md"
+                class="h2-md inline-block align-middle tracking-wider"
                 v-html="menuItemData.title"
               ></h2>
             </NuxtLink>
             <div
-              class="hidden lg:flex items-center gap-4 tracking-wider font-semibold text-lg"
+              class="hidden items-center gap-4 text-lg font-semibold tracking-wider lg:flex"
             >
               <NuxtLink
                 v-for="(link, idx) in menuItemData.menu"
                 :key="idx"
                 :to="link.url"
-                class="relative before:absolute before:h-3xs before:w-0 before:bottom-0 before:bg-primary hover:before:w-full before:transition-[width] before:duration-300 before:ease-linear"
+                class="relative before:absolute before:bottom-0 before:h-3xs before:w-0 before:bg-primary before:transition-[width] before:duration-300 before:ease-linear hover:before:w-full"
                 ><span class="relative">{{ link.title }}</span></NuxtLink
               >
             </div>
@@ -165,14 +165,14 @@ const getLayoutBgColor = computed(() => {
       </template>
       <template #mobile-content="{ headerClose }">
         <div
-          class="flex justify-center items-center gap-4 tracking-wider font-semibold text-lg py-xs"
+          class="flex items-center justify-center gap-4 py-xs text-lg font-semibold tracking-wider"
         >
           <NuxtLink
             v-for="(link, idx) in menuItemData.menu"
             :key="idx"
             :to="link.url"
             @click="headerClose"
-            class="relative before:absolute before:h-3xs before:w-0 before:bottom-0 before:bg-primary hover:before:w-full before:transition-[width] before:duration-300 before:ease-linear"
+            class="relative before:absolute before:bottom-0 before:h-3xs before:w-0 before:bg-primary before:transition-[width] before:duration-300 before:ease-linear hover:before:w-full"
             ><span class="relative">{{ link.title }}</span></NuxtLink
           >
         </div>
@@ -192,14 +192,14 @@ const getLayoutBgColor = computed(() => {
         :show="alertMessage !== null"
         :color="alertColor"
         dismissible
-        class="my-xs mx-xs"
+        class="mx-xs my-xs"
       >
         <div class="flex justify-center text-light-1">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 512 512"
             fill="currentColor"
-            class="w-xs mr-2xs"
+            class="mr-2xs w-xs"
           >
             <!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. -->
             <path
@@ -249,18 +249,18 @@ const getLayoutBgColor = computed(() => {
           />
           <div
             v-if="role === 'ADMIN'"
-            class="px-2xs py-xs rounded-md bg-light-4 drop-shadow-md mt-xs"
+            class="mt-xs rounded-md bg-light-4 px-2xs py-xs drop-shadow-md"
           >
             <NuxtLink
               to="/admin"
-              class="flex gap-2 items-center justify-center px-2xs py-3xs bg-light-2 drop-shadow-md rounded-md hover:opacity-60 duration-300 ease-linear"
+              class="flex items-center justify-center gap-2 rounded-md bg-light-2 px-2xs py-3xs drop-shadow-md duration-300 ease-linear hover:opacity-60"
             >
               <p>Admin Page</p>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 448 512"
                 fill="currentColor"
-                class="w-xs aspect-square"
+                class="aspect-square w-xs"
               >
                 <!-- !Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                 <path
