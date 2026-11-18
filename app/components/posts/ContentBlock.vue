@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { PostType } from '#shared/types'
 import { MclFormGroup, MclTextArea } from '@bobbykim/mcl-forms'
-import { Transition, ref } from 'vue'
+import { ref } from 'vue'
 
 const props = defineProps<{
   isAdmin: boolean

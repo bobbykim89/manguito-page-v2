@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { UserType } from '#shared/types'
-const props = defineProps<{
+defineProps<{
   loginUrl: string
   signupUrl: string
   auth: boolean
@@ -13,7 +13,6 @@ const emit = defineEmits<{
   (e: 'user-click', event: Event): void
 }>()
 const handleLogoutClick = (e: Event) => {
-  e.preventDefault
   emit('logout-click', e)
 }
 const handleButtonClick = (e: Event) => {

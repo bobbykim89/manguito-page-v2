@@ -43,14 +43,14 @@ useHead({
     { property: 'og:title', content: 'Post | Manguito Page' },
     {
       property: 'og:image',
-      content: resolveMetaImage(currentPost.value?.imageId!),
+      content: resolveMetaImage(currentPost.value?.imageId as string),
     },
     { property: 'og:url', content: url.href },
     { property: 'twitter:domain', content: url.host },
     { property: 'twitter:url', content: url.href },
     {
       property: 'twitter:image',
-      content: resolveMetaImage(currentPost.value?.imageId!),
+      content: resolveMetaImage(currentPost.value?.imageId as string),
     },
     {
       name: 'twitter:title',

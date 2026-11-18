@@ -41,7 +41,7 @@ export class AuthController {
       e,
       authInputSchema.parse,
     )
-    let user = await this.userModel.findOne({ email })
+    const user = await this.userModel.findOne({ email })
     if (!user) {
       throw createError({
         status: 403,

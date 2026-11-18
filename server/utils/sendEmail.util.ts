@@ -25,7 +25,7 @@ export const sendEmail = async (
       subject,
       text,
     })
-  } catch (error) {
+  } catch {
     throw createError({
       status: 500,
       message: 'Internal Server Error',
