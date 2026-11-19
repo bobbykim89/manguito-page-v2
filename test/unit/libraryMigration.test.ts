@@ -24,6 +24,12 @@ const banned: Array<[RegExp, string]> = [
   [/\btextcolor=/, 'textcolor → text-color (1.0)'],
   [/\bbtn-no-ring\b/, 'btn-no-ring must not hide the focus ring'],
   [/\blabel-for=/, 'MclFormGroup label-for → field-id (mcl-forms 0.12)'],
+  // the theme's --spacing-{xs..3xl} tokens win over Tailwind's container sizes,
+  // so max-w-md is 2rem, not 28rem: write the width out, e.g. max-w-[28rem]
+  [
+    /\bmax-w-(3xs|2xs|xs|sm|md|lg|xl|[2-7]xl)\b/,
+    'max-w-<size> resolves to the theme spacing scale: use max-w-[<n>rem]',
+  ],
 ]
 
 describe('component library migration', () => {
