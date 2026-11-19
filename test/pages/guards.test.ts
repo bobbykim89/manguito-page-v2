@@ -83,3 +83,18 @@ describe('route guards on first load', () => {
     }
   })
 })
+
+describe('login page', () => {
+  it('explains an expired session', async () => {
+    const res = await page('/auth/login?reason=expired')
+    expect(res.status).toBe(200)
+    expect(res.html).toContain('Your session expired, please log in again.')
+    expect(res.html).toContain('role="status"')
+  })
+
+  it('says nothing about sessions otherwise', async () => {
+    const res = await page('/auth/login')
+    expect(res.status).toBe(200)
+    expect(res.html).not.toContain('Your session expired')
+  })
+})
