@@ -28,9 +28,9 @@ export class AuthController {
       .select('-password')
     if (!user) {
       throw createError({
-        status: 404,
-        message: 'Not found',
-        statusMessage: 'User not found',
+        status: 401,
+        message: 'Unauthorized',
+        statusMessage: 'Session expired, please log in again',
       })
     }
     return user

@@ -24,6 +24,11 @@ export const useUserStore = defineStore('user', () => {
   const currentUser = ref<UserType | null>(null)
   const isAuthenticated = ref<boolean>(false)
   const role = ref<UserRoleType | null>(null)
+  // true once a sent session cookie was rejected with 401 (expired or stale)
+  const sessionExpired = ref<boolean>(false)
+  // the startup auth check, shared by init and route guards; kept out of
+  // state so it never serializes into the payload
+  let authCheck: Promise<void> | null = null
 
   // USERS: getters
   const getCurrentAuthInfo = computed(() => {
@@ -64,7 +69,7 @@ export const useUserStore = defineStore('user', () => {
       role.value = res.role
       alertStore.setAlert('Successfully authenticated user', 'success')
     } catch (error) {
-      handleAuthError(error)
+      handleAuthError(error, true)
       cookie.value = null
     }
   }
@@ -149,7 +154,13 @@ export const useUserStore = defineStore('user', () => {
       handleAuthError(error)
     }
   }
-  const handleAuthError = (err: unknown) => {
+  const isUnauthorized = (err: unknown): boolean =>
+    !!err &&
+    typeof err === 'object' &&
+    'statusCode' in err &&
+    err.statusCode === 401
+  // quiet: the startup session check, where a rejected cookie logs out silently
+  const handleAuthError = (err: unknown, quiet = false) => {
     const errorMessage: string = errorCheck.extractMessage(err)
     const checkAuthError: boolean = errorCheck.isAuthError(err)
     if (checkAuthError) {
@@ -157,15 +168,28 @@ export const useUserStore = defineStore('user', () => {
       isAuthenticated.value = false
       role.value = null
     }
+    // a rejected session logs out; guards send protected pages to login.
+    // Only an action the user started gets told about it.
+    if (isUnauthorized(err)) {
+      cookie.value = null
+      sessionExpired.value = true
+      if (quiet) return
+    }
     console.error(errorMessage)
     alertStore.setAlert(errorMessage)
+  }
+  const ensureAuth = (): Promise<void> => {
+    authCheck ??= getCurrentUser()
+    return authCheck
   }
   return {
     currentUser,
     isAuthenticated,
     role,
     getCurrentAuthInfo,
+    sessionExpired,
     getCurrentUser,
+    ensureAuth,
     loginWithCredential,
     signupUser,
     updateUsername,

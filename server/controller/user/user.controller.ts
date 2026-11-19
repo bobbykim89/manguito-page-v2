@@ -242,9 +242,9 @@ export class UserController {
     const user = await this.userModel.findById(ctx.user.id)
     if (!user) {
       throw createError({
-        status: 404,
-        message: 'Not found',
-        statusMessage: 'User not found',
+        status: 401,
+        message: 'Unauthorized',
+        statusMessage: 'Session expired, please log in again',
       })
     }
     return user
@@ -255,9 +255,9 @@ export class UserController {
     const user = await this.userModel.findById(ctx.user.id).select('-password')
     if (!user) {
       throw createError({
-        status: 404,
-        message: 'Not Found',
-        statusMessage: 'Access denied: user not found',
+        status: 401,
+        message: 'Unauthorized',
+        statusMessage: 'Session expired, please log in again',
       })
     }
     return user

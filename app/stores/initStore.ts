@@ -16,7 +16,7 @@ export const useInitStore = defineStore('init', () => {
   const initStores = async () => {
     setLoading(true)
     await postStore.getAllPosts()
-    await userStore.getCurrentUser()
+    await userStore.ensureAuth()
     setLoading(false)
     isMounted.value = true
   }

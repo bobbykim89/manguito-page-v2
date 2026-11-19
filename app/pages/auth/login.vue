@@ -27,6 +27,7 @@ useHead({
 })
 
 const router = useRouter()
+const route = useRoute()
 const userStore = useUserStore()
 const { currentUser } = storeToRefs(userStore)
 const loginCred = reactive<AuthInput>({
@@ -49,6 +50,13 @@ const onSubmit = async () => {
       class="mx-auto max-w-md rounded-lg bg-light-3 px-xs py-md drop-shadow-md md:px-sm"
     >
       <h2 class="h2-md mb-sm text-center">Login</h2>
+      <p
+        v-if="route.query.reason === 'expired'"
+        role="status"
+        class="mb-sm text-center"
+      >
+        Your session expired, please log in again.
+      </p>
       <form @submit.prevent="onSubmit">
         <MclFormGroup label-for="login-email" label="Email:" class="mb-xs">
           <MclInputText
