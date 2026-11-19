@@ -55,13 +55,13 @@ const onSubmit = async () => {
 </script>
 
 <template>
-  <div class="relative font-inter max-w-screen-md mx-auto py-md px-2xs">
+  <div class="font-inter relative mx-auto max-w-screen-md px-2xs py-md">
     <h2 class="h2-md mb-xs">Users</h2>
     <div class="grid gap-2">
       <div
         v-for="user in res"
         :key="user._id!.toString()"
-        class="bg-light-4 px-xs py-sm rounded-md overflow-x-hidden drop-shadow-md flex flex-col md:flex-row gap-4 justify-between"
+        class="flex flex-col justify-between gap-4 overflow-x-hidden rounded-md bg-light-4 px-xs py-sm drop-shadow-md md:flex-row"
       >
         <div class="w-full">
           <p>Username: {{ user.name }}</p>
@@ -71,7 +71,7 @@ const onSubmit = async () => {
         <div class="flex items-center justify-end md:justify-center">
           <!-- delete -->
           <button
-            class="hover:opacity-65 duration-300 ease-linear text-dark-1"
+            class="text-dark-1 duration-300 ease-linear hover:opacity-65"
             aria-label="delete post"
             @click="openEdit(user)"
           >
@@ -79,7 +79,7 @@ const onSubmit = async () => {
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 640 512"
               fill="currentColor"
-              class="w-[20px] aspect-square"
+              class="aspect-square w-[20px]"
             >
               <!-- !Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
               <path
@@ -107,7 +107,7 @@ const onSubmit = async () => {
             <div
               v-for="(role, idx) in roleOptions"
               :key="idx"
-              class="flex gap-1 mb-3xs"
+              class="mb-3xs flex gap-1"
             >
               <MclInputRadio
                 :id="`option-${role.toLowerCase()}`"

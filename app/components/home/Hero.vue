@@ -9,28 +9,28 @@ defineProps<{
 
 <template>
   <section
-    class="grid grid-flow-row md:grid-cols-5 py-xs md:py-md font-inter overflow-x-hidden"
+    class="font-inter grid grid-flow-row overflow-x-hidden py-xs md:grid-cols-5 md:py-md"
   >
-    <div class="col-span-2 order-2 md:order-1 w-full">
+    <div class="order-2 col-span-2 w-full md:order-1">
       <div
-        class="h-full flex flex-col items-center md:items-start justify-center md:pl-md max-w-screen-sm ml-auto"
+        class="ml-auto flex h-full max-w-screen-sm flex-col items-center justify-center md:items-start md:pl-md"
       >
         <div>
           <h3
-            class="h3-md font-semibold tracking-wider text-start ml-2xs mb-2xs"
+            class="h3-md mb-2xs ml-2xs text-start font-semibold tracking-wider"
           >
             Welcome to
           </h3>
           <h1 class="h1-md mb-sm text-primary" v-html="hadingText"></h1>
         </div>
         <p
-          class="w-5/6 md:w-full text-center md:text-start text-md lg:text-lg mb-md"
+          class="mb-md w-5/6 text-center text-md md:w-full md:text-start lg:text-lg"
           v-html="heroParagraph"
         ></p>
         <div class="mx-auto">
           <NuxtLink
             :to="linkUrl"
-            class="btn btn-progress btn-primary animate-bounce drop-shadow-md"
+            class="btn btn-progress animate-bounce drop-shadow-md btn-primary"
           >
             <span>
               {{ linkText }}
@@ -39,19 +39,19 @@ defineProps<{
         </div>
       </div>
     </div>
-    <div class="col-span-3 order1 relative md:order-2 min-h-75">
+    <div class="order1 relative col-span-3 min-h-75 md:order-2">
       <div
-        class="absolute top-0 -left-4 lg:left-[10%] w-72 h-72 lg:w-96 lg:h-96 bg-[#a2d918] rounded-full mix-blend-multiply filter blur-xl opacity-50 animate-balls"
+        class="absolute top-0 -left-4 h-72 w-72 animate-balls rounded-full bg-[#a2d918] opacity-50 mix-blend-multiply blur-xl filter lg:left-[10%] lg:h-96 lg:w-96"
       />
       <div
-        class="absolute top-0 right-[12%] lg:right-1/4 w-72 h-72 lg:w-96 lg:h-96 bg-yellow-300 rounded-full mix-blend-multiply filter blur-xl opacity-50 animate-balls animation-delay-2000"
+        class="animation-delay-2000 absolute top-0 right-[12%] h-72 w-72 animate-balls rounded-full bg-yellow-300 opacity-50 mix-blend-multiply blur-xl filter lg:right-1/4 lg:h-96 lg:w-96"
       />
       <div
-        class="absolute left-8 lg:left-1/4 -bottom-4 w-72 h-72 lg:w-96 lg:h-96 bg-red-300 rounded-full mix-blend-multiply filter blur-xl opacity-50 animate-balls animation-delay-4000"
+        class="animation-delay-4000 absolute -bottom-4 left-8 h-72 w-72 animate-balls rounded-full bg-red-300 opacity-50 mix-blend-multiply blur-xl filter lg:left-1/4 lg:h-96 lg:w-96"
       />
       <NuxtImg
         src="/img/home/manguito_transparent.webp"
-        class="relative w-4/5 lg:w-1/2 mx-auto object-contain"
+        class="relative mx-auto w-4/5 object-contain lg:w-1/2"
         sizes="80vw lg:30vw"
         height="400"
         alt="manguito banner"

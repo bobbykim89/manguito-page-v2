@@ -16,7 +16,7 @@ const submitComment = () => {
 
 <template>
   <div
-    class="bg-light-4 px-xs py-xs rounded-md overflow-x-hidden drop-shadow-md"
+    class="overflow-x-hidden rounded-md bg-light-4 px-xs py-xs drop-shadow-md"
   >
     <form @submit.prevent="submitComment">
       <MclFormGroup label-for="comment-input" label="Comment:">
@@ -28,9 +28,9 @@ const submitComment = () => {
           placeholder="Please write comment here"
           v-model="commentRef"
         />
-        <div class="flex justify-end gap-2 mt-3xs text-dark-1">
+        <div class="mt-3xs flex justify-end gap-2 text-dark-1">
           <button
-            class="hover:opacity-65 duration-300 ease-linear"
+            class="duration-300 ease-linear hover:opacity-65"
             type="submit"
             role="button"
             aria-label="post comment"
@@ -40,7 +40,7 @@ const submitComment = () => {
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 512 512"
               fill="currentColor"
-              class="w-[20px] aspect-square"
+              class="aspect-square w-[20px]"
             >
               <!-- !Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
               <path

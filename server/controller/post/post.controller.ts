@@ -179,10 +179,9 @@ export class PostController {
       })
     }
     // delete comments belongs to this post
-    const comments = await this.commentModel.find({ post: postId })
     try {
       await this.commentModel.deleteMany({ post: postId })
-    } catch (err) {
+    } catch {
       throw createError({
         status: 500,
         message: 'Internal server error',
@@ -195,7 +194,7 @@ export class PostController {
     // delete post
     try {
       await this.postModel.findByIdAndDelete(postId)
-    } catch (err) {
+    } catch {
       throw createError({
         status: 500,
         message: 'Internal server error',

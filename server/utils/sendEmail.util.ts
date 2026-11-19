@@ -5,7 +5,7 @@ import nodemailer from 'nodemailer'
 export const sendEmail = async (
   email: string,
   subject: string,
-  text: string
+  text: string,
 ) => {
   const config = useRuntimeConfig()
   try {
@@ -25,7 +25,7 @@ export const sendEmail = async (
       subject,
       text,
     })
-  } catch (error) {
+  } catch {
     throw createError({
       status: 500,
       message: 'Internal Server Error',

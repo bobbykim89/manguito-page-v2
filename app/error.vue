@@ -18,13 +18,13 @@ useHead({
 
 <template>
   <NuxtLayout name="default">
-    <section class="min-h-[75vh] flex items-center">
+    <section class="flex min-h-[75vh] items-center">
       <div
-        class="mx-auto text-center py-md px-xl bg-light-3 rounded-md drop-shadow-md text-dark-3"
+        class="mx-auto rounded-md bg-light-3 px-xl py-md text-center text-dark-3 drop-shadow-md"
       >
-        <h1 class="text-[4rem] mb-sm font-bold">404</h1>
-        <p class="text-[1.5rem] mb-xs">This page doesn't exist</p>
-        <NuxtLink to="/" class="btn btn-primary text-light-3"
+        <h1 class="mb-sm text-[4rem] font-bold">404</h1>
+        <p class="mb-xs text-[1.5rem]">This page doesn't exist</p>
+        <NuxtLink to="/" class="btn text-light-3 btn-primary"
           >Back to main page</NuxtLink
         >
       </div>

@@ -35,23 +35,23 @@ const onDelete = async (id: string) => {
 </script>
 
 <template>
-  <div class="font-inter max-w-screen-md mx-auto py-md px-2xs">
+  <div class="font-inter mx-auto max-w-screen-md px-2xs py-md">
     <h2 class="h2-md mb-xs">Posts</h2>
     <div class="grid gap-2">
       <div
         v-for="post in res"
         :key="post._id!.toString()"
-        class="bg-light-4 rounded-md overflow-x-hidden drop-shadow-md flex flex-col md:flex-row"
+        class="flex flex-col overflow-x-hidden rounded-md bg-light-4 drop-shadow-md md:flex-row"
       >
         <NuxtImg
           provider="cloudinary"
           :src="formattedUrl(post.imageId)"
           alt="post image"
-          class="aspect-square h-3xl object-center object-cover rounded-t-md md:rounded-tr-none md:rounded-l-md"
+          class="aspect-square h-3xl rounded-t-md object-cover object-center md:rounded-l-md md:rounded-tr-none"
           loading="lazy"
         />
         <div
-          class="flex flex-col md:flex-row justify-between w-full px-xs py-sm gap-4"
+          class="flex w-full flex-col justify-between gap-4 px-xs py-sm md:flex-row"
         >
           <div class="w-full">
             <p>
@@ -67,7 +67,7 @@ const onDelete = async (id: string) => {
           <div class="flex items-center justify-end md:justify-center">
             <!-- delete -->
             <button
-              class="hover:opacity-65 duration-300 ease-linear text-dark-1"
+              class="text-dark-1 duration-300 ease-linear hover:opacity-65"
               aria-label="delete post"
               @click="onDelete(post._id!.toString())"
             >
@@ -75,7 +75,7 @@ const onDelete = async (id: string) => {
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 448 512"
                 fill="currentColor"
-                class="w-[20px] aspect-square"
+                class="aspect-square w-[20px]"
               >
                 <!-- !Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                 <path

@@ -17,14 +17,14 @@ const { currentUser } = storeToRefs(userStore)
 </script>
 
 <template>
-  <div class="flex justify-center py-sm font-inter px-2xs">
+  <div class="font-inter flex justify-center px-2xs py-sm">
     <div
-      class="max-w-screen-md bg-light-4 rounded-lg px-sm py-md md:px-md md:py-lg"
+      class="max-w-screen-md rounded-lg bg-light-4 px-sm py-md md:px-md md:py-lg"
     >
       <NuxtImg
         src="/img/about.webp"
         alt="inspector pollo"
-        class="aspect-square rounded-full border-4 border-dark-1 max-h-[256px] mb-sm"
+        class="mb-sm aspect-square max-h-[256px] rounded-full border-4 border-dark-1"
         width="256"
         height="256"
       />
@@ -44,20 +44,20 @@ const { currentUser } = storeToRefs(userStore)
           {{ currentUser?.role }}
         </li>
       </ul>
-      <p class="text-lg mb-2xs">Navigate to:</p>
+      <p class="mb-2xs text-lg">Navigate to:</p>
       <div
-        class="flex gap-1 justify-center items-center bg-light-3 py-2xs px-3xs text-dark-1 overflow-y-auto rounded-lg"
+        class="flex items-center justify-center gap-1 overflow-y-auto rounded-lg bg-light-3 px-3xs py-2xs text-dark-1"
       >
         <NuxtLink
           to="/admin/posts"
           aria-label="posts"
-          class="hover:opacity-60 transition-opacity duration-300 ease-linear p-3xs"
+          class="p-3xs transition-opacity duration-300 ease-linear hover:opacity-60"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 512 512"
             fill="currentColor"
-            class="w-md aspect-square"
+            class="aspect-square w-md"
           >
             <!-- !Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
             <path
@@ -68,13 +68,13 @@ const { currentUser } = storeToRefs(userStore)
         <NuxtLink
           to="/admin/comments"
           aria-label="comments"
-          class="hover:opacity-60 transition-opacity duration-300 ease-linear p-3xs"
+          class="p-3xs transition-opacity duration-300 ease-linear hover:opacity-60"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 512 512"
             fill="currentColor"
-            class="w-md aspect-square"
+            class="aspect-square w-md"
           >
             <!-- !Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
             <path
@@ -85,13 +85,13 @@ const { currentUser } = storeToRefs(userStore)
         <NuxtLink
           to="/admin/users"
           aria-label="users"
-          class="hover:opacity-60 transition-opacity duration-300 ease-linear p-3xs"
+          class="p-3xs transition-opacity duration-300 ease-linear hover:opacity-60"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 576 512"
             fill="currentColor"
-            class="w-md aspect-square"
+            class="aspect-square w-md"
           >
             <!-- !Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
             <path

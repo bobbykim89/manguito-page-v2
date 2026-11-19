@@ -2,7 +2,7 @@ import { createError, type H3Event, readMultipartFormData } from 'h3'
 
 export const readFormDataText = async (
   e: H3Event,
-  key: string = 'content'
+  key: string = 'content',
 ): Promise<void> => {
   const body = await readMultipartFormData(e)
   if (!body) {

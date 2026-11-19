@@ -25,11 +25,11 @@ const onPwUpdateSubmit = (e: Event) => {
 </script>
 
 <template>
-  <div class="px-2xs py-xs bg-light-4 rounded-md drop-shadow-md">
+  <div class="rounded-md bg-light-4 px-2xs py-xs drop-shadow-md">
     <!-- username update -->
-    <div class="rounded-md drop-shadow-md overflow-hidden mb-xs">
+    <div class="mb-xs overflow-hidden rounded-md drop-shadow-md">
       <button
-        class="block w-full py-3xs px-xs bg-light-3 hover:bg-opacity-60 transition-colors duration-300 ease-linear text-left"
+        class="block w-full bg-light-3 px-xs py-3xs text-left transition-colors duration-300 ease-linear hover:bg-opacity-60"
         v-collapse:update-username
       >
         Update Username
@@ -39,7 +39,7 @@ const onPwUpdateSubmit = (e: Event) => {
         accordion="update-user"
         class-name="bg-light-3/65"
       >
-        <div class="py-xs px-2xs">
+        <div class="px-2xs py-xs">
           <form @submit.prevent="onUsernameUpdateSubmit">
             <MclFormGroup label-for="user-name" label="Username:">
               <MclInputText
@@ -49,7 +49,7 @@ const onPwUpdateSubmit = (e: Event) => {
                 required
               />
             </MclFormGroup>
-            <div class="flex justify-end mt-3xs">
+            <div class="mt-3xs flex justify-end">
               <button role="submit" class="btn btn-primary">Save</button>
             </div>
           </form>
@@ -58,9 +58,9 @@ const onPwUpdateSubmit = (e: Event) => {
     </div>
 
     <!-- pw update -->
-    <div class="rounded-md drop-shadow-md overflow-hidden">
+    <div class="overflow-hidden rounded-md drop-shadow-md">
       <button
-        class="block w-full py-3xs px-xs bg-light-3 hover:bg-opacity-60 transition-colors duration-300 ease-linear text-left"
+        class="block w-full bg-light-3 px-xs py-3xs text-left transition-colors duration-300 ease-linear hover:bg-opacity-60"
         v-collapse:update-password
       >
         Update Password
@@ -70,7 +70,7 @@ const onPwUpdateSubmit = (e: Event) => {
         accordion="update-user"
         class-name="bg-light-3/65"
       >
-        <div class="py-xs px-2xs">
+        <div class="px-2xs py-xs">
           <form @submit.prevent="onPwUpdateSubmit">
             <MclFormGroup label-for="current-pw" label="Current password:">
               <MclInputText
@@ -90,7 +90,7 @@ const onPwUpdateSubmit = (e: Event) => {
                 type="password"
               />
             </MclFormGroup>
-            <div class="flex justify-end mt-3xs">
+            <div class="mt-3xs flex justify-end">
               <button role="submit" class="btn btn-primary">Save</button>
             </div>
           </form>

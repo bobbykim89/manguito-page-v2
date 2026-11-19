@@ -76,6 +76,8 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     workBranch: process.env.WORK_BRANCH,
+    // empty unless NUXT_MONGO_URI is set at runtime (the API tests do)
+    mongoUri: '',
     mongoId: process.env.MONGO_ADMIN_ID,
     mongoPw: process.env.MONGO_ADMIN_PW,
     mongoClusterName: process.env.MONGO_CLUSTER_NAME,

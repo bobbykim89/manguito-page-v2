@@ -74,53 +74,53 @@ const AsyncParallax = defineAsyncComponent({
     />
     <MclContainerA>
       <template #left-column>
-        <div class="grid grid-cols-2 gap-y-4 py-lg relative">
+        <div class="relative grid grid-cols-2 gap-y-4 py-lg">
           <div
-            class="absolute w-70 md:w-80 bg-warning rounded-full aspect-square top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 drop-shadow-lg"
+            class="absolute top-1/2 left-1/2 aspect-square w-70 -translate-x-1/2 -translate-y-1/2 rounded-full bg-warning drop-shadow-lg md:w-80"
           ></div>
           <div
-            class="aspect-square -translate-y-1/4 justify-self-end drop-shadow-lg overflow-hidden rounded-full border-4 border-light-1"
+            class="aspect-square -translate-y-1/4 justify-self-end overflow-hidden rounded-full border-4 border-light-1 drop-shadow-lg"
           >
             <NuxtImg
               :src="containerContent.img1"
               alt="picture of manguito looking cheeky"
-              class="relative h-49 object-center object-cover aspect-square hover:grayscale transition-[filter] duration-300 ease-linear"
+              class="relative aspect-square h-49 object-cover object-center transition-[filter] duration-300 ease-linear hover:grayscale"
               height="196"
               width="196"
               loading="lazy"
             />
           </div>
           <div
-            class="aspect-square translate-y-1/4 justify-self-start overflow-hidden border-4 border-light-1 rounded-full drop-shadow-lg"
+            class="aspect-square translate-y-1/4 justify-self-start overflow-hidden rounded-full border-4 border-light-1 drop-shadow-lg"
           >
             <NuxtImg
               :src="containerContent.img2"
               alt="a picture of manguito perching on the branch"
-              class="relative h-49 object-center object-cover aspect-square hover:grayscale transition-[filter] duration-300 ease-linear"
+              class="relative aspect-square h-49 object-cover object-center transition-[filter] duration-300 ease-linear hover:grayscale"
               height="196"
               width="196"
               loading="lazy"
             />
           </div>
           <div
-            class="aspect-square -translate-y-1/4 justify-self-end overflow-hidden border-4 border-light-1 rounded-full drop-shadow-lg"
+            class="aspect-square -translate-y-1/4 justify-self-end overflow-hidden rounded-full border-4 border-light-1 drop-shadow-lg"
           >
             <NuxtImg
               :src="containerContent.img3"
               alt="a picture of manguito hiding in flowers"
-              class="relative h-49 object-center object-cover aspect-square hover:grayscale transition-[filter] duration-300 ease-linear"
+              class="relative aspect-square h-49 object-cover object-center transition-[filter] duration-300 ease-linear hover:grayscale"
               height="196"
               width="196"
               loading="lazy"
             />
           </div>
           <div
-            class="aspect-square translate-y-1/4 justify-self-start overflow-hidden border-4 border-light-1 rounded-full drop-shadow-lg"
+            class="aspect-square translate-y-1/4 justify-self-start overflow-hidden rounded-full border-4 border-light-1 drop-shadow-lg"
           >
             <NuxtImg
               :src="containerContent.img4"
               alt="a picture of manguito perching on the fridge magnet"
-              class="relative h-49 object-center object-cover aspect-square hover:grayscale transition-[filter] duration-300 ease-linear"
+              class="relative aspect-square h-49 object-cover object-center transition-[filter] duration-300 ease-linear hover:grayscale"
               height="196"
               width="196"
               loading="lazy"
@@ -135,7 +135,7 @@ const AsyncParallax = defineAsyncComponent({
           <div className="mb-8">
             <h2 className="h2-md mb-xs" v-html="containerContent.title"></h2>
             <div
-              class="h-3xs md:h-2xs w-xl bg-warning mb-xs mx-auto md:mx-0"
+              class="mx-auto mb-xs h-3xs w-xl bg-warning md:mx-0 md:h-2xs"
             ></div>
             <p className="md:text-lg" v-html="containerContent.desc"></p>
           </div>

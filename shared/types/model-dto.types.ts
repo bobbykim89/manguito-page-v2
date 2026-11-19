@@ -2,7 +2,7 @@ import { CommentModel, PostModel, UserModel } from '../models'
 
 type WithParsedId<T> = Omit<T, '_id'> & { _id: string }
 
-export interface UserType extends WithParsedId<Omit<UserModel, 'password'>> {}
+export type UserType = WithParsedId<Omit<UserModel, 'password'>>
 
 export interface PostType extends WithParsedId<Omit<PostModel, 'author'>> {
   author: UserType

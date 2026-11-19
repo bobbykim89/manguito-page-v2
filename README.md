@@ -1,29 +1,28 @@
 # Manguito Page v2
 
-A repository for source code of [Manguito Page](https://manguito-page.vercel.app/) — a photo blog dedicated to Manguito, an adorable peach-faced lovebird, showcasing daily moments and charming antics. Reworked original [Manguito Page](https://github.com/bobbykim89/manguito-page) using Nuxt 4 and TypeScript.
+A repository for source code of [Manguito Page](https://manguito-page.bobbykim.dev/) — a photo blog dedicated to Manguito, an adorable peach-faced lovebird, showcasing daily moments and charming antics. Reworked original [Manguito Page](https://github.com/bobbykim89/manguito-page) using Nuxt 4 and TypeScript.
+
+## Requirements
+
+- Node 24 (`nvm use` reads `.nvmrc`)
+- pnpm 12, pinned in `package.json` (`corepack enable` picks it up)
+- Docker, for the local MongoDB
 
 ## Setup
 
 Install the dependencies:
 
 ```bash
-# pnpm
 pnpm install
-
-# yarn
-yarn install
 ```
 
 ## Local DB
 
-Start local database using docker compose (resets existing data on restart):
+Start the local database with Docker Compose (`restart` recreates the container and wipes its data):
 
 ```bash
-# pnpm
+pnpm db:local:up
 pnpm db:local:restart
-
-# yarn
-yarn db:local:restart
 ```
 
 ## Dev Server
@@ -31,57 +30,41 @@ yarn db:local:restart
 Start the development server on `http://localhost:3000`:
 
 ```bash
-# local env
-## pnpm
+# local env (.env.local, local DB)
 pnpm dev
-## yarn
-yarn dev
 
-# dev env
-## pnpm
+# dev env (.env.dev)
 pnpm dev:dev
-## yarn
-yarn dev:dev
 
-# prod env
-## pnpm
+# prod env (.env), real data, use with care
 pnpm dev:prod
-## yarn
-yarn dev:prod
 ```
+
+## Quality checks
+
+```bash
+pnpm lint          # ESLint
+pnpm format        # Prettier (format:check to only check)
+pnpm typecheck     # vue-tsc
+pnpm test          # Vitest: API tests against an in-memory MongoDB + unit tests
+```
+
+CI runs `lint` and `test` on every pull request; both must pass before merging to `master`.
 
 ## Production
 
 Build the application for production:
 
 ```bash
-# prod build
-## pnpm
-pnpm build
-## yarn
-yarn build
-
-# dev build
-## pnpm
-pnpm build:dev
-## yarn
-yarn build:dev
-
-# local build
-## pnpm
-pnpm build:local
-## yarn
-yarn build:local
+pnpm build        # prod
+pnpm build:dev    # dev env
+pnpm build:local  # local env
 ```
 
-Locally preview production build:
+Locally preview the production build:
 
 ```bash
-# pnpm
-pnpm run preview
-
-# yarn
-yarn preview
+pnpm preview
 ```
 
 Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.

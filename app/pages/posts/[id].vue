@@ -43,14 +43,14 @@ useHead({
     { property: 'og:title', content: 'Post | Manguito Page' },
     {
       property: 'og:image',
-      content: resolveMetaImage(currentPost.value?.imageId!),
+      content: resolveMetaImage(currentPost.value?.imageId as string),
     },
     { property: 'og:url', content: url.href },
     { property: 'twitter:domain', content: url.host },
     { property: 'twitter:url', content: url.href },
     {
       property: 'twitter:image',
-      content: resolveMetaImage(currentPost.value?.imageId!),
+      content: resolveMetaImage(currentPost.value?.imageId as string),
     },
     {
       name: 'twitter:title',
@@ -137,25 +137,25 @@ const handleRouterEvent = () => {
 </script>
 
 <template>
-  <section class="py-md min-h-[90dvh]" @click="handleRouterEvent">
+  <section class="min-h-[90dvh] py-md" @click="handleRouterEvent">
     <div class="container">
       <div class="px-xs">
         <div
-          class="max-w-screen-lg mx-auto bg-light-2 rounded-md relative"
+          class="relative mx-auto max-w-screen-lg rounded-md bg-light-2"
           ref="contentRef"
           @click.stop
         >
           <!-- close button -->
           <NuxtLink
             to="/posts"
-            class="absolute top-0 right-0 mt-2xs mr-3 text-dark-2 hover:opacity-60 transition-opacity duration-300 ease-linear"
+            class="absolute top-0 right-0 mt-2xs mr-3 text-dark-2 transition-opacity duration-300 ease-linear hover:opacity-60"
             aria-label="close button"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 384 512"
               fill="currentColor"
-              class="w-sm aspect-square"
+              class="aspect-square w-sm"
             >
               <!-- !Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
               <path
@@ -165,15 +165,15 @@ const handleRouterEvent = () => {
           </NuxtLink>
           <div
             v-if="currentPost === null"
-            class="w-full flex justify-center py-lg"
+            class="flex w-full justify-center py-lg"
           >
             <div
-              class="aspect-square w-3xl rounded-full border-8 border-r-primary animate-spin"
+              class="aspect-square w-3xl animate-spin rounded-full border-8 border-r-primary"
             ></div>
           </div>
           <div
             v-else
-            class="relative grid md:grid-cols-2 gap-6 px-xs pt-10 pb-sm md:pb-md"
+            class="relative grid gap-6 px-xs pt-10 pb-sm md:grid-cols-2 md:pb-md"
           >
             <!-- left side -->
             <div>
@@ -184,7 +184,7 @@ const handleRouterEvent = () => {
                     provider="cloudinary"
                     :src="currentPost?.imageId"
                     alt="a picture of manguito"
-                    class="relative object-center object-cover w-full rounded-md"
+                    class="relative w-full rounded-md object-cover object-center"
                     :placeholder="[484, 645]"
                     placeholder-class="img-placeholder"
                     width="484"
@@ -193,17 +193,17 @@ const handleRouterEvent = () => {
                   />
                   <div
                     v-else
-                    class="relative aspect-[3/4] w-full bg-light-3 rounded-md flex flex-col justify-center items-center"
+                    class="relative flex aspect-[3/4] w-full flex-col items-center justify-center rounded-md bg-light-3"
                   >
                     <div
-                      class="animate-spin rounded-full h-2xl w-2xl border-8 border-light-1 border-r-primary"
+                      class="h-2xl w-2xl animate-spin rounded-full border-8 border-light-1 border-r-primary"
                     ></div>
                   </div>
                 </Transition>
                 <!-- share button -->
                 <button
                   v-if="isSupported"
-                  class="absolute top-0 right-0 text-light-1 p-3xs mr-2xs mt-2xs hover:text-primary transition-colors duration-300 ease-linear"
+                  class="absolute top-0 right-0 mt-2xs mr-2xs p-3xs text-light-1 transition-colors duration-300 ease-linear hover:text-primary"
                   aria-label="copy current url"
                   @click="copyUrl"
                 >
@@ -220,7 +220,7 @@ const handleRouterEvent = () => {
                   </svg>
                 </button>
                 <button
-                  class="absolute left-0 top-1/2 -translate-y-1/2 text-light-1 p-3xs hover:text-primary transition-colors duration-300 ease-linear"
+                  class="absolute top-1/2 left-0 -translate-y-1/2 p-3xs text-light-1 transition-colors duration-300 ease-linear hover:text-primary"
                   aria-label="previous post"
                   @click="handlePrevClick"
                 >
@@ -237,7 +237,7 @@ const handleRouterEvent = () => {
                   </svg>
                 </button>
                 <button
-                  class="absolute right-0 top-1/2 -translate-y-1/2 text-light-1 p-3xs hover:text-primary transition-colors duration-300 ease-linear"
+                  class="absolute top-1/2 right-0 -translate-y-1/2 p-3xs text-light-1 transition-colors duration-300 ease-linear hover:text-primary"
                   aria-label="next post"
                   @click="handleNextClick"
                 >

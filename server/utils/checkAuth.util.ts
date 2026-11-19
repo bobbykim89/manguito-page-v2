@@ -19,7 +19,7 @@ export const checkAuth = (event: H3Event<EventHandlerRequest>) => {
   try {
     const decodedToken = jwt.verify(token, config.jwtSecret)
     event.context.user = decodedToken
-  } catch (error) {
+  } catch {
     throw createError({
       status: 401,
       message: 'Unauthorized',

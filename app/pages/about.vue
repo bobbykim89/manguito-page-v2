@@ -35,16 +35,16 @@ const socialUrls = {
 
 <template>
   <div class="container">
-    <div class="flex justify-center items-center min-h-[75vh] px-xs py-md">
+    <div class="flex min-h-[75vh] items-center justify-center px-xs py-md">
       <div
-        class="p-md md:px-lg md:py-xl bg-light-3 max-w-screen-lg rounded-md drop-shadow-md"
+        class="max-w-screen-lg rounded-md bg-light-3 p-md drop-shadow-md md:px-lg md:py-xl"
       >
         <div
-          class="flex flex-col md:flex-row gap-lg items-center justify-center"
+          class="flex flex-col items-center justify-center gap-lg md:flex-row"
         >
           <div>
             <NuxtImg
-              class="aspect-square rounded-full border-4 border-dark-4 w-full min-w-[256px] max-w-[384px]"
+              class="aspect-square w-full max-w-[384px] min-w-[256px] rounded-full border-4 border-dark-4"
               src="/img/about.webp"
               alt="manguito sitting on monitor"
               width="256"
@@ -54,7 +54,7 @@ const socialUrls = {
           </div>
           <div class="text-dark-3">
             <h2 class="h2-md mb-xs">About Manguito Page</h2>
-            <div class="font-bold text-lg mb-xs">
+            <div class="mb-xs text-lg font-bold">
               <p>
                 A photo blog dedicated to Manguito, an adorable peach-faced
                 lovebird, showcasing daily moments and charming antics.
@@ -68,7 +68,7 @@ const socialUrls = {
                 :href="socialUrls.github.url"
                 :target="socialUrls.github.target"
                 rel="noreferrer"
-                class="hover:opacity-75 transition-opacity duration-300 ease-linear"
+                class="transition-opacity duration-300 ease-linear hover:opacity-75"
                 aria-label="github link"
               >
                 <svg
@@ -89,7 +89,7 @@ const socialUrls = {
                 :target="socialUrls.linkedin.target"
                 rel="noreferrer"
                 aria-label="linkedin link"
-                class="hover:opacity-75 transition-opacity duration-300 ease-linear"
+                class="transition-opacity duration-300 ease-linear hover:opacity-75"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -109,13 +109,13 @@ const socialUrls = {
                 :target="socialUrls.email.target"
                 rel="noreferrer"
                 aria-label="email link"
-                class="p-3xs rounded-md bg-dark-3 text-light-3 hover:bg-opacity-75 transition-colors duration-300 ease-linear"
+                class="rounded-md bg-dark-3 p-3xs text-light-3 transition-colors duration-300 ease-linear hover:bg-opacity-75"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 512 512"
                   fill="currentColor"
-                  class="h-[40px] aspect-square"
+                  class="aspect-square h-[40px]"
                 >
                   <!-- !Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                   <path
