@@ -109,7 +109,7 @@ const socialUrls = {
                 :target="socialUrls.email.target"
                 rel="noreferrer"
                 aria-label="email link"
-                class="rounded-md bg-dark-3 p-3xs text-light-3 transition-colors duration-300 ease-linear hover:bg-opacity-75"
+                class="rounded-md bg-dark-3 p-3xs text-light-3 transition-colors duration-300 ease-linear hover:bg-dark-3/75"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

@@ -1,0 +1,42 @@
+import { globSync, readFileSync } from 'node:fs'
+import { describe, expect, it } from 'vitest'
+
+// Old @bobbykim/manguito-theme APIs. Vue passes unknown props through without
+// an error and typecheck doesn't flag them, so these would fail silently.
+const banned: Array<[RegExp, string]> = [
+  [/:?class-name=/, 'class-name → custom-class (1.0)'],
+  [/\bis-required\b/, 'is-required → required (1.0)'],
+  [/\s:?display-[a-z]+/, 'display-* → show-* (1.0)'],
+  [
+    /v-collapse\b|vCollapse/,
+    'v-collapse is sunsetted: AccordionGroup + useCollapseTrigger',
+  ],
+  [
+    /v-toggle\b|vToggle/,
+    'v-toggle is deprecated: open dialogs through their ref',
+  ],
+  [/\baccordion=/, 'accordion= is ignored: wrap panels in <AccordionGroup>'],
+  [/bg-opacity-/, 'bg-opacity-* only affects mcl-bg-*: use bg-<color>/<n>'],
+  [
+    /\bno-(backdrop|header)\b/,
+    'no-backdrop/no-header → show-backdrop/show-header (1.0)',
+  ],
+  [/\btextcolor=/, 'textcolor → text-color (1.0)'],
+  [/\bbtn-no-ring\b/, 'btn-no-ring must not hide the focus ring'],
+]
+
+describe('component library migration', () => {
+  it('uses no pre-1.0 or deprecated manguito-theme APIs in app/', () => {
+    const hits: string[] = []
+    for (const file of globSync('app/**/*.{vue,ts}')) {
+      readFileSync(file, 'utf8')
+        .split('\n')
+        .forEach((line, i) => {
+          for (const [pattern, why] of banned) {
+            if (pattern.test(line)) hits.push(`${file}:${i + 1} ${why}`)
+          }
+        })
+    }
+    expect(hits).toEqual([])
+  })
+})

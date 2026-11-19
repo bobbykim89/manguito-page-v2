@@ -94,7 +94,7 @@ const onSubmit = async () => {
       ref="modalRef"
       title="Update user role"
       backdrop-color="dark-3"
-      :class-name="['rounded-lg']"
+      custom-class="rounded-lg"
       @close="onModalClose"
     >
       <template #body="{ close }">
