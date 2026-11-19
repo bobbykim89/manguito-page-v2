@@ -162,7 +162,7 @@ const onSubmit = async (): Promise<void> => {
       <template #body="{ close }">
         <div class="px-xs pb-xs">
           <form @submit.prevent="onSubmit">
-            <MclFormGroup field-id="file-input">
+            <MclFormGroup field-id="file-input" class="mt-sm">
               <MclInputFile
                 id="file-input"
                 v-model="imageFileRef"
@@ -174,7 +174,7 @@ const onSubmit = async (): Promise<void> => {
                 show-border
               />
             </MclFormGroup>
-            <MclFormGroup field-id="content-input">
+            <MclFormGroup field-id="content-input" class="mt-sm">
               <MclTextArea
                 id="content-input"
                 v-model="contentRef"

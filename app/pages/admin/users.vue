@@ -110,6 +110,7 @@ const onSubmit = async () => {
                 v-model="selectedRole"
                 name="user-role"
                 :value="role"
+                bg-color="primary"
                 checked-bg-color="primary"
               />
               <label :for="`option-${role.toLowerCase()}`" class="capitalize">{{
