@@ -24,6 +24,11 @@ export const useUserStore = defineStore('user', () => {
   const currentUser = ref<UserType | null>(null)
   const isAuthenticated = ref<boolean>(false)
   const role = ref<UserRoleType | null>(null)
+  // true once a sent session cookie was rejected with 401 (expired or stale)
+  const sessionExpired = ref<boolean>(false)
+  // the startup auth check, shared by init and route guards; kept out of
+  // state so it never serializes into the payload
+  let authCheck: Promise<void> | null = null
 
   // USERS: getters
   const getCurrentAuthInfo = computed(() => {
@@ -149,6 +154,11 @@ export const useUserStore = defineStore('user', () => {
       handleAuthError(error)
     }
   }
+  const isUnauthorized = (err: unknown): boolean =>
+    !!err &&
+    typeof err === 'object' &&
+    'statusCode' in err &&
+    err.statusCode === 401
   const handleAuthError = (err: unknown) => {
     const errorMessage: string = errorCheck.extractMessage(err)
     const checkAuthError: boolean = errorCheck.isAuthError(err)
@@ -157,15 +167,27 @@ export const useUserStore = defineStore('user', () => {
       isAuthenticated.value = false
       role.value = null
     }
+    // a rejected session logs out quietly; guards send protected pages to login
+    if (isUnauthorized(err)) {
+      cookie.value = null
+      sessionExpired.value = true
+      return
+    }
     console.error(errorMessage)
     alertStore.setAlert(errorMessage)
+  }
+  const ensureAuth = (): Promise<void> => {
+    authCheck ??= getCurrentUser()
+    return authCheck
   }
   return {
     currentUser,
     isAuthenticated,
     role,
     getCurrentAuthInfo,
+    sessionExpired,
     getCurrentUser,
+    ensureAuth,
     loginWithCredential,
     signupUser,
     updateUsername,
