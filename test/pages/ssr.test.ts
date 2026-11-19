@@ -1,13 +1,5 @@
-import { describe, expect, inject, it } from 'vitest'
-
-/** Requests a page the way a browser does, without following redirects. */
-const page = async (path: string) => {
-  const res = await fetch(`${inject('baseUrl')}${path}`, {
-    headers: { accept: 'text/html' },
-    redirect: 'manual',
-  })
-  return { status: res.status, html: await res.text() }
-}
+import { describe, expect, it } from 'vitest'
+import { page } from '../utils/page'
 
 describe('server-rendered pages', () => {
   it.each([
