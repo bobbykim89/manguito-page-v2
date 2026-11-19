@@ -14,3 +14,13 @@ describe('server-rendered pages', () => {
     expect(res.html).not.toContain('404 | Manguito Page')
   })
 })
+
+describe('error page', () => {
+  it('shows a 404 for an unknown route', async () => {
+    const res = await page('/does-not-exist')
+    expect(res.status).toBe(404)
+    // Vue escapes the apostrophe in server-rendered text
+    expect(res.html).toMatch(/This page doesn(?:'|&#39;)t exist/)
+    expect(res.html).toContain('<title>404 | Manguito Page')
+  })
+})
