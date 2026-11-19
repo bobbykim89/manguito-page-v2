@@ -1,17 +1,15 @@
-import { useAlertStore, useInitStore, useUserStore } from '@/stores'
-import { storeToRefs } from 'pinia'
+import { useAlertStore, useUserStore } from '@/stores'
 
 export default defineNuxtRouteMiddleware(async () => {
   const userStore = useUserStore()
   const alertStore = useAlertStore()
-  const initStore = useInitStore()
-  const { isMounted } = storeToRefs(initStore)
+  // runs on the server render too, so wait for the session check
+  await userStore.ensureAuth()
   const { isAuthenticated, currentUser } = userStore.getCurrentAuthInfo
-  if (isMounted.value === true && !isAuthenticated) {
-    alertStore.setAlert('Admin only route: redirecting to main page')
-    return navigateTo({ path: '/' })
+  if (!isAuthenticated && userStore.sessionExpired) {
+    return navigateTo({ path: '/auth/login', query: { reason: 'expired' } })
   }
-  if (isMounted.value === true && currentUser?.role !== 'ADMIN') {
+  if (!isAuthenticated || currentUser?.role !== 'ADMIN') {
     alertStore.setAlert('Admin only route: redirecting to main page')
     return navigateTo({ path: '/' })
   }
