@@ -108,7 +108,7 @@ const onSubmit = async (): Promise<void> => {
         <!-- toggle modal -->
         <button
           v-if="isAuthorizedUser"
-          class="mt-sm rounded-full bg-primary p-2xs text-light-1 transition-colors duration-300 ease-linear hover:bg-primary/70"
+          class="mt-sm rounded-full bg-primary p-2xs text-light-1 transition-colors duration-300 ease-linear hover:bg-primary/70 focus-visible:mcl-focus-ring"
           @click="modalRef?.open()"
           aria-label="new post"
         >

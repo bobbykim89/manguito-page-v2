@@ -38,7 +38,7 @@ const onPwUpdateSubmit = (e: Event) => {
     <!-- username update -->
     <div class="mb-xs overflow-hidden rounded-md drop-shadow-md">
       <button
-        class="block w-full bg-light-3 px-xs py-3xs text-left transition-colors duration-300 ease-linear hover:bg-light-3/60"
+        class="block w-full bg-light-3 px-xs py-3xs text-left transition-colors duration-300 ease-linear hover:bg-light-3/60 focus-visible:mcl-focus-ring focus-visible:outline-offset-[-3px]"
         type="button"
         v-bind="usernameTrigger.attrs.value"
         @click="usernameTrigger.toggle()"
@@ -71,7 +71,7 @@ const onPwUpdateSubmit = (e: Event) => {
     <!-- pw update -->
     <div class="overflow-hidden rounded-md drop-shadow-md">
       <button
-        class="block w-full bg-light-3 px-xs py-3xs text-left transition-colors duration-300 ease-linear hover:bg-light-3/60"
+        class="block w-full bg-light-3 px-xs py-3xs text-left transition-colors duration-300 ease-linear hover:bg-light-3/60 focus-visible:mcl-focus-ring focus-visible:outline-offset-[-3px]"
         type="button"
         v-bind="passwordTrigger.attrs.value"
         @click="passwordTrigger.toggle()"
