@@ -52,7 +52,7 @@ const onPwUpdateSubmit = (e: Event) => {
       >
         <div class="px-2xs py-xs">
           <form @submit.prevent="onUsernameUpdateSubmit">
-            <MclFormGroup label-for="user-name" label="Username:">
+            <MclFormGroup field-id="user-name" label="Username:">
               <MclInputText
                 id="user-name"
                 v-model="usernameRef"
@@ -85,7 +85,7 @@ const onPwUpdateSubmit = (e: Event) => {
       >
         <div class="px-2xs py-xs">
           <form @submit.prevent="onPwUpdateSubmit">
-            <MclFormGroup label-for="current-pw" label="Current password:">
+            <MclFormGroup field-id="current-pw" label="Current password:">
               <MclInputText
                 id="current-pw"
                 rounded
@@ -94,7 +94,7 @@ const onPwUpdateSubmit = (e: Event) => {
                 type="password"
               />
             </MclFormGroup>
-            <MclFormGroup label-for="new-pw" label="New password:">
+            <MclFormGroup field-id="new-pw" label="New password:">
               <MclInputText
                 id="new-pw"
                 rounded

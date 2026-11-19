@@ -23,6 +23,7 @@ const banned: Array<[RegExp, string]> = [
   ],
   [/\btextcolor=/, 'textcolor → text-color (1.0)'],
   [/\bbtn-no-ring\b/, 'btn-no-ring must not hide the focus ring'],
+  [/\blabel-for=/, 'MclFormGroup label-for → field-id (mcl-forms 0.12)'],
 ]
 
 describe('component library migration', () => {

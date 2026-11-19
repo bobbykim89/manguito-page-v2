@@ -51,7 +51,7 @@ const handleFormSubmit = async () => {
       <h2 class="h2-md mb-sm text-center">Request Reset</h2>
       <form @submit.prevent="handleFormSubmit">
         <MclFormGroup
-          label-for="email"
+          field-id="email"
           label="Email:"
           :text-bold="true"
           class="mb-xs"

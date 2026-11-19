@@ -58,7 +58,7 @@ const onSubmit = async () => {
         Your session expired, please log in again.
       </p>
       <form @submit.prevent="onSubmit">
-        <MclFormGroup label-for="login-email" label="Email:" class="mb-xs">
+        <MclFormGroup field-id="login-email" label="Email:" class="mb-xs">
           <MclInputText
             id="login-email"
             rounded
@@ -67,7 +67,7 @@ const onSubmit = async () => {
             v-model="loginCred.email"
           />
         </MclFormGroup>
-        <MclFormGroup label-for="login-pw" label="Password:" class="mb-xs">
+        <MclFormGroup field-id="login-pw" label="Password:" class="mb-xs">
           <MclInputText
             id="login-pw"
             rounded

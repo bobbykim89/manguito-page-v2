@@ -55,7 +55,7 @@ const handleFormSubmit = async () => {
       <h2 class="h2-md mb-sm text-center">Reset Password</h2>
       <form @submit.prevent="handleFormSubmit">
         <MclFormGroup
-          label-for="new-password"
+          field-id="new-password"
           label="New Password:"
           :text-bold="true"
           class="mb-xs"
@@ -66,7 +66,8 @@ const handleFormSubmit = async () => {
             rounded
             required
             v-model="passwordInputRef"
-            pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])[A-Za-z\d\W_]{8,}$"
+            :pattern="passwordPattern"
+            :invalid="breaksPasswordRule(passwordInputRef)"
             invalid-feedback="Password must include one number, one uppercase and lowercase letter, one special character with at least 8 characters length."
           ></MclInputText>
         </MclFormGroup>

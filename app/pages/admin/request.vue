@@ -35,7 +35,7 @@ const onSubmit = async () => {
       <h3 class="h3-md mb-sm text-center">Request Admin Privileges</h3>
       <form @submit.prevent="onSubmit">
         <MclFormGroup
-          label-for="admin-phrase"
+          field-id="admin-phrase"
           label="Secret phrase:"
           class="mb-xs"
         >
