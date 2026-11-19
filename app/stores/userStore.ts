@@ -69,7 +69,7 @@ export const useUserStore = defineStore('user', () => {
       role.value = res.role
       alertStore.setAlert('Successfully authenticated user', 'success')
     } catch (error) {
-      handleAuthError(error)
+      handleAuthError(error, true)
       cookie.value = null
     }
   }
@@ -159,7 +159,8 @@ export const useUserStore = defineStore('user', () => {
     typeof err === 'object' &&
     'statusCode' in err &&
     err.statusCode === 401
-  const handleAuthError = (err: unknown) => {
+  // quiet: the startup session check, where a rejected cookie logs out silently
+  const handleAuthError = (err: unknown, quiet = false) => {
     const errorMessage: string = errorCheck.extractMessage(err)
     const checkAuthError: boolean = errorCheck.isAuthError(err)
     if (checkAuthError) {
@@ -167,11 +168,12 @@ export const useUserStore = defineStore('user', () => {
       isAuthenticated.value = false
       role.value = null
     }
-    // a rejected session logs out quietly; guards send protected pages to login
+    // a rejected session logs out; guards send protected pages to login.
+    // Only an action the user started gets told about it.
     if (isUnauthorized(err)) {
       cookie.value = null
       sessionExpired.value = true
-      return
+      if (quiet) return
     }
     console.error(errorMessage)
     alertStore.setAlert(errorMessage)

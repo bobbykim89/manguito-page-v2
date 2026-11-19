@@ -60,6 +60,24 @@ describe('userStore session handling', () => {
     expect(user.isAuthenticated).toBe(true)
   })
 
+  it('tells the user when an action they started hits an expired session', async () => {
+    useAuthToken().value = 'Bearer stale'
+    mockApi('PUT', '/api/user/user-info/username', () => {
+      throw createError({
+        statusCode: 401,
+        statusMessage: 'Session expired, please log in again',
+      })
+    })
+    const user = useUserStore()
+    await user.updateUsername({ username: 'new-name' } as never)
+    expect(useAlertStore().alertMessage).toBe(
+      'Session expired, please log in again',
+    )
+    expect(user.isAuthenticated).toBe(false)
+    expect(user.sessionExpired).toBe(true)
+    expect(useAuthToken().value).toBeFalsy()
+  })
+
   it('makes no request without a cookie', async () => {
     let calls = 0
     mockApi('GET', '/api/auth', () => {
