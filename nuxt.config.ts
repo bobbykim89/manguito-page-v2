@@ -181,7 +181,7 @@ export default defineNuxtConfig({
         },
       ],
     },
-    workbox: {
+    generateSW: {
       globPatterns: ['**/*.{js,css,html,png,svg,ico}'],
       navigateFallback: undefined,
     },
