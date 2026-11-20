@@ -9,6 +9,7 @@ Current focus: the improvement backlog in GitHub issues #11–#22 (tooling, comp
 - Node **24** (`.nvmrc`; run `nvm use` first). `engines.node` is `>=24.0.0`.
 - pnpm **12** pinned via `packageManager` (use corepack). Build scripts must be explicitly allowed in `pnpm-workspace.yaml` under `allowBuilds`; pnpm 12 fails the install on unapproved ones.
 - Vercel uses the pinned pnpm because the project sets `ENABLE_EXPERIMENTAL_COREPACK=1`.
+- Held back on purpose: TypeScript stays on 6.0 (7.0 is the native compiler, which `vue-tsc` doesn't support yet) and `@types/node` on 24 (the runtime is Node 24). Tailwind 4 runs through its Vite plugin (`@tailwindcss/vite` in `nuxt.config.ts`), not PostCSS.
 
 ## Commands
 

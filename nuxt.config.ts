@@ -1,4 +1,5 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import tailwindcss from '@tailwindcss/vite'
 
 export default defineNuxtConfig({
   compatibilityDate: '2024-04-03',
@@ -95,11 +96,9 @@ export default defineNuxtConfig({
       cloudinarySourceUrl: process.env.CLOUDINARY_SOURCE_URL,
     },
   },
-  css: ['~/assets/css/page_transition.scss', '~/assets/css/styles.css'],
-  postcss: {
-    plugins: {
-      '@tailwindcss/postcss': {},
-    },
+  css: ['~/assets/css/page_transition.css', '~/assets/css/styles.css'],
+  vite: {
+    plugins: [tailwindcss()],
   },
   image: {
     cloudinary: {
@@ -182,7 +181,7 @@ export default defineNuxtConfig({
         },
       ],
     },
-    workbox: {
+    generateSW: {
       globPatterns: ['**/*.{js,css,html,png,svg,ico}'],
       navigateFallback: undefined,
     },
