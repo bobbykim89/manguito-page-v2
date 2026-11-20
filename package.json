@@ -49,14 +49,12 @@
     "pinia": "3.0.4",
     "postcss": "^8.5.6",
     "vue": "3.5.27",
-    "vue-router": "^5.0.2",
     "zod": "4.3.6"
   },
   "packageManager": "pnpm@12.22.0+sha512.894940a3d9a57dfa6fd373990fb4e41e09c2f2d76d982ed1d75275d39267f988fb4e2d40900cbe9921c68d97c67aa1a1096d276633db248f7b34927ac9ddb7a4",
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@nuxt/test-utils": "4.4.0",
-    "@types/bcryptjs": "^2.4.6",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^25.2.1",
     "@types/nodemailer": "^7.0.9",
@@ -70,7 +68,6 @@
     "mongodb-memory-server": "^11.3.0",
     "prettier": "^3.10.1",
     "prettier-plugin-tailwindcss": "^0.8.1",
-    "sass": "^1.97.3",
     "tailwindcss": "^4.1.18",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.73.0",
