@@ -10,10 +10,9 @@ export const sendEmail = async (
   const config = useRuntimeConfig()
   try {
     const transporter = nodemailer.createTransport({
-      service: 'Gmail',
-      host: 'smtp.gmail.com',
-      port: 465,
-      secure: true,
+      host: config.mailerHost,
+      port: Number(config.mailerPort),
+      secure: Boolean(config.mailerSecure),
       auth: {
         user: config.mailerEmailAddress,
         pass: config.mailerAppPassword,

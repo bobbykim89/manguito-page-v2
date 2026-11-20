@@ -257,6 +257,9 @@ importers:
       '@types/nodemailer':
         specifier: ^8.0.2
         version: 8.0.2
+      '@types/smtp-server':
+        specifier: ^3.5.13
+        version: 3.5.13
       '@vite-pwa/nuxt':
         specifier: 2.0.2
         version: 2.0.2(@nuxt/schema@4.6.4)(confbox@0.2.4)(dotenv@17.4.2)(giget@3.3.1)(jiti@2.7.0)(magic-string@1.4.5)(magicast@0.5.5)(mlly@1.8.0)(rolldown@1.2.19)(typescript@6.0.3)(unplugin@3.7.0(esbuild@0.28.2)(rolldown@1.2.19)(rollup@4.68.7)(vite@8.3.8(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.97.3)(terser@5.51.2)(yaml@2.8.2)))(vite@8.3.8(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.97.3)(terser@5.51.2)(yaml@2.8.2))
@@ -287,6 +290,9 @@ importers:
       prettier-plugin-tailwindcss:
         specifier: ^0.8.1
         version: 0.8.1(prettier@3.10.1)
+      smtp-server:
+        specifier: ^3.21.6
+        version: 3.21.6
       tailwindcss:
         specifier: ^4.3.5
         version: 4.3.5
@@ -1866,6 +1872,9 @@ packages:
 
   '@types/resolve@1.20.2':
     resolution: {integrity: sha512-60BCwRFOZCQhDncwQdxxeOEEkbc5dIMccYLwbxsS4TUNeVECQ/pBJ0j09mrHOl/JJvpRPGwO9SvE4nR2Nb/a4Q==}
+
+  '@types/smtp-server@3.5.13':
+    resolution: {integrity: sha512-S3rGl2KbViH+98/CgHipPIWgtAFnjxLsppxIRbgJHNuZL7Y+py+7kZjT7xS+wOmCxYTn4O7IqLqkvekg99MDVQ==}
 
   '@types/trusted-types@2.0.7':
     resolution: {integrity: sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==}
@@ -4284,6 +4293,10 @@ packages:
   proto-list@1.2.4:
     resolution: {integrity: sha512-vtK/94akxsTMhe0/cbfpR+syPuszcuwhqVjJq26CuNDgFGj682oRBXOP5MJpv2r7JtE8MsiepGIqvvOTBwn2vA==}
 
+  punycode.js@2.3.1:
+    resolution: {integrity: sha512-uxFIHU0YlHYhDQtV4R9J6a52SLx28BCjT+4ieh7IGbgwVJWO+km431c4yRlREUAsAmt/uMjQUyQHNEPf0M39CA==}
+    engines: {node: '>=6'}
+
   punycode@2.3.1:
     resolution: {integrity: sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg==}
     engines: {node: '>=6'}
@@ -4526,6 +4539,10 @@ packages:
 
   smob@1.6.1:
     resolution: {integrity: sha512-KAkBqZl3c2GvNgNhcoyJae1aKldDW0LO279wF9bk1PnluRTETKBq0WyzRXxEhoQLk56yHaOY4JCBEKDuJIET5g==}
+    engines: {node: '>=20.0.0'}
+
+  smtp-server@3.21.6:
+    resolution: {integrity: sha512-QlCb8T8eS6qpiehMRdrDrKUwg4CBCQBSzfNEUQudQUau3xfRUp93X19oOuvjKyryFuEYh1cPEdYhYa09XuePvg==}
     engines: {node: '>=20.0.0'}
 
   source-map-js@1.2.3:
@@ -7179,6 +7196,11 @@ snapshots:
       '@types/node': 25.2.3
 
   '@types/resolve@1.20.2': {}
+
+  '@types/smtp-server@3.5.13':
+    dependencies:
+      '@types/node': 24.19.2
+      '@types/nodemailer': 8.0.2
 
   '@types/trusted-types@2.0.7': {}
 
@@ -9899,6 +9921,8 @@ snapshots:
 
   proto-list@1.2.4: {}
 
+  punycode.js@2.3.1: {}
+
   punycode@2.3.1: {}
 
   qified@0.10.1:
@@ -10182,6 +10206,11 @@ snapshots:
   slash@5.1.0: {}
 
   smob@1.6.1: {}
+
+  smtp-server@3.21.6:
+    dependencies:
+      nodemailer: 10.6.0
+      punycode.js: 2.3.1
 
   source-map-js@1.2.3: {}
 
