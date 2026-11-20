@@ -43,3 +43,10 @@ export const exists = async (
     })) === 1
   )
 }
+
+/** Removes every post and comment (API test files share one database). */
+export const clearContent = async (): Promise<void> => {
+  const conn = await db()
+  await conn.connection.collection('posts').deleteMany({})
+  await conn.connection.collection('comments').deleteMany({})
+}
