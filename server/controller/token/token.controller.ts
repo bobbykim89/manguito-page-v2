@@ -3,13 +3,20 @@ import { Token, type TokenModel, User, type UserModel } from '#shared/models'
 import type { EventHandlerRequest, H3Event } from 'h3'
 import {
   createError,
+  getRequestURL,
   getResponseStatus,
   getResponseStatusText,
   readValidatedBody,
 } from 'h3'
-import { Model, Types } from 'mongoose'
-import { sendEmail } from '../../utils'
+import { Model } from 'mongoose'
+import { createResetToken, digestResetToken, sendEmail } from '../../utils'
 import { UserController } from '../user/user.controller'
+
+// Same answer whether or not the email has an account.
+const RESET_REQUESTED = {
+  status: 200,
+  message: "If that email has an account, we've sent a reset link.",
+}
 
 export class TokenController {
   private tokenModel: Model<TokenModel>
@@ -21,40 +28,25 @@ export class TokenController {
     this.userController = new UserController()
   }
   public sentToken = async (e: H3Event<EventHandlerRequest>) => {
-    const { email, url } = await readValidatedBody(
-      e,
-      tokenEmailInputSchema.parse,
-    )
+    const { email } = await readValidatedBody(e, tokenEmailInputSchema.parse)
     const user = await this.userModel.findOne({ email })
-    if (!user) {
-      throw createError({
-        status: 400,
-        message: 'Bad Request',
-        statusMessage:
-          'Bad Request: user with following email address is not found',
-      })
-    }
-    let token = await this.tokenModel.findOne({
-      userId: new Types.ObjectId(user.id),
-    })
-    if (!token) {
-      const tempPassword = Math.random().toString(36).slice(-8)
-      const hashedToken = await this.userController.hashPassword(tempPassword)
-      token = await new this.tokenModel({
-        userId: user.id,
-        token: hashedToken,
-      }).save()
-    }
+    if (!user) return RESET_REQUESTED
 
-    const message: string = `Dear ${user.name},\n\nWe received a request to reset your password. To proceed with resetting your password, please click the link below:\n${url}/auth/reset-password?user=${user.id}&token=${token.token} \n\nThis link will be active for the next 60 minutes. After that, you will need to request a new link if you still wish to reset your password.\nIf you did not request a password reset, you can safely ignore this email.\n\nThank you,\nBobby Kim`
+    // a new request replaces any earlier link
+    await this.tokenModel.deleteMany({ userId: user._id })
+    const { token, digest } = createResetToken()
+    await new this.tokenModel({ userId: user._id, token: digest }).save()
+
+    // The link points at the host this request reached. Never take it from
+    // the body or X-Forwarded-Host, or anyone could send a real token to their
+    // own site. The scheme comes from the proxy (Vercel terminates HTTPS).
+    const origin = getRequestURL(e, { xForwardedProto: true }).origin
+    const link = `${origin}/auth/reset-password?user=${user.id}&token=${token}`
+
+    const message: string = `Dear ${user.name},\n\nWe received a request to reset your password. To proceed with resetting your password, please click the link below:\n${link} \n\nThis link will be active for the next 60 minutes. After that, you will need to request a new link if you still wish to reset your password.\nIf you did not request a password reset, you can safely ignore this email.\n\nThank you,\nBobby Kim`
     await sendEmail(user.email, 'Password Reset Request', message)
 
-    const status = getResponseStatus(e)
-    const text = getResponseStatusText(e)
-    return {
-      status,
-      message: text,
-    }
+    return RESET_REQUESTED
   }
   public resetPasswordWithToken = async (e: H3Event<EventHandlerRequest>) => {
     const { password, token, userId } = await readValidatedBody(
@@ -69,7 +61,10 @@ export class TokenController {
         statusMessage: 'Not Found: User not found.',
       })
     }
-    const pwResetToken = await this.tokenModel.findOne({ userId, token })
+    const pwResetToken = await this.tokenModel.findOne({
+      userId,
+      token: digestResetToken(token),
+    })
     if (!pwResetToken) {
       throw createError({
         status: 400,

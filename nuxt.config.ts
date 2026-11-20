@@ -92,6 +92,10 @@ export default defineNuxtConfig({
     cloudinaryFolderName: process.env.CLOUDINARY_FOLDER,
     mailerEmailAddress: process.env.MAILER_EMAIL_ADDRESS,
     mailerAppPassword: process.env.MAILER_APP_PASSWORD,
+    // Gmail SMTP; the API tests point these at a local sink (NUXT_MAILER_*)
+    mailerHost: 'smtp.gmail.com',
+    mailerPort: 465,
+    mailerSecure: true,
     public: {
       cloudinarySourceUrl: process.env.CLOUDINARY_SOURCE_URL,
     },

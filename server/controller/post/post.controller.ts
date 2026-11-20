@@ -33,7 +33,7 @@ export class PostController {
   public getAllPost = async (): Promise<PostModel[]> => {
     const allPost = await this.postModel
       .find({})
-      .populate('author', '-password -admin')
+      .populate('author', 'name')
       .sort({ date: -1 })
     if (!allPost) {
       throw createError({
@@ -77,7 +77,7 @@ export class PostController {
     }
     const post = await this.postModel
       .findById(postId)
-      .populate('author', '-password -admin')
+      .populate('author', 'name')
     if (!post) {
       throw createError({
         status: 404,
@@ -116,7 +116,7 @@ export class PostController {
       })
     }
 
-    return await savePost.populate('author', '-password -admin')
+    return await savePost.populate('author', 'name')
   }
   public updatePost = async (
     e: H3Event<EventHandlerRequest>,
@@ -133,7 +133,7 @@ export class PostController {
         statusMessage: 'Post not found',
       })
     }
-    if (post.author !== user._id) {
+    if (!post.author?.equals(user._id)) {
       throw createError({
         status: 401,
         message: 'Access denied',
@@ -147,7 +147,7 @@ export class PostController {
         { content, updatedAt: new Date() },
         { new: true, returnDocument: 'after' },
       )
-      .populate('author', '-password -admin')
+      .populate('author', 'name')
 
     if (!updatedPost) {
       throw createError({
@@ -170,7 +170,7 @@ export class PostController {
       })
     }
     // check if user is authorized
-    if (post.author !== user._id && user.role !== 'ADMIN') {
+    if (!post.author?.equals(user._id) && user.role !== 'ADMIN') {
       throw createError({
         status: 401,
         message: 'Unauthorized',

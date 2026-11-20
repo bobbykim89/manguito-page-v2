@@ -33,9 +33,12 @@ const handleFormSubmit = async () => {
   try {
     await $fetch('/api/token/send-token', {
       method: 'POST',
-      body: { email: emailInputRef.value, url: url.origin },
+      body: { email: emailInputRef.value },
     })
-    alertStore.setAlert('Please check your email', 'success')
+    alertStore.setAlert(
+      "If that email has an account, we've sent a reset link.",
+      'success',
+    )
     router.push({ path: '/auth/login' })
   } catch (error) {
     alertStore.setAlert((error as H3Error).statusMessage!)
