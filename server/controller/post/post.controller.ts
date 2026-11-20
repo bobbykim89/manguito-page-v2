@@ -133,7 +133,7 @@ export class PostController {
         statusMessage: 'Post not found',
       })
     }
-    if (post.author !== user._id) {
+    if (!post.author?.equals(user._id)) {
       throw createError({
         status: 401,
         message: 'Access denied',
@@ -170,7 +170,7 @@ export class PostController {
       })
     }
     // check if user is authorized
-    if (post.author !== user._id && user.role !== 'ADMIN') {
+    if (!post.author?.equals(user._id) && user.role !== 'ADMIN') {
       throw createError({
         status: 401,
         message: 'Unauthorized',

@@ -96,7 +96,7 @@ export class CommentController {
       })
     }
     if (
-      comment.author !== user._id &&
+      !comment.author?.equals(user._id) &&
       user.role !== 'ADMIN' &&
       user.role !== 'MANAGER'
     ) {
