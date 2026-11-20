@@ -47,7 +47,7 @@ const onSubmit = async () => {
 <template>
   <div class="container px-xs py-xl lg:py-2xl">
     <div
-      class="mx-auto max-w-md rounded-lg bg-light-3 px-xs py-md drop-shadow-md md:px-sm"
+      class="mx-auto max-w-[28rem] rounded-lg bg-light-3 px-xs py-md drop-shadow-md md:px-sm"
     >
       <h2 class="h2-md mb-sm text-center">Login</h2>
       <p
@@ -58,7 +58,7 @@ const onSubmit = async () => {
         Your session expired, please log in again.
       </p>
       <form @submit.prevent="onSubmit">
-        <MclFormGroup label-for="login-email" label="Email:" class="mb-xs">
+        <MclFormGroup field-id="login-email" label="Email:" class="mb-xs">
           <MclInputText
             id="login-email"
             rounded
@@ -67,7 +67,7 @@ const onSubmit = async () => {
             v-model="loginCred.email"
           />
         </MclFormGroup>
-        <MclFormGroup label-for="login-pw" label="Password:" class="mb-xs">
+        <MclFormGroup field-id="login-pw" label="Password:" class="mb-xs">
           <MclInputText
             id="login-pw"
             rounded

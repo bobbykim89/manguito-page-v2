@@ -91,7 +91,7 @@ const onDelete = (e: Event) => {
       </div>
       <div v-else>
         <form @submit.prevent="onSave">
-          <MclFormGroup label-for="edit-content" label="Edit content:">
+          <MclFormGroup field-id="edit-content" label="Edit content:">
             <MclTextArea
               id="edit-content"
               bg-color="light-3"

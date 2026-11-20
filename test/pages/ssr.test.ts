@@ -24,3 +24,16 @@ describe('error page', () => {
     expect(res.html).toContain('<title>404 | Manguito Page')
   })
 })
+
+describe('form labels', () => {
+  it.each([
+    ['/auth/login', ['login-email', 'login-pw']],
+    ['/auth/signup', ['signup-name', 'signup-email', 'signup-pw']],
+  ])('ties each label on %s to its input', async (path, ids) => {
+    const res = await page(path)
+    for (const id of ids) {
+      expect(res.html).toMatch(new RegExp(`<label[^>]*for="${id}"`))
+      expect(res.html).toMatch(new RegExp(`<input[^>]*id="${id}"`))
+    }
+  })
+})

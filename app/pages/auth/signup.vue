@@ -51,11 +51,11 @@ const onSubmit = async () => {
 <template>
   <div class="container px-xs py-xl lg:py-2xl">
     <div
-      class="mx-auto max-w-md rounded-lg bg-light-3 px-xs py-md drop-shadow-md md:px-sm"
+      class="mx-auto max-w-[28rem] rounded-lg bg-light-3 px-xs py-md drop-shadow-md md:px-sm"
     >
       <h2 class="h2-md mb-sm text-center">Signup</h2>
       <form @submit.prevent="onSubmit">
-        <MclFormGroup label-for="signup-name" label="Name:" class="mb-xs">
+        <MclFormGroup field-id="signup-name" label="Name:" class="mb-xs">
           <MclInputText
             id="signup-name"
             rounded
@@ -63,7 +63,7 @@ const onSubmit = async () => {
             v-model="userInfo.name"
           />
         </MclFormGroup>
-        <MclFormGroup label-for="signup-email" label="Email:" class="mb-xs">
+        <MclFormGroup field-id="signup-email" label="Email:" class="mb-xs">
           <MclInputText
             id="signup-email"
             rounded
@@ -72,19 +72,20 @@ const onSubmit = async () => {
             v-model="userInfo.email"
           />
         </MclFormGroup>
-        <MclFormGroup label-for="signup-pw" label="Password:" class="mb-xs">
+        <MclFormGroup field-id="signup-pw" label="Password:" class="mb-xs">
           <MclInputText
             id="signup-pw"
             rounded
             type="password"
             required
             v-model="userInfo.password"
-            pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])[A-Za-z\d\W_]{8,}$"
+            :pattern="passwordPattern"
+            :invalid="breaksPasswordRule(userInfo.password)"
             invalid-feedback="Password must include one number, one uppercase and lowercase letter, one special character with at least 8 characters length."
           />
         </MclFormGroup>
         <MclFormGroup
-          label-for="signup-pw-confirm"
+          field-id="signup-pw-confirm"
           label="Confirm Password:"
           class="mb-xs"
         >

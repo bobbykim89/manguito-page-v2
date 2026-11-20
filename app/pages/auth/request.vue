@@ -46,12 +46,12 @@ const handleFormSubmit = async () => {
 <template>
   <div class="container px-xs py-xl lg:py-2xl">
     <div
-      class="mx-auto max-w-md rounded-lg bg-light-3 px-xs py-md drop-shadow-md md:px-sm"
+      class="mx-auto max-w-[28rem] rounded-lg bg-light-3 px-xs py-md drop-shadow-md md:px-sm"
     >
       <h2 class="h2-md mb-sm text-center">Request Reset</h2>
       <form @submit.prevent="handleFormSubmit">
         <MclFormGroup
-          label-for="email"
+          field-id="email"
           label="Email:"
           :text-bold="true"
           class="mb-xs"

@@ -4,3 +4,10 @@ allowBuilds:
   mongodb-memory-server: true
   sharp: true
   vue-demi: true
+# jsdom 28+ (via isomorphic-dompurify, a dependency of @bobbykim/manguito-theme
+# since 1.2.0) require()s ESM-only packages, which Vercel's Node runtime rejects
+# (ERR_REQUIRE_ESM, every server-rendered page 500s). isomorphic-dompurify
+# documents this pin as the workaround (mango-planner-v2 uses it too):
+# https://github.com/kkomelin/isomorphic-dompurify/issues/394
+overrides:
+  isomorphic-dompurify>jsdom: 25.0.1

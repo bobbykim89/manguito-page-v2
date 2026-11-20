@@ -35,10 +35,6 @@ const onModalClose = () => {
   selectedUser.value = null
   selectedRole.value = 'USER'
 }
-const onOptionChange = (e: Event, value: UserRoleType) => {
-  e.preventDefault()
-  selectedRole.value = value
-}
 const onSubmit = async () => {
   if (!cookie.value) return
   if (selectedUser.value === null) return
@@ -94,7 +90,7 @@ const onSubmit = async () => {
       ref="modalRef"
       title="Update user role"
       backdrop-color="dark-3"
-      :class-name="['rounded-lg']"
+      custom-class="rounded-lg"
       @close="onModalClose"
     >
       <template #body="{ close }">
@@ -111,10 +107,11 @@ const onSubmit = async () => {
             >
               <MclInputRadio
                 :id="`option-${role.toLowerCase()}`"
+                v-model="selectedRole"
+                name="user-role"
                 :value="role"
-                :checked="role === selectedRole"
                 bg-color="primary"
-                @change="onOptionChange!"
+                checked-bg-color="primary"
               />
               <label :for="`option-${role.toLowerCase()}`" class="capitalize">{{
                 role

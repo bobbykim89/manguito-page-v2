@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { Collapse } from '@bobbykim/manguito-theme'
-import { vCollapse } from '@bobbykim/manguito-theme/directives'
+import { AccordionGroup, Collapse } from '@bobbykim/manguito-theme'
+import { useCollapseTrigger } from '@bobbykim/manguito-theme/composable'
 import { MclFormGroup, MclInputText } from '@bobbykim/mcl-forms'
 import { ref } from 'vue'
 
@@ -12,6 +12,15 @@ const emit = defineEmits<{
 const usernameRef = ref<string>('')
 const currentPasswordRef = ref<string>('')
 const newPasswordRef = ref<string>('')
+
+const usernamePanel = ref<InstanceType<typeof Collapse>>()
+const passwordPanel = ref<InstanceType<typeof Collapse>>()
+const usernameTrigger = useCollapseTrigger(usernamePanel, {
+  id: 'update-username',
+})
+const passwordTrigger = useCollapseTrigger(passwordPanel, {
+  id: 'update-password',
+})
 
 const onUsernameUpdateSubmit = (e: Event) => {
   emit('on-username-update', e, usernameRef.value)
@@ -25,23 +34,25 @@ const onPwUpdateSubmit = (e: Event) => {
 </script>
 
 <template>
-  <div class="rounded-md bg-light-4 px-2xs py-xs drop-shadow-md">
+  <AccordionGroup class="rounded-md bg-light-4 px-2xs py-xs drop-shadow-md">
     <!-- username update -->
     <div class="mb-xs overflow-hidden rounded-md drop-shadow-md">
       <button
-        class="block w-full bg-light-3 px-xs py-3xs text-left transition-colors duration-300 ease-linear hover:bg-opacity-60"
-        v-collapse:update-username
+        class="block w-full bg-light-3 px-xs py-3xs text-left transition-colors duration-300 ease-linear hover:bg-light-3/60 focus-visible:mcl-focus-ring focus-visible:outline-offset-[-3px]"
+        type="button"
+        v-bind="usernameTrigger.attrs.value"
+        @click="usernameTrigger.toggle()"
       >
         Update Username
       </button>
       <Collapse
+        ref="usernamePanel"
         id="update-username"
-        accordion="update-user"
-        class-name="bg-light-3/65"
+        custom-class="bg-light-3/65"
       >
         <div class="px-2xs py-xs">
           <form @submit.prevent="onUsernameUpdateSubmit">
-            <MclFormGroup label-for="user-name" label="Username:">
+            <MclFormGroup field-id="user-name" label="Username:">
               <MclInputText
                 id="user-name"
                 v-model="usernameRef"
@@ -60,19 +71,21 @@ const onPwUpdateSubmit = (e: Event) => {
     <!-- pw update -->
     <div class="overflow-hidden rounded-md drop-shadow-md">
       <button
-        class="block w-full bg-light-3 px-xs py-3xs text-left transition-colors duration-300 ease-linear hover:bg-opacity-60"
-        v-collapse:update-password
+        class="block w-full bg-light-3 px-xs py-3xs text-left transition-colors duration-300 ease-linear hover:bg-light-3/60 focus-visible:mcl-focus-ring focus-visible:outline-offset-[-3px]"
+        type="button"
+        v-bind="passwordTrigger.attrs.value"
+        @click="passwordTrigger.toggle()"
       >
         Update Password
       </button>
       <Collapse
+        ref="passwordPanel"
         id="update-password"
-        accordion="update-user"
-        class-name="bg-light-3/65"
+        custom-class="bg-light-3/65"
       >
         <div class="px-2xs py-xs">
           <form @submit.prevent="onPwUpdateSubmit">
-            <MclFormGroup label-for="current-pw" label="Current password:">
+            <MclFormGroup field-id="current-pw" label="Current password:">
               <MclInputText
                 id="current-pw"
                 rounded
@@ -81,7 +94,7 @@ const onPwUpdateSubmit = (e: Event) => {
                 type="password"
               />
             </MclFormGroup>
-            <MclFormGroup label-for="new-pw" label="New password:">
+            <MclFormGroup field-id="new-pw" label="New password:">
               <MclInputText
                 id="new-pw"
                 rounded
@@ -97,7 +110,7 @@ const onPwUpdateSubmit = (e: Event) => {
         </div>
       </Collapse>
     </div>
-  </div>
+  </AccordionGroup>
 </template>
 
 <style scoped></style>

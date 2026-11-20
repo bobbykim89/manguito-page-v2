@@ -19,7 +19,7 @@ const submitComment = () => {
     class="overflow-x-hidden rounded-md bg-light-4 px-xs py-xs drop-shadow-md"
   >
     <form @submit.prevent="submitComment">
-      <MclFormGroup label-for="comment-input" label="Comment:">
+      <MclFormGroup field-id="comment-input" label="Comment:">
         <MclTextArea
           id="comment-input"
           bg-color="light-3"

@@ -3,7 +3,6 @@ import { useRequestURL } from '#app'
 import { ImageUrl } from '@/composables/useImageUrl'
 import { useAlertStore, usePostStore, useUserStore } from '@/stores'
 import { Modal } from '@bobbykim/manguito-theme'
-import { vToggle } from '@bobbykim/manguito-theme/directives'
 import { MclFormGroup, MclInputFile, MclTextArea } from '@bobbykim/mcl-forms'
 import imageCompression from 'browser-image-compression'
 import { storeToRefs } from 'pinia'
@@ -109,8 +108,8 @@ const onSubmit = async (): Promise<void> => {
         <!-- toggle modal -->
         <button
           v-if="isAuthorizedUser"
-          class="mt-sm rounded-full bg-primary p-2xs text-light-1 transition-colors duration-300 ease-linear hover:bg-opacity-70"
-          v-toggle:new-post-modal
+          class="mt-sm rounded-full bg-primary p-2xs text-light-1 transition-colors duration-300 ease-linear hover:bg-primary/70 focus-visible:mcl-focus-ring"
+          @click="modalRef?.open()"
           aria-label="new post"
         >
           <svg
@@ -144,7 +143,7 @@ const onSubmit = async (): Promise<void> => {
         </div>
         <div v-if="showLoadMore" class="col-span-3">
           <button
-            class="w-full bg-primary px-xs py-2xs font-semibold text-light-1 transition-colors duration-300 ease-linear hover:bg-opacity-60"
+            class="w-full bg-primary px-xs py-2xs font-semibold text-light-1 transition-colors duration-300 ease-linear hover:bg-primary/60"
             @click="onLoadMore"
           >
             Load More
@@ -157,31 +156,31 @@ const onSubmit = async (): Promise<void> => {
       id="new-post-modal"
       backdrop-color="dark-3"
       title="New post"
-      :class-name="['rounded-lg']"
+      custom-class="rounded-lg"
       @close="onModalClose"
     >
       <template #body="{ close }">
         <div class="px-xs pb-xs">
           <form @submit.prevent="onSubmit">
-            <MclFormGroup label-for="file-input">
+            <MclFormGroup field-id="file-input" class="mt-sm">
               <MclInputFile
                 id="file-input"
                 v-model="imageFileRef"
                 rounded
-                is-required
+                required
                 button-text="Browse"
                 button-color="primary"
                 button-text-color="light-1"
-                display-border
+                show-border
               />
             </MclFormGroup>
-            <MclFormGroup label-for="content-input">
+            <MclFormGroup field-id="content-input" class="mt-sm">
               <MclTextArea
                 id="content-input"
                 v-model="contentRef"
                 required
                 rounded
-                display-border
+                show-border
               />
             </MclFormGroup>
             <div class="mt-xs flex items-center justify-end gap-2">
