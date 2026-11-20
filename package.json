@@ -36,7 +36,7 @@
     "@nuxt/fonts": "0.13.0",
     "@nuxt/image": "^2.2.1",
     "@nuxtjs/robots": "^7.0.2",
-    "@pinia/nuxt": "0.11.3",
+    "@pinia/nuxt": "1.0.3",
     "@vueuse/core": "14.2.0",
     "bcryptjs": "^3.0.3",
     "browser-image-compression": "^2.0.2",
@@ -45,7 +45,7 @@
     "mongoose": "^9.12.2",
     "nodemailer": "^8.0.0",
     "nuxt": "4.6.4",
-    "pinia": "3.0.4",
+    "pinia": "4.1.0",
     "vue": "3.5.45",
     "zod": "4.6.7"
   },
