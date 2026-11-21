@@ -1,4 +1,5 @@
-import { createError, type H3Event, readMultipartFormData } from 'h3'
+import { type H3Event, readMultipartFormData } from 'h3'
+import { apiError } from './apiError.util'
 
 export const readFormDataText = async (
   e: H3Event,
@@ -6,20 +7,18 @@ export const readFormDataText = async (
 ): Promise<void> => {
   const body = await readMultipartFormData(e)
   if (!body) {
-    throw createError({
-      status: 404,
-      message: 'Not found',
-      statusMessage: 'Request body not found, please try again',
-    })
+    throw apiError(
+      'VALIDATION_FAILED',
+      'Request body not found, please try again',
+    )
   }
   const content = body.find((item) => item.name === key)
   if (!content) {
-    throw createError({
-      status: 404,
-      message: 'Not found',
-      statusMessage: 'Content field not found',
-    })
+    throw apiError('VALIDATION_FAILED', 'Content field not found')
   }
   const decodedContent = Buffer.from(content.data).toString()
+  if (!decodedContent.trim()) {
+    throw apiError('VALIDATION_FAILED', 'Please write a caption.')
+  }
   e.context[key] = decodedContent
 }

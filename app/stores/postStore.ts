@@ -12,6 +12,7 @@ export const usePostStore = defineStore('post', () => {
   const alertStore = useAlertStore()
   const userStore = useUserStore()
   const cookie = useAuthToken()
+  const { $api } = useNuxtApp()
   // POST: states
   const posts = ref<PostType[]>([])
   const currentPost = ref<PostType | null>(null)
@@ -31,17 +32,9 @@ export const usePostStore = defineStore('post', () => {
     }, 500)
   }
   const getAllPosts = async () => {
-    try {
-      const { data: res } = await useFetch<PostType[]>('/api/post', {
-        method: 'GET',
-      })
-      if (!res.value)
-        throw new Error('Failed to get response from server, please try again')
-
-      posts.value = res.value
-    } catch (error) {
-      handlePostError(error)
-    }
+    const { data, error } = await useApi<PostType[]>('/api/post')
+    if (error.value) return handlePostError(error.value)
+    posts.value = data.value ?? []
   }
   const setCurrentPost = (postId: string) => {
     setPostLoadnigTimeout()
@@ -108,14 +101,13 @@ export const usePostStore = defineStore('post', () => {
     try {
       const { isAuthenticated, role } = userStore.getCurrentAuthInfo
       if (!cookie.value || !isAuthenticated)
-        throw new Error('No user authentication found, please login')
+        return alertStore.setAlert('No user authentication found, please login')
 
       if (role !== 'ADMIN' && role !== 'MANAGER')
         throw new Error('Unauthorized action for current user')
 
-      const res = await $fetch<PostType>('/api/post', {
+      const res = await $api<PostType>('/api/post', {
         method: 'POST',
-        headers: { Authorization: cookie.value },
         body: payload,
       })
       posts.value = [res, ...posts.value]
@@ -128,7 +120,7 @@ export const usePostStore = defineStore('post', () => {
     try {
       const { isAuthenticated, currentUser } = userStore.getCurrentAuthInfo
       if (!cookie.value || !isAuthenticated)
-        throw new Error('No user authentication found, please login')
+        return alertStore.setAlert('No user authentication found, please login')
 
       const currentPost = posts.value.find(
         (item) => item._id.toString() === postId,
@@ -136,9 +128,8 @@ export const usePostStore = defineStore('post', () => {
       if (currentPost?.author._id !== currentUser?._id)
         throw new Error('Unauthorized user')
 
-      const res = await $fetch<PostType>(`/api/post/${postId}`, {
+      const res = await $api<PostType>(`/api/post/${postId}`, {
         method: 'PUT',
-        headers: { Authorization: cookie.value },
         body: payload,
       })
       posts.value = posts.value.map((post) =>
@@ -154,7 +145,7 @@ export const usePostStore = defineStore('post', () => {
       const { isAuthenticated, currentUser, role } =
         userStore.getCurrentAuthInfo
       if (!cookie.value || !isAuthenticated)
-        throw new Error('No user authentication found, please login')
+        return alertStore.setAlert('No user authentication found, please login')
 
       const currentPost = posts.value.find(
         (item) => item._id.toString() === postId,
@@ -162,9 +153,8 @@ export const usePostStore = defineStore('post', () => {
       if (currentPost?.author._id !== currentUser?._id && role !== 'ADMIN')
         throw new Error('Unauthorized user')
 
-      await $fetch(`/api/post/${postId}`, {
+      await $api(`/api/post/${postId}`, {
         method: 'DELETE',
-        headers: { Authorization: cookie.value },
       })
       posts.value = posts.value.filter((post) => post._id.toString() !== postId)
       alertStore.setAlert('Successfully deleted post!', 'success')
@@ -172,12 +162,14 @@ export const usePostStore = defineStore('post', () => {
       handlePostError(error)
     }
   }
+  // a dead session logs out (like userStore); a refusal only alerts
   const handlePostError = (err: unknown) => {
     const errorMessage: string = errorCheck.extractMessage(err)
-
+    if (errorCheck.isAuthError(err)) userStore.expireSession()
     console.error(errorMessage)
     alertStore.setAlert(errorMessage)
   }
+
   return {
     posts,
     currentPost,

@@ -9,7 +9,7 @@ describe('GET /api/post', () => {
   it('returns an empty list from an empty database', async () => {
     const res = await api('GET', '/api/post')
     expect(res.status).toBe(200)
-    expect(res.json).toEqual([])
+    expect(res.json.data).toEqual([])
   })
 })
 
@@ -19,7 +19,7 @@ describe('author fields', () => {
     await insertPost(id)
     const res = await api('GET', '/api/post')
     expect(res.status).toBe(200)
-    expect(Object.keys(res.json[0].author).sort()).toEqual(['_id', 'name'])
+    expect(Object.keys(res.json.data[0].author).sort()).toEqual(['_id', 'name'])
   })
 
   it('lists trimmed posts with no author at all', async () => {
@@ -27,6 +27,6 @@ describe('author fields', () => {
     await insertPost(id)
     const res = await api('GET', '/api/post/trimmed')
     expect(res.status).toBe(200)
-    expect(Object.keys(res.json[0]).sort()).toEqual(['_id', 'imageId'])
+    expect(Object.keys(res.json.data[0]).sort()).toEqual(['_id', 'imageId'])
   })
 })

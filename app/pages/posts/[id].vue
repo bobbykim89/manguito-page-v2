@@ -25,11 +25,10 @@ const { copy, isSupported } = useClipboard()
 
 postStore.setCurrentPost(route.params.id as string)
 
-const { data: comments, refresh } = await useFetch<CommentType[]>(
+const { $api } = useNuxtApp()
+const reportError = useReportApiError()
+const { data: comments, refresh } = await useApi<CommentType[]>(
   `/api/comment/${route.params.id}`,
-  {
-    method: 'GET',
-  },
 )
 
 const resolveMetaImage = (img: string) => {
@@ -113,21 +112,25 @@ const deletePost = async () => {
 }
 const onCommentSubmit = async (text: string) => {
   if (!cookie.value) return
-  await $fetch(`/api/comment/${route.params.id}`, {
-    method: 'POST',
-    headers: { Authorization: cookie.value },
-    body: { text },
-  })
+  try {
+    await $api(`/api/comment/${route.params.id}`, {
+      method: 'POST',
+      body: { text },
+    })
+  } catch (err) {
+    return reportError(err)
+  }
   alertStore.setAlert('Successfully created a comment!', 'success')
   refresh()
 }
 const onCommentDelete = async (id: string) => {
   if (isManagerOrUp.value === false && isAuthor.value === false) return
   if (!cookie.value) return
-  await $fetch(`/api/comment/${id}`, {
-    method: 'DELETE',
-    headers: { Authorization: cookie.value },
-  })
+  try {
+    await $api(`/api/comment/${id}`, { method: 'DELETE' })
+  } catch (err) {
+    return reportError(err)
+  }
   alertStore.setAlert('Successfully deleted a comment!', 'success')
   refresh()
 }

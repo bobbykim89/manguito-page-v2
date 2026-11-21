@@ -1,6 +1,7 @@
 import { useRuntimeConfig } from '#imports'
 import { v2 as cloudinary } from 'cloudinary'
-import { createError, type H3Event, readMultipartFormData } from 'h3'
+import { type H3Event, readMultipartFormData } from 'h3'
+import { apiError } from './apiError.util'
 
 const config = useRuntimeConfig()
 
@@ -16,48 +17,38 @@ export const uploadCloudinary = async (
 ): Promise<void> => {
   const body = await readMultipartFormData(e)
   if (!body) {
-    throw createError({
-      status: 404,
-      message: 'Not found',
-      statusMessage: 'Request body not found, please try again',
-    })
+    throw apiError(
+      'VALIDATION_FAILED',
+      'Request body not found, please try again',
+    )
   }
   const file = body.find((item) => {
     return item.name === key
   })
   if (!file) {
-    throw createError({
-      status: 404,
-      message: 'Not found',
-      statusMessage: 'File not found',
-    })
+    throw apiError('VALIDATION_FAILED', 'File not found')
   }
   if (file.type !== 'image/jpeg' && file.type !== 'image/png') {
-    throw createError({
-      status: 415,
-      message: 'Unsupported media type',
-      statusMessage:
-        'Unsupported media type please check if file has png or jpeg format',
-    })
+    throw apiError(
+      'UNSUPPORTED_MEDIA_TYPE',
+      'Unsupported media type please check if file has png or jpeg format',
+    )
   }
   const base64EncodedImage = Buffer.from(file.data).toString('base64')
   const dataUrl = `data:${file.type};base64,${base64EncodedImage}`
 
-  const { public_id } = await cloudinary.uploader.upload(
-    dataUrl,
-    {
+  let public_id: string
+  try {
+    ;({ public_id } = await cloudinary.uploader.upload(dataUrl, {
       folder: config.cloudinaryFolderName,
-    },
-    (err) => {
-      if (err) {
-        throw createError({
-          status: err.http_code,
-          message: err.message,
-          statusMessage: err.message,
-        })
-      }
-    },
-  )
+    }))
+  } catch (err) {
+    console.error(err)
+    throw apiError(
+      'UPSTREAM_FAILED',
+      'Could not upload the image, please try again.',
+    )
+  }
 
   e.context.file = { imageId: public_id }
 }

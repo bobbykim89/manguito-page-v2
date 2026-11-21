@@ -1,20 +1,24 @@
 import { resetPwInputSchema, tokenEmailInputSchema } from '#shared/dto/token'
 import { Token, type TokenModel, User, type UserModel } from '#shared/models'
 import type { EventHandlerRequest, H3Event } from 'h3'
-import {
-  createError,
-  getRequestURL,
-  getResponseStatus,
-  getResponseStatusText,
-  readValidatedBody,
-} from 'h3'
+import { getRequestURL, readValidatedBody } from 'h3'
 import { Model } from 'mongoose'
-import { createResetToken, digestResetToken, sendEmail } from '../../utils'
+import {
+  apiError,
+  createResetToken,
+  digestResetToken,
+  parseObjectId,
+  sendEmail,
+} from '../../utils'
 import { UserController } from '../user/user.controller'
 
 // Same answer whether or not the email has an account.
+// One answer for a bad user id, an unknown user and a wrong or used token, so
+// the endpoint doesn't say which user ids exist.
+const badResetLink = () =>
+  apiError('VALIDATION_FAILED', 'This reset link is invalid or has expired.')
+
 const RESET_REQUESTED = {
-  status: 200,
   message: "If that email has an account, we've sent a reset link.",
 }
 
@@ -53,35 +57,23 @@ export class TokenController {
       e,
       resetPwInputSchema.parse,
     )
-    const user = await this.userModel.findById(userId)
-    if (!user) {
-      throw createError({
-        status: 400,
-        message: 'Not Found',
-        statusMessage: 'Not Found: User not found.',
-      })
+    let id
+    try {
+      id = parseObjectId(userId)
+    } catch {
+      throw badResetLink()
     }
+    const user = await this.userModel.findById(id)
+    if (!user) throw badResetLink()
     const pwResetToken = await this.tokenModel.findOne({
-      userId,
+      userId: id,
       token: digestResetToken(token),
     })
-    if (!pwResetToken) {
-      throw createError({
-        status: 400,
-        message: 'Not Found',
-        statusMessage: 'Not Found: Token not found.',
-      })
-    }
+    if (!pwResetToken) throw badResetLink()
     const hashedPassword = await this.userController.hashPassword(password)
     user.password = hashedPassword
     await user.save()
     await pwResetToken.deleteOne()
-
-    const status = getResponseStatus(e)
-    const text = getResponseStatusText(e)
-    return {
-      status,
-      message: text,
-    }
+    return null
   }
 }

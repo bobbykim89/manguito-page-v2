@@ -12,14 +12,17 @@ import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { useAlertStore } from './alertStore'
 
+const NO_SESSION = 'No user authentication found, please login'
+
 interface AuthToken {
-  access_token: string
+  accessToken: string
 }
 
 export const useUserStore = defineStore('user', () => {
   const errorCheck = useErrorCheck()
   const alertStore = useAlertStore()
   const cookie = useAuthToken()
+  const { $api } = useNuxtApp()
   // USERS: states
   const currentUser = ref<UserType | null>(null)
   const isAuthenticated = ref<boolean>(false)
@@ -42,12 +45,10 @@ export const useUserStore = defineStore('user', () => {
   // USERS: actions
   const authUser = async () => {
     try {
-      if (!cookie.value)
-        throw new Error('No user authentication found, please login')
+      if (!cookie.value) return alertNoSession()
 
-      const res = await $fetch<UserType>('/api/auth', {
+      const res = await $api<UserType>('/api/auth', {
         method: 'GET',
-        headers: { Authorization: cookie.value },
       })
       currentUser.value = res
       isAuthenticated.value = true
@@ -60,26 +61,25 @@ export const useUserStore = defineStore('user', () => {
     try {
       if (!cookie.value) return
 
-      const res = await $fetch<UserType>('/api/auth', {
+      const res = await $api<UserType>('/api/auth', {
         method: 'GET',
-        headers: { Authorization: cookie.value },
       })
       currentUser.value = res
       isAuthenticated.value = true
       role.value = res.role
       alertStore.setAlert('Successfully authenticated user', 'success')
     } catch (error) {
+      // only UNAUTHENTICATED ends the session (handleAuthError does that)
       handleAuthError(error, true)
-      cookie.value = null
     }
   }
   const loginWithCredential = async (payload: AuthInput) => {
     try {
-      const res = await $fetch<AuthToken>('/api/auth', {
+      const res = await $api<AuthToken>('/api/auth', {
         method: 'POST',
         body: payload,
       })
-      cookie.value = res.access_token
+      cookie.value = res.accessToken
       await authUser()
       alertStore.setAlert('Login Successful!', 'success')
     } catch (error) {
@@ -88,11 +88,11 @@ export const useUserStore = defineStore('user', () => {
   }
   const signupUser = async (payload: UserInput) => {
     try {
-      const res = await $fetch<AuthToken>('/api/user', {
+      const res = await $api<AuthToken>('/api/user', {
         method: 'POST',
         body: payload,
       })
-      cookie.value = res.access_token
+      cookie.value = res.accessToken
       await authUser()
       alertStore.setAlert('Signup successful!', 'success')
     } catch (error) {
@@ -101,12 +101,10 @@ export const useUserStore = defineStore('user', () => {
   }
   const updateUsername = async (payload: NewUsernameInput) => {
     try {
-      if (!cookie.value)
-        throw new Error('No user authentication found, please login')
+      if (!cookie.value) return alertNoSession()
 
-      await $fetch<UserType>('/api/user/user-info/username', {
+      await $api<UserType>('/api/user/user-info/username', {
         method: 'PUT',
-        headers: { Authorization: cookie.value },
         body: payload,
       })
       await authUser()
@@ -117,12 +115,10 @@ export const useUserStore = defineStore('user', () => {
   }
   const updatePassword = async (payload: PwUpdateInput) => {
     try {
-      if (!cookie.value)
-        throw new Error('No user authentication found, please login')
+      if (!cookie.value) return alertNoSession()
 
-      await $fetch('/api/user/user-info/password', {
+      await $api('/api/user/user-info/password', {
         method: 'PUT',
-        headers: { Authorization: cookie.value },
         body: payload,
       })
       await authUser()
@@ -140,12 +136,10 @@ export const useUserStore = defineStore('user', () => {
   }
   const setAdmin = async (payload: SetAdminInput) => {
     try {
-      if (!cookie.value)
-        throw new Error('No user authentication found, please login')
+      if (!cookie.value) return alertNoSession()
 
-      await $fetch<UserType>('/api/user/admin', {
+      await $api<UserType>('/api/user/admin', {
         method: 'PUT',
-        headers: { Authorization: cookie.value },
         body: payload,
       })
       await authUser()
@@ -154,30 +148,31 @@ export const useUserStore = defineStore('user', () => {
       handleAuthError(error)
     }
   }
-  const isUnauthorized = (err: unknown): boolean =>
-    !!err &&
-    typeof err === 'object' &&
-    'statusCode' in err &&
-    err.statusCode === 401
   // quiet: the startup session check, where a rejected cookie logs out silently
+  // the session is gone: log out; guards send protected pages to login
+  const expireSession = () => {
+    cookie.value = null
+    currentUser.value = null
+    isAuthenticated.value = false
+    role.value = null
+    sessionExpired.value = true
+  }
+  const alertNoSession = () => {
+    alertStore.setAlert(NO_SESSION)
+  }
+  // quiet: the startup session check, where a dead session logs out silently.
+  // Only UNAUTHENTICATED ends the session; a refusal or a wrong password
+  // (FORBIDDEN, INVALID_CREDENTIALS) only alerts.
   const handleAuthError = (err: unknown, quiet = false) => {
     const errorMessage: string = errorCheck.extractMessage(err)
-    const checkAuthError: boolean = errorCheck.isAuthError(err)
-    if (checkAuthError) {
-      currentUser.value = null
-      isAuthenticated.value = false
-      role.value = null
-    }
-    // a rejected session logs out; guards send protected pages to login.
-    // Only an action the user started gets told about it.
-    if (isUnauthorized(err)) {
-      cookie.value = null
-      sessionExpired.value = true
+    if (errorCheck.isAuthError(err)) {
+      expireSession()
       if (quiet) return
     }
     console.error(errorMessage)
     alertStore.setAlert(errorMessage)
   }
+
   const ensureAuth = (): Promise<void> => {
     authCheck ??= getCurrentUser()
     return authCheck
@@ -196,5 +191,6 @@ export const useUserStore = defineStore('user', () => {
     updatePassword,
     logoutUser,
     setAdmin,
+    expireSession,
   }
 })
