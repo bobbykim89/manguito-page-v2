@@ -15,6 +15,13 @@ describe('server-rendered pages', () => {
   })
 })
 
+describe('post page', () => {
+  it('renders a post page with a bad id without a server error', async () => {
+    const res = await page('/posts/not-an-id')
+    expect(res.status).toBeLessThan(500)
+  })
+})
+
 describe('error page', () => {
   it('shows a 404 for an unknown route', async () => {
     const res = await page('/does-not-exist')

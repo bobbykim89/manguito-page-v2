@@ -1,12 +1,13 @@
 import { createHash } from 'node:crypto'
 import mongoose from 'mongoose'
 import { beforeEach, describe, expect, inject, it } from 'vitest'
-import { api } from '../utils/api'
+import { api, expectApiError } from '../utils/api'
 import { insertUser } from '../utils/auth'
 import { db } from '../utils/db'
 import { resetFakes, resetLinkIn, sentMail } from '../utils/fakes'
 
 const GENERIC = "If that email has an account, we've sent a reset link."
+const RESET_LINK = 'This reset link is invalid or has expired.'
 
 const requestReset = (email: string, headers?: Record<string, string>) =>
   api('POST', '/api/token/send-token', {
@@ -95,7 +96,7 @@ describe('POST /api/token/send-token', () => {
     const first = (await emailedLink(email)).searchParams.get('token')!
     const second = (await emailedLink(email)).searchParams.get('token')!
     expect(await storedTokens(id)).toHaveLength(1)
-    expect((await resetWith(id, first)).status).toBe(400)
+    expectApiError(await resetWith(id, first), 'VALIDATION_FAILED', RESET_LINK)
     expect((await resetWith(id, second)).status).toBe(200)
   })
 })
@@ -114,13 +115,21 @@ describe('POST /api/token/reset-password', () => {
     expect(res.json).toEqual({ ok: true, data: null })
     expect((await users.findOne({ _id }))!.password).not.toBe(before)
     expect(await storedTokens(id)).toHaveLength(0)
-    expect((await resetWith(id, token)).status).toBe(400)
+    expectApiError(await resetWith(id, token), 'VALIDATION_FAILED', RESET_LINK)
   })
 
   it('rejects the stored value as a token', async () => {
     const { id, email } = await insertUser()
     await emailedLink(email)
     const stored = (await storedTokens(id))[0]!.token as string
-    expect((await resetWith(id, stored)).status).toBe(400)
+    expectApiError(await resetWith(id, stored), 'VALIDATION_FAILED', RESET_LINK)
+  })
+
+  it('answers the same for a user id with no account', async () => {
+    const res = await resetWith(
+      new mongoose.Types.ObjectId().toString(),
+      'a'.repeat(64),
+    )
+    expectApiError(res, 'VALIDATION_FAILED', RESET_LINK)
   })
 })

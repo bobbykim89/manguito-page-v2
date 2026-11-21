@@ -1,9 +1,10 @@
 import type { H3Event } from 'h3'
 import { postController } from '../../controller'
 
+// reads the caption first, so a request without one never uploads an image
 const uploadPostImage = async (e: H3Event) => {
-  await uploadCloudinary(e)
   await readFormDataText(e)
+  await uploadCloudinary(e)
 }
 
 export default defineApiRoute({
