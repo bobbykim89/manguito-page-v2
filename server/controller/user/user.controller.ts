@@ -13,6 +13,7 @@ import type { EventHandlerRequest, H3Event, H3EventContext } from 'h3'
 import { createError, readValidatedBody } from 'h3'
 import jwt from 'jsonwebtoken'
 import type { Model } from 'mongoose'
+import { apiError } from '../../utils'
 
 export class UserController {
   private config: RuntimeConfig
@@ -62,11 +63,10 @@ export class UserController {
     // check if current password matches
     const isMatch = await bcrypt.compare(currentPassword, user.password)
     if (!isMatch) {
-      throw createError({
-        status: 403,
-        message: 'Validation error',
-        statusMessage: 'Invalid credential: please check your password again',
-      })
+      throw apiError(
+        'INVALID_CREDENTIALS',
+        'Invalid credential: please check your password again',
+      )
     }
     const hashedNewPw = await this.hashPassword(newPassword)
     const updatedUser = await this.userModel.findByIdAndUpdate(
@@ -114,21 +114,13 @@ export class UserController {
     const user = await this.getRawCurrentUserData(e.context)
     const { phrase } = await readValidatedBody(e, setAdminInputSchema.parse)
     if (phrase !== this.config.adminSecretPhrase) {
-      throw createError({
-        status: 403,
-        message: 'Forbidden',
-        statusMessage: 'Access denied.',
-      })
+      throw apiError('FORBIDDEN', 'Access denied.')
     }
     const existingAdmins = await this.userModel
       .find({ role: 'ADMIN' })
       .select('-password')
     if (existingAdmins.length > 0) {
-      throw createError({
-        status: 403,
-        message: 'Forbidden',
-        statusMessage: 'Access denied: admin already exists.',
-      })
+      throw apiError('FORBIDDEN', 'Access denied: admin already exists.')
     }
     const updatedUser = await this.userModel
       .findByIdAndUpdate(
@@ -151,11 +143,10 @@ export class UserController {
   ): Promise<UserModel[]> => {
     const currentUser = await this.getRawCurrentUserData(e.context)
     if (currentUser.role !== 'ADMIN') {
-      throw createError({
-        status: 401,
-        message: 'Access denied',
-        statusMessage: 'Access denied: only admin has access to user info.',
-      })
+      throw apiError(
+        'FORBIDDEN',
+        'Access denied: only admin has access to user info.',
+      )
     }
     const allUser = await this.userModel
       .find({ role: { $ne: 'ADMIN' } })
@@ -175,11 +166,10 @@ export class UserController {
     const userId = getRouterParam(e, 'id')
     const user = await this.getRawCurrentUserData(e.context)
     if (user.role !== 'ADMIN') {
-      throw createError({
-        status: 401,
-        message: 'Access denied',
-        statusMessage: 'Access denied: only admin has access to user info.',
-      })
+      throw apiError(
+        'FORBIDDEN',
+        'Access denied: only admin has access to user info.',
+      )
     }
     const { role } = await readValidatedBody(e, setUserRoleInputSchema.parse)
     const updatedUser = await this.userModel
@@ -220,11 +210,7 @@ export class UserController {
   ): Promise<UserModel> => {
     const user = await this.userModel.findById(ctx.user.id)
     if (!user) {
-      throw createError({
-        status: 401,
-        message: 'Unauthorized',
-        statusMessage: 'Session expired, please log in again',
-      })
+      throw apiError('UNAUTHENTICATED', 'Session expired, please log in again')
     }
     return user
   }
@@ -233,11 +219,7 @@ export class UserController {
   ): Promise<UserModel> => {
     const user = await this.userModel.findById(ctx.user.id).select('-password')
     if (!user) {
-      throw createError({
-        status: 401,
-        message: 'Unauthorized',
-        statusMessage: 'Session expired, please log in again',
-      })
+      throw apiError('UNAUTHENTICATED', 'Session expired, please log in again')
     }
     return user
   }

@@ -2,8 +2,9 @@ import { authInputSchema } from '#shared/dto/auth'
 import { User, type UserModel } from '#shared/models'
 import bcrypt from 'bcryptjs'
 import type { EventHandlerRequest, H3Event } from 'h3'
-import { createError, readValidatedBody } from 'h3'
+import { readValidatedBody } from 'h3'
 import { Model } from 'mongoose'
+import { apiError } from '../../utils'
 import { UserController } from '../user/user.controller'
 
 export class AuthController {
@@ -21,11 +22,7 @@ export class AuthController {
       .findById(e.context.user.id)
       .select('-password')
     if (!user) {
-      throw createError({
-        status: 401,
-        message: 'Unauthorized',
-        statusMessage: 'Session expired, please log in again',
-      })
+      throw apiError('UNAUTHENTICATED', 'Session expired, please log in again')
     }
     return user
   }
@@ -37,21 +34,17 @@ export class AuthController {
     )
     const user = await this.userModel.findOne({ email })
     if (!user) {
-      throw createError({
-        status: 403,
-        message: 'Validation error',
-        statusMessage:
-          'Invalid credential: please check email or password again',
-      })
+      throw apiError(
+        'INVALID_CREDENTIALS',
+        'Invalid credential: please check email or password again',
+      )
     }
     const isMatch = await bcrypt.compare(password, user.password)
     if (!isMatch) {
-      throw createError({
-        status: 403,
-        message: 'Validation error',
-        statusMessage:
-          'Invalid credential: please check email or password again',
-      })
+      throw apiError(
+        'INVALID_CREDENTIALS',
+        'Invalid credential: please check email or password again',
+      )
     }
     const payload = {
       id: user.id,

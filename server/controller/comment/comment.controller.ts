@@ -3,6 +3,7 @@ import { type CommentModel, Comment } from '#shared/models'
 import type { EventHandlerRequest, H3Event } from 'h3'
 import { createError, getRouterParam, readValidatedBody } from 'h3'
 import { Model, Types } from 'mongoose'
+import { apiError } from '../../utils'
 import { UserController } from '../user/user.controller'
 
 export class CommentController {
@@ -93,12 +94,10 @@ export class CommentController {
       user.role !== 'ADMIN' &&
       user.role !== 'MANAGER'
     ) {
-      throw createError({
-        status: 401,
-        message: 'Unauthorized',
-        statusMessage:
-          'Unauthorized: current user is not authorized for this action.',
-      })
+      throw apiError(
+        'FORBIDDEN',
+        'Access denied: you are not allowed to delete this comment.',
+      )
     }
     await this.commentModel.findByIdAndDelete(commentId)
     return { id: comment.id as string }

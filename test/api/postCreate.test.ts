@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { api } from '../utils/api'
+import { api, expectApiError } from '../utils/api'
 import { insertUser } from '../utils/auth'
 import { cloudinaryCalls, resetFakes } from '../utils/fakes'
 
@@ -25,7 +25,7 @@ describe('POST /api/post', () => {
   it('a user cannot create a post and nothing is uploaded', async () => {
     const { token } = await insertUser('USER')
     const res = await api('POST', '/api/post', { token, raw: newPostForm() })
-    expect(res.status).toBe(401)
+    expectApiError(res, 'FORBIDDEN')
     expect(await uploads()).toHaveLength(0)
   })
 

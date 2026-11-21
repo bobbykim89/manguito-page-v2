@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { api } from '../utils/api'
+import { api, expectApiError } from '../utils/api'
 import { insertUser } from '../utils/auth'
 import { exists, insertComment, insertPost } from '../utils/content'
 import { cloudinaryCalls, resetFakes } from '../utils/fakes'
@@ -26,7 +26,7 @@ describe('PUT /api/post/:id', () => {
       token: admin.token,
       body: { content: 'edited' },
     })
-    expect(res.status).toBe(401)
+    expectApiError(res, 'FORBIDDEN')
   })
 })
 
@@ -52,7 +52,7 @@ describe('DELETE /api/post/:id', () => {
     const res = await api('DELETE', `/api/post/${postId}`, {
       token: other.token,
     })
-    expect(res.status).toBe(401)
+    expectApiError(res, 'FORBIDDEN')
     expect(await exists('posts', postId)).toBe(true)
   })
 
@@ -90,7 +90,7 @@ describe('DELETE /api/comment/:id', () => {
     const res = await api('DELETE', `/api/comment/${commentId}`, {
       token: other.token,
     })
-    expect(res.status).toBe(401)
+    expectApiError(res, 'FORBIDDEN')
     expect(await exists('comments', commentId)).toBe(true)
   })
 })

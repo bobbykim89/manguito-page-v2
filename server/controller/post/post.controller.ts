@@ -8,7 +8,7 @@ import {
 import type { EventHandlerRequest, H3Event } from 'h3'
 import { createError, getQuery, getRouterParam, readValidatedBody } from 'h3'
 import { Model } from 'mongoose'
-import { deleteCloudinaryImage } from '../../utils'
+import { apiError, deleteCloudinaryImage } from '../../utils'
 import { UserController } from '../user/user.controller'
 
 export class PostController {
@@ -87,11 +87,7 @@ export class PostController {
     const user = await this.userController.getCurrentUserData(e.context)
 
     if (user.role !== 'ADMIN' && user.role !== 'MANAGER') {
-      throw createError({
-        status: 401,
-        message: 'Access denied',
-        statusMessage: 'Access denied: unauthorized user',
-      })
+      throw apiError('FORBIDDEN', 'Access denied: unauthorized user')
     }
     const newPost = new this.postModel({
       imageId: file.imageId,
@@ -126,12 +122,10 @@ export class PostController {
       })
     }
     if (!post.author?.equals(user._id)) {
-      throw createError({
-        status: 401,
-        message: 'Access denied',
-        statusMessage:
-          'Access denied: Only author of the post can update the post',
-      })
+      throw apiError(
+        'FORBIDDEN',
+        'Access denied: only the author of the post can update it.',
+      )
     }
     const updatedPost = await this.postModel
       .findByIdAndUpdate(
@@ -163,12 +157,10 @@ export class PostController {
     }
     // check if user is authorized
     if (!post.author?.equals(user._id) && user.role !== 'ADMIN') {
-      throw createError({
-        status: 401,
-        message: 'Unauthorized',
-        statusMessage:
-          'Unauthorized: current user is not authorized for this action.',
-      })
+      throw apiError(
+        'FORBIDDEN',
+        'Access denied: you are not allowed to delete this post.',
+      )
     }
     // delete comments belongs to this post
     try {
