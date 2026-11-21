@@ -1,33 +1,34 @@
-export const useErrorCheck = () => {
-  const extractMessage = (err: unknown) => {
-    if (err && typeof err === 'object' && 'statusMessage' in err) {
-      return String(err.statusMessage)
-    }
-    if (err instanceof Error) {
-      return err.message
-    }
-    return 'Unknown Error.'
-  }
+import type { ApiErrorCode } from '#shared/types'
+import { ApiError, isApiFailure } from '@/utils/apiError'
 
-  const isAuthError = (err: unknown) => {
-    // check for 401 status code
+/** The code of an ApiError, or of a useApi error's envelope. */
+const errorCode = (err: unknown): ApiErrorCode | null => {
+  if (err instanceof ApiError) return err.code
+  if (err && typeof err === 'object' && 'data' in err && isApiFailure(err.data))
+    return err.data.error.code
+  return null
+}
+
+export const useErrorCheck = () => {
+  const extractMessage = (err: unknown): string => {
+    if (err instanceof ApiError) return err.message
     if (
       err &&
       typeof err === 'object' &&
-      'statusCode' in err &&
-      err.statusCode === 401
-    ) {
-      return true
-    }
-    // check for auth-related error messages
-    if (
-      err instanceof Error &&
-      err.message.toLowerCase().includes('no user authentication found')
-    ) {
-      return true
-    }
-    return false
+      'data' in err &&
+      isApiFailure(err.data)
+    )
+      return err.data.error.message
+    // TEMPORARY until every call site uses $api (task 3 removes it)
+    if (err && typeof err === 'object' && 'statusMessage' in err)
+      return String(err.statusMessage)
+    if (err instanceof Error) return err.message
+    return 'Unknown Error.'
   }
+
+  /** True only for a dead session; a refusal or wrong password is not one. */
+  const isAuthError = (err: unknown): boolean =>
+    errorCode(err) === 'UNAUTHENTICATED'
 
   return { extractMessage, isAuthError }
 }
