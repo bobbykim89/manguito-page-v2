@@ -22,10 +22,8 @@ const selectedUser = ref<UserType | null>(null)
 const selectedRole = ref<UserRoleType>('USER')
 const roleOptions: UserRoleType[] = ['MANAGER', 'USER']
 
-const { data: res, refresh } = await useFetch<UserType[]>('/api/user/admin', {
-  method: 'GET',
-  headers: { Authorization: cookie.value ? cookie.value : '' },
-})
+const { $api } = useNuxtApp()
+const { data: res, refresh } = await useApi<UserType[]>('/api/user/admin')
 const openEdit = (user: UserType) => {
   selectedUser.value = user
   selectedRole.value = user.role
@@ -38,9 +36,8 @@ const onModalClose = () => {
 const onSubmit = async () => {
   if (!cookie.value) return
   if (selectedUser.value === null) return
-  await $fetch(`/api/user/admin/${selectedUser.value._id}`, {
+  await $api(`/api/user/admin/${selectedUser.value._id}`, {
     method: 'PUT',
-    headers: { Authorization: cookie.value },
     body: { role: selectedRole.value },
   })
   onModalClose()

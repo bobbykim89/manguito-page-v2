@@ -2,7 +2,6 @@
 import { useRequestURL } from '#app'
 import { useAlertStore } from '@/stores'
 import { MclFormGroup, MclInputText } from '@bobbykim/mcl-forms'
-import type { H3Error } from 'h3'
 
 const url = useRequestURL()
 
@@ -26,12 +25,13 @@ useHead({
 
 const router = useRouter()
 const alertStore = useAlertStore()
+const { $api } = useNuxtApp()
 const emailInputRef = ref<string>('')
 
 const handleFormSubmit = async () => {
   if (emailInputRef.value === '') return
   try {
-    await $fetch('/api/token/send-token', {
+    await $api('/api/token/send-token', {
       method: 'POST',
       body: { email: emailInputRef.value },
     })
@@ -41,7 +41,7 @@ const handleFormSubmit = async () => {
     )
     router.push({ path: '/auth/login' })
   } catch (error) {
-    alertStore.setAlert((error as H3Error).statusMessage!)
+    alertStore.setAlert(useErrorCheck().extractMessage(error))
   }
 }
 </script>

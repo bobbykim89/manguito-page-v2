@@ -17,6 +17,6 @@ describe('GET /api/auth', () => {
     const { id, token } = await insertUser()
     const res = await api('GET', '/api/auth', { token })
     expect(res.status).toBe(200)
-    expect(res.json._id).toBe(id)
+    expect(res.json.data._id).toBe(id)
   })
 })

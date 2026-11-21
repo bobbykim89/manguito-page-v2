@@ -12,6 +12,7 @@ export const usePostStore = defineStore('post', () => {
   const alertStore = useAlertStore()
   const userStore = useUserStore()
   const cookie = useAuthToken()
+  const { $api } = useNuxtApp()
   // POST: states
   const posts = ref<PostType[]>([])
   const currentPost = ref<PostType | null>(null)
@@ -31,17 +32,9 @@ export const usePostStore = defineStore('post', () => {
     }, 500)
   }
   const getAllPosts = async () => {
-    try {
-      const { data: res } = await useFetch<PostType[]>('/api/post', {
-        method: 'GET',
-      })
-      if (!res.value)
-        throw new Error('Failed to get response from server, please try again')
-
-      posts.value = res.value
-    } catch (error) {
-      handlePostError(error)
-    }
+    const { data, error } = await useApi<PostType[]>('/api/post')
+    if (error.value) return handlePostError(error.value)
+    posts.value = data.value ?? []
   }
   const setCurrentPost = (postId: string) => {
     setPostLoadnigTimeout()
@@ -113,9 +106,8 @@ export const usePostStore = defineStore('post', () => {
       if (role !== 'ADMIN' && role !== 'MANAGER')
         throw new Error('Unauthorized action for current user')
 
-      const res = await $fetch<PostType>('/api/post', {
+      const res = await $api<PostType>('/api/post', {
         method: 'POST',
-        headers: { Authorization: cookie.value },
         body: payload,
       })
       posts.value = [res, ...posts.value]
@@ -136,9 +128,8 @@ export const usePostStore = defineStore('post', () => {
       if (currentPost?.author._id !== currentUser?._id)
         throw new Error('Unauthorized user')
 
-      const res = await $fetch<PostType>(`/api/post/${postId}`, {
+      const res = await $api<PostType>(`/api/post/${postId}`, {
         method: 'PUT',
-        headers: { Authorization: cookie.value },
         body: payload,
       })
       posts.value = posts.value.map((post) =>
@@ -162,9 +153,8 @@ export const usePostStore = defineStore('post', () => {
       if (currentPost?.author._id !== currentUser?._id && role !== 'ADMIN')
         throw new Error('Unauthorized user')
 
-      await $fetch(`/api/post/${postId}`, {
+      await $api(`/api/post/${postId}`, {
         method: 'DELETE',
-        headers: { Authorization: cookie.value },
       })
       posts.value = posts.value.filter((post) => post._id.toString() !== postId)
       alertStore.setAlert('Successfully deleted post!', 'success')

@@ -13,7 +13,8 @@ useHead({
 
 const cookie = useAuthToken()
 
-const { data: res, refresh } = await useFetch<PostType[]>('/api/post')
+const { $api } = useNuxtApp()
+const { data: res, refresh } = await useApi<PostType[]>('/api/post')
 
 const formattedUrl = (id: string): string => {
   const imageUrl = new ImageUrl(id)
@@ -25,10 +26,7 @@ const onDelete = async (id: string) => {
     import.meta.client &&
     window.confirm('Please confirm to permanently delete this post')
   ) {
-    await $fetch(`/api/post/${id}`, {
-      method: 'DELETE',
-      headers: { Authorization: cookie.value },
-    })
+    await $api(`/api/post/${id}`, { method: 'DELETE' })
   }
   refresh()
 }

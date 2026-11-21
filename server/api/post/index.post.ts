@@ -1,15 +1,17 @@
-import { H3Event } from 'h3'
+import type { H3Event } from 'h3'
 import { postController } from '../../controller'
 
-export default defineEventHandler({
-  onRequest: [
-    defineRequestMiddleware(checkAuth),
+const uploadPostImage = async (e: H3Event) => {
+  await uploadCloudinary(e)
+  await readFormDataText(e)
+}
+
+export default defineApiRoute({
+  middleware: [
+    checkAuth,
     // before the upload, so a refused request never reaches Cloudinary
-    defineRequestMiddleware(requireRole('ADMIN', 'MANAGER')),
-    defineRequestMiddleware(async (e: H3Event) => {
-      await uploadCloudinary(e)
-      await readFormDataText(e)
-    }),
+    requireRole('ADMIN', 'MANAGER'),
+    uploadPostImage,
   ],
-  handler: eventHandler(postController.createNewPost),
+  handler: postController.createNewPost,
 })

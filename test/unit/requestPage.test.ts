@@ -4,7 +4,7 @@ import type { Pinia } from 'pinia'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import RequestPage from '@/pages/auth/request.vue'
 import { useAlertStore } from '@/stores'
-import { clearApiMocks, mockApi, resetState } from './helpers'
+import { clearApiMocks, mockApi, okEnvelope, resetState } from './helpers'
 
 const GENERIC = "If that email has an account, we've sent a reset link."
 
@@ -16,7 +16,7 @@ describe('password reset request page', () => {
     body = undefined
     mockApi('POST', '/api/token/send-token', async (e) => {
       body = await readBody(e)
-      return { status: 200, message: GENERIC }
+      return okEnvelope({ status: 200, message: GENERIC })
     })
   })
   afterEach(clearApiMocks)

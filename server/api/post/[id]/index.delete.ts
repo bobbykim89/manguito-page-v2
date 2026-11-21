@@ -1,6 +1,6 @@
 import { postController } from '../../../controller'
 
-export default defineEventHandler({
-  onRequest: [defineRequestMiddleware(checkAuth)],
-  handler: eventHandler(postController.deletePostById),
+export default defineApiRoute({
+  middleware: [checkAuth],
+  handler: postController.deletePostById,
 })

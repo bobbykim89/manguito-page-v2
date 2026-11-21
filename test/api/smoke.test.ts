@@ -6,6 +6,7 @@ describe('test harness', () => {
   it('serves the API', async () => {
     const res = await api('GET', '/api/does-not-exist')
     expect(res.status).toBe(404)
+    expect(res.json.ok).toBe(false)
   })
 
   it('connects to the memory database', async () => {

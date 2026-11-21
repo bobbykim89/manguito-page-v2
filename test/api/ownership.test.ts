@@ -15,7 +15,7 @@ describe('PUT /api/post/:id', () => {
       body: { content: 'edited' },
     })
     expect(res.status).toBe(200)
-    expect(res.json.content).toBe('edited')
+    expect(res.json.data.content).toBe('edited')
   })
 
   it('another user cannot edit the post', async () => {

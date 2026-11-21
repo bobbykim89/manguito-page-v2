@@ -20,6 +20,7 @@ export const useUserStore = defineStore('user', () => {
   const errorCheck = useErrorCheck()
   const alertStore = useAlertStore()
   const cookie = useAuthToken()
+  const { $api } = useNuxtApp()
   // USERS: states
   const currentUser = ref<UserType | null>(null)
   const isAuthenticated = ref<boolean>(false)
@@ -45,9 +46,8 @@ export const useUserStore = defineStore('user', () => {
       if (!cookie.value)
         throw new Error('No user authentication found, please login')
 
-      const res = await $fetch<UserType>('/api/auth', {
+      const res = await $api<UserType>('/api/auth', {
         method: 'GET',
-        headers: { Authorization: cookie.value },
       })
       currentUser.value = res
       isAuthenticated.value = true
@@ -60,9 +60,8 @@ export const useUserStore = defineStore('user', () => {
     try {
       if (!cookie.value) return
 
-      const res = await $fetch<UserType>('/api/auth', {
+      const res = await $api<UserType>('/api/auth', {
         method: 'GET',
-        headers: { Authorization: cookie.value },
       })
       currentUser.value = res
       isAuthenticated.value = true
@@ -75,7 +74,7 @@ export const useUserStore = defineStore('user', () => {
   }
   const loginWithCredential = async (payload: AuthInput) => {
     try {
-      const res = await $fetch<AuthToken>('/api/auth', {
+      const res = await $api<AuthToken>('/api/auth', {
         method: 'POST',
         body: payload,
       })
@@ -88,7 +87,7 @@ export const useUserStore = defineStore('user', () => {
   }
   const signupUser = async (payload: UserInput) => {
     try {
-      const res = await $fetch<AuthToken>('/api/user', {
+      const res = await $api<AuthToken>('/api/user', {
         method: 'POST',
         body: payload,
       })
@@ -104,9 +103,8 @@ export const useUserStore = defineStore('user', () => {
       if (!cookie.value)
         throw new Error('No user authentication found, please login')
 
-      await $fetch<UserType>('/api/user/user-info/username', {
+      await $api<UserType>('/api/user/user-info/username', {
         method: 'PUT',
-        headers: { Authorization: cookie.value },
         body: payload,
       })
       await authUser()
@@ -120,9 +118,8 @@ export const useUserStore = defineStore('user', () => {
       if (!cookie.value)
         throw new Error('No user authentication found, please login')
 
-      await $fetch('/api/user/user-info/password', {
+      await $api('/api/user/user-info/password', {
         method: 'PUT',
-        headers: { Authorization: cookie.value },
         body: payload,
       })
       await authUser()
@@ -143,9 +140,8 @@ export const useUserStore = defineStore('user', () => {
       if (!cookie.value)
         throw new Error('No user authentication found, please login')
 
-      await $fetch<UserType>('/api/user/admin', {
+      await $api<UserType>('/api/user/admin', {
         method: 'PUT',
-        headers: { Authorization: cookie.value },
         body: payload,
       })
       await authUser()
@@ -154,11 +150,6 @@ export const useUserStore = defineStore('user', () => {
       handleAuthError(error)
     }
   }
-  const isUnauthorized = (err: unknown): boolean =>
-    !!err &&
-    typeof err === 'object' &&
-    'statusCode' in err &&
-    err.statusCode === 401
   // quiet: the startup session check, where a rejected cookie logs out silently
   const handleAuthError = (err: unknown, quiet = false) => {
     const errorMessage: string = errorCheck.extractMessage(err)
@@ -170,7 +161,7 @@ export const useUserStore = defineStore('user', () => {
     }
     // a rejected session logs out; guards send protected pages to login.
     // Only an action the user started gets told about it.
-    if (isUnauthorized(err)) {
+    if (checkAuthError) {
       cookie.value = null
       sessionExpired.value = true
       if (quiet) return

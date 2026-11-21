@@ -19,9 +19,6 @@ export const useErrorCheck = () => {
       isApiFailure(err.data)
     )
       return err.data.error.message
-    // TEMPORARY until every call site uses $api (task 3 removes it)
-    if (err && typeof err === 'object' && 'statusMessage' in err)
-      return String(err.statusMessage)
     if (err instanceof Error) return err.message
     return 'Unknown Error.'
   }

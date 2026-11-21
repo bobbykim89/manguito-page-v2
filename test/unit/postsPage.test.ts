@@ -3,7 +3,7 @@ import type { Pinia } from 'pinia'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import PostsPage from '@/pages/posts/index.vue'
 import { useUserStore } from '@/stores'
-import { clearApiMocks, mockApi, resetState } from './helpers'
+import { clearApiMocks, mockApi, okEnvelope, resetState } from './helpers'
 
 const admin = {
   _id: 'a1',
@@ -39,7 +39,7 @@ const openModal = async (wrapper: Awaited<ReturnType<typeof mountAsAdmin>>) => {
 describe('posts page new-post modal', () => {
   beforeEach(() => {
     resetState()
-    mockApi('GET', '/api/post', () => [])
+    mockApi('GET', '/api/post', () => okEnvelope([]))
   })
   afterEach(() => {
     clearApiMocks()

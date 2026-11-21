@@ -12,14 +12,12 @@ useHead({
 })
 
 const cookie = useAuthToken()
-const { data: res, refresh } = await useFetch<CommentType[]>('/api/comment')
+const { $api } = useNuxtApp()
+const { data: res, refresh } = await useApi<CommentType[]>('/api/comment')
 
 const onDelete = async (id: string) => {
   if (!cookie.value) return
-  await $fetch(`/api/comment/${id}`, {
-    method: 'DELETE',
-    headers: { Authorization: cookie.value },
-  })
+  await $api(`/api/comment/${id}`, { method: 'DELETE' })
   refresh()
 }
 </script>

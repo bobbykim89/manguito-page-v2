@@ -1,6 +1,6 @@
 import { commentController } from '../../../controller'
 
-export default defineEventHandler({
-  onRequest: [defineRequestMiddleware(checkAuth)],
-  handler: eventHandler(commentController.createNewComment),
+export default defineApiRoute({
+  middleware: [checkAuth],
+  handler: commentController.createNewComment,
 })

@@ -2,7 +2,7 @@ import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { readBody } from 'h3'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import AdminUsersPage from '@/pages/admin/users.vue'
-import { clearApiMocks, mockApi, resetState } from './helpers'
+import { clearApiMocks, mockApi, okEnvelope, resetState } from './helpers'
 
 const kiwi = {
   _id: 'u2',
@@ -20,10 +20,10 @@ describe('admin users role change', () => {
     resetState()
     sent = []
     useAuthToken().value = 'Bearer admin'
-    mockApi('GET', '/api/user/admin', () => [kiwi])
+    mockApi('GET', '/api/user/admin', () => okEnvelope([kiwi]))
     mockApi('PUT', '/api/user/admin/u2', async (event) => {
       sent.push(await readBody(event))
-      return { ...kiwi, role: 'MANAGER' }
+      return okEnvelope({ ...kiwi, role: 'MANAGER' })
     })
   })
   afterEach(() => {
