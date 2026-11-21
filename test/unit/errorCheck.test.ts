@@ -26,4 +26,14 @@ describe('useErrorCheck', () => {
     expect(extractMessage(new Error('plain'))).toBe('plain')
     expect(extractMessage(42)).toBe('Unknown Error.')
   })
+
+  it('hides a raw fetch message when there is no envelope', () => {
+    const proxied = Object.assign(
+      new Error('[GET] "/api/post": 504 Gateway Timeout'),
+      { statusCode: 504, data: '<html>Gateway</html>' },
+    )
+    expect(extractMessage(proxied)).toBe(
+      'Could not reach the server, please try again.',
+    )
+  })
 })

@@ -17,6 +17,7 @@ useHead({
 
 const cookie = useAuthToken()
 const alertStore = useAlertStore()
+const reportError = useReportApiError()
 const modalRef = ref<InstanceType<typeof Modal>>()
 const selectedUser = ref<UserType | null>(null)
 const selectedRole = ref<UserRoleType>('USER')
@@ -36,10 +37,14 @@ const onModalClose = () => {
 const onSubmit = async () => {
   if (!cookie.value) return
   if (selectedUser.value === null) return
-  await $api(`/api/user/admin/${selectedUser.value._id}`, {
-    method: 'PUT',
-    body: { role: selectedRole.value },
-  })
+  try {
+    await $api(`/api/user/admin/${selectedUser.value._id}`, {
+      method: 'PUT',
+      body: { role: selectedRole.value },
+    })
+  } catch (err) {
+    return reportError(err)
+  }
   onModalClose()
   refresh()
   alertStore.setAlert('Successfully updated user role', 'success')

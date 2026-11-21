@@ -14,6 +14,7 @@ useHead({
 const cookie = useAuthToken()
 
 const { $api } = useNuxtApp()
+const reportError = useReportApiError()
 const { data: res, refresh } = await useApi<PostType[]>('/api/post')
 
 const formattedUrl = (id: string): string => {
@@ -23,10 +24,14 @@ const formattedUrl = (id: string): string => {
 const onDelete = async (id: string) => {
   if (!cookie.value) return
   if (
-    import.meta.client &&
-    window.confirm('Please confirm to permanently delete this post')
-  ) {
+    !import.meta.client ||
+    !window.confirm('Please confirm to permanently delete this post')
+  )
+    return
+  try {
     await $api(`/api/post/${id}`, { method: 'DELETE' })
+  } catch (err) {
+    return reportError(err)
   }
   refresh()
 }

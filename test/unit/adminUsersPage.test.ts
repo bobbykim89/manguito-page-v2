@@ -2,7 +2,15 @@ import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { readBody } from 'h3'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import AdminUsersPage from '@/pages/admin/users.vue'
-import { clearApiMocks, mockApi, okEnvelope, resetState } from './helpers'
+import type { Pinia } from 'pinia'
+import { useAlertStore } from '@/stores'
+import {
+  clearApiMocks,
+  failEnvelope,
+  mockApi,
+  okEnvelope,
+  resetState,
+} from './helpers'
 
 const kiwi = {
   _id: 'u2',
@@ -44,5 +52,23 @@ describe('admin users role change', () => {
     await wrapper.find('[role="dialog"] form').trigger('submit')
     await settle()
     expect(sent).toEqual([{ role: 'MANAGER' }])
+  })
+
+  it('alerts a refusal instead of success', async () => {
+    clearApiMocks()
+    mockApi('GET', '/api/user/admin', () => okEnvelope([kiwi]))
+    mockApi('PUT', '/api/user/admin/u2', (e) =>
+      failEnvelope(e, 'FORBIDDEN', 'Access denied.'),
+    )
+    const wrapper = await mountSuspended(AdminUsersPage, {
+      global: { stubs: { transition: false } },
+    })
+    await wrapper.find('button[aria-label="delete post"]').trigger('click')
+    await settle()
+    await wrapper.find('#option-manager').setValue(true)
+    await wrapper.find('[role="dialog"] form').trigger('submit')
+    await settle()
+    const alertStore = useAlertStore(useNuxtApp().$pinia as Pinia)
+    expect(alertStore.alertMessage).toBe('Access denied.')
   })
 })
