@@ -10,15 +10,10 @@ import { User, type UserModel } from '#shared/models'
 import { type RuntimeConfig } from '@nuxt/schema'
 import bcrypt from 'bcryptjs'
 import type { EventHandlerRequest, H3Event, H3EventContext } from 'h3'
-import {
-  createError,
-  getResponseStatus,
-  getResponseStatusText,
-  readValidatedBody,
-  setResponseStatus,
-} from 'h3'
+import { getRouterParam, readValidatedBody } from 'h3'
 import jwt from 'jsonwebtoken'
 import type { Model } from 'mongoose'
+import { apiError, parseObjectId } from '../../utils'
 
 export class UserController {
   private config: RuntimeConfig
@@ -36,12 +31,10 @@ export class UserController {
     )
     let user = await this.userModel.findOne({ email })
     if (user) {
-      throw createError({
-        status: 400,
-        message: 'Bad Request',
-        statusMessage:
-          'Bad Request: following email address is already in use, please use different email address',
-      })
+      throw apiError(
+        'CONFLICT',
+        'That email address is already in use, please use a different one.',
+      )
     }
     await this.checkUniqueUsername(name)
     user = new this.userModel({
@@ -55,16 +48,8 @@ export class UserController {
     const payload = {
       id: user.id,
     }
-    // set access token
     const accessToken = this.signToken(payload)
-    const status = getResponseStatus(e)
-    const text = getResponseStatusText(e)
-
-    return {
-      status,
-      message: text,
-      access_token: `Bearer ${accessToken}`,
-    }
+    return { accessToken: `Bearer ${accessToken}` }
   }
   public updatePassword = async (e: H3Event<EventHandlerRequest>) => {
     const user = await this.getRawCurrentUserData(e.context)
@@ -76,11 +61,10 @@ export class UserController {
     // check if current password matches
     const isMatch = await bcrypt.compare(currentPassword, user.password)
     if (!isMatch) {
-      throw createError({
-        status: 403,
-        message: 'Validation error',
-        statusMessage: 'Invalid credential: please check your password again',
-      })
+      throw apiError(
+        'INVALID_CREDENTIALS',
+        'Invalid credential: please check your password again',
+      )
     }
     const hashedNewPw = await this.hashPassword(newPassword)
     const updatedUser = await this.userModel.findByIdAndUpdate(
@@ -89,20 +73,9 @@ export class UserController {
       { new: true, returnDocument: 'after' },
     )
     if (!updatedUser) {
-      throw createError({
-        status: 500,
-        message: 'Server error',
-        statusMessage: 'Unexpected error occurred, please try again.',
-      })
+      throw apiError('INTERNAL', 'Something went wrong, please try again.')
     }
-    setResponseStatus(e, 200, 'Successfully updated user password')
-    const status = getResponseStatus(e)
-    const text = getResponseStatusText(e)
-
-    return {
-      status,
-      message: text,
-    }
+    return null
   }
   public updateUsername = async (
     e: H3Event<EventHandlerRequest>,
@@ -121,11 +94,7 @@ export class UserController {
       )
       .select('-password')
     if (!updatedUser) {
-      throw createError({
-        status: 500,
-        message: 'Server error',
-        statusMessage: 'Unexpected error occurred, please try again.',
-      })
+      throw apiError('INTERNAL', 'Something went wrong, please try again.')
     }
     return updatedUser
   }
@@ -135,21 +104,13 @@ export class UserController {
     const user = await this.getRawCurrentUserData(e.context)
     const { phrase } = await readValidatedBody(e, setAdminInputSchema.parse)
     if (phrase !== this.config.adminSecretPhrase) {
-      throw createError({
-        status: 403,
-        message: 'Forbidden',
-        statusMessage: 'Access denied.',
-      })
+      throw apiError('FORBIDDEN', 'Access denied.')
     }
     const existingAdmins = await this.userModel
       .find({ role: 'ADMIN' })
       .select('-password')
     if (existingAdmins.length > 0) {
-      throw createError({
-        status: 403,
-        message: 'Forbidden',
-        statusMessage: 'Access denied: admin already exists.',
-      })
+      throw apiError('FORBIDDEN', 'Access denied: admin already exists.')
     }
     const updatedUser = await this.userModel
       .findByIdAndUpdate(
@@ -159,11 +120,7 @@ export class UserController {
       )
       .select('-password')
     if (!updatedUser) {
-      throw createError({
-        status: 500,
-        message: 'Server error',
-        statusMessage: 'Unexpected error occurred, please try again.',
-      })
+      throw apiError('INTERNAL', 'Something went wrong, please try again.')
     }
     return updatedUser
   }
@@ -172,35 +129,25 @@ export class UserController {
   ): Promise<UserModel[]> => {
     const currentUser = await this.getRawCurrentUserData(e.context)
     if (currentUser.role !== 'ADMIN') {
-      throw createError({
-        status: 401,
-        message: 'Access denied',
-        statusMessage: 'Access denied: only admin has access to user info.',
-      })
+      throw apiError(
+        'FORBIDDEN',
+        'Access denied: only admin has access to user info.',
+      )
     }
-    const allUser = await this.userModel
+    return await this.userModel
       .find({ role: { $ne: 'ADMIN' } })
       .select('-password')
-    if (!allUser) {
-      throw createError({
-        status: 404,
-        message: 'Not found',
-        statusMessage: 'Users not found',
-      })
-    }
-    return allUser
   }
   public setUserRole = async (
     e: H3Event<EventHandlerRequest>,
   ): Promise<UserModel> => {
-    const userId = getRouterParam(e, 'id')
+    const userId = parseObjectId(getRouterParam(e, 'id'))
     const user = await this.getRawCurrentUserData(e.context)
     if (user.role !== 'ADMIN') {
-      throw createError({
-        status: 401,
-        message: 'Access denied',
-        statusMessage: 'Access denied: only admin has access to user info.',
-      })
+      throw apiError(
+        'FORBIDDEN',
+        'Access denied: only admin has access to user info.',
+      )
     }
     const { role } = await readValidatedBody(e, setUserRoleInputSchema.parse)
     const updatedUser = await this.userModel
@@ -211,11 +158,7 @@ export class UserController {
       )
       .select('-password')
     if (!updatedUser) {
-      throw createError({
-        status: 500,
-        message: 'Server error',
-        statusMessage: 'Unexpected error occurred, please try again.',
-      })
+      throw apiError('NOT_FOUND', 'User not found')
     }
     return updatedUser
   }
@@ -229,11 +172,10 @@ export class UserController {
       .find({ name: username })
       .select('-password')
     if (user.length > 0) {
-      throw createError({
-        status: 400,
-        message: 'Bad Request',
-        statusMessage: `Bad Request: username '${username}' is already in use, please use different username`,
-      })
+      throw apiError(
+        'CONFLICT',
+        `Username '${username}' is already in use, please use a different one.`,
+      )
     }
   }
   public getRawCurrentUserData = async (
@@ -241,11 +183,7 @@ export class UserController {
   ): Promise<UserModel> => {
     const user = await this.userModel.findById(ctx.user.id)
     if (!user) {
-      throw createError({
-        status: 401,
-        message: 'Unauthorized',
-        statusMessage: 'Session expired, please log in again',
-      })
+      throw apiError('UNAUTHENTICATED', 'Session expired, please log in again')
     }
     return user
   }
@@ -254,11 +192,7 @@ export class UserController {
   ): Promise<UserModel> => {
     const user = await this.userModel.findById(ctx.user.id).select('-password')
     if (!user) {
-      throw createError({
-        status: 401,
-        message: 'Unauthorized',
-        statusMessage: 'Session expired, please log in again',
-      })
+      throw apiError('UNAUTHENTICATED', 'Session expired, please log in again')
     }
     return user
   }

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { api } from '../utils/api'
+import { api, expectApiError } from '../utils/api'
 import { deleteUser, insertUser } from '../utils/auth'
 
 describe('GET /api/auth', () => {
@@ -7,8 +7,9 @@ describe('GET /api/auth', () => {
     const { id, token } = await insertUser()
     await deleteUser(id)
     const res = await api('GET', '/api/auth', { token })
-    expect(res.status).toBe(401)
-    expect(JSON.stringify(res.json)).toContain(
+    expectApiError(
+      res,
+      'UNAUTHENTICATED',
       'Session expired, please log in again',
     )
   })
@@ -17,6 +18,6 @@ describe('GET /api/auth', () => {
     const { id, token } = await insertUser()
     const res = await api('GET', '/api/auth', { token })
     expect(res.status).toBe(200)
-    expect(res.json._id).toBe(id)
+    expect(res.json.data._id).toBe(id)
   })
 })

@@ -37,11 +37,14 @@ const drain = (req: IncomingMessage) =>
 /**
  * Local stand-ins for Gmail SMTP and the Cloudinary upload API, so the API
  * tests never reach the network. The HTTP server also exposes what it
- * recorded under /__mail, /__cloudinary and POST /__reset.
+ * recorded under /__mail, /__cloudinary and POST /__reset, and POST
+ * /__fail?service=mail|cloudinary makes the next call to that service fail.
  */
 export const startFakes = async () => {
   const mail: SentMail[] = []
   const cloudinary: Array<{ method: string; path: string }> = []
+  // set by POST /__fail?service=…; each fails one call, then clears
+  const failing = { mail: false, cloudinary: false }
 
   const smtp = new SMTPServer({
     authOptional: true,
@@ -49,6 +52,11 @@ export const startFakes = async () => {
     disabledCommands: ['STARTTLS'],
     logger: false,
     onAuth: (_auth, _session, callback) => callback(null, { user: 'test' }),
+    onRcptTo: (_address, _session, callback) => {
+      if (!failing.mail) return callback()
+      failing.mail = false
+      callback(Object.assign(new Error('fake failure'), { responseCode: 550 }))
+    },
     onData: (stream, session, callback) => {
       const chunks: Buffer[] = []
       stream.on('data', (chunk: Buffer) => chunks.push(chunk))
@@ -75,9 +83,24 @@ export const startFakes = async () => {
     if (path === '/__reset' && req.method === 'POST') {
       mail.length = 0
       cloudinary.length = 0
+      failing.mail = false
+      failing.cloudinary = false
+      return json(200, { ok: true })
+    }
+    if (path === '/__fail' && req.method === 'POST') {
+      const service = new URL(req.url ?? '/', 'http://fake').searchParams.get(
+        'service',
+      )
+      if (service !== 'mail' && service !== 'cloudinary')
+        return json(400, { error: `unknown service: ${service}` })
+      failing[service] = true
       return json(200, { ok: true })
     }
     cloudinary.push({ method: req.method ?? 'GET', path })
+    if (failing.cloudinary) {
+      failing.cloudinary = false
+      return json(500, { error: { message: 'fake failure' } })
+    }
     if (path.endsWith('/image/upload'))
       return json(200, { public_id: 'fake-folder/fake-id' })
     if (path.endsWith('/image/destroy')) return json(200, { result: 'ok' })

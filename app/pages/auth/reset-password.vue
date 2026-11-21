@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useAlertStore } from '@/stores'
 import { MclFormGroup, MclInputText } from '@bobbykim/mcl-forms'
-import type { H3Error } from 'h3'
 
 const url = useRequestURL()
 
@@ -26,6 +25,7 @@ useHead({
 const route = useRoute()
 const router = useRouter()
 const alertStore = useAlertStore()
+const { $api } = useNuxtApp()
 const passwordInputRef = ref<string>('')
 
 const handleFormSubmit = async () => {
@@ -35,14 +35,14 @@ const handleFormSubmit = async () => {
   if (!token) return
   if (passwordInputRef.value === '') return
   try {
-    await $fetch('/api/token/reset-password', {
+    await $api('/api/token/reset-password', {
       method: 'POST',
       body: { userId, token, password: passwordInputRef.value },
     })
     alertStore.setAlert('Successfully updated password', 'success')
     router.push({ path: '/auth/login' })
   } catch (error) {
-    alertStore.setAlert((error as H3Error).statusMessage!)
+    alertStore.setAlert(useErrorCheck().extractMessage(error))
   }
 }
 </script>

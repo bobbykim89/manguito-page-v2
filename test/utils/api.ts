@@ -1,4 +1,8 @@
-import { inject } from 'vitest'
+import {
+  API_ERROR_STATUS,
+  type ApiErrorCode,
+} from '../../shared/types/api.types'
+import { expect, inject } from 'vitest'
 
 export interface ApiResult {
   status: number
@@ -39,4 +43,16 @@ export const api = async (
     json = text
   }
   return { status: res.status, json, headers: res.headers }
+}
+
+/** Asserts an error envelope with the code's status (and message, if given). */
+export const expectApiError = (
+  res: ApiResult,
+  code: ApiErrorCode,
+  message?: string,
+) => {
+  expect(res.status).toBe(API_ERROR_STATUS[code])
+  expect(res.json?.ok).toBe(false)
+  expect(res.json.error.code).toBe(code)
+  if (message !== undefined) expect(res.json.error.message).toBe(message)
 }

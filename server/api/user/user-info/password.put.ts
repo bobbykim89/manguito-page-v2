@@ -1,6 +1,6 @@
 import { userController } from '../../../controller'
 
-export default defineEventHandler({
-  onRequest: [defineRequestMiddleware(checkAuth)],
-  handler: eventHandler(userController.updatePassword),
+export default defineApiRoute({
+  middleware: [checkAuth],
+  handler: userController.updatePassword,
 })

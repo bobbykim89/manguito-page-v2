@@ -6,18 +6,12 @@ import {
   type PostModel,
 } from '#shared/models'
 import type { EventHandlerRequest, H3Event } from 'h3'
-import {
-  createError,
-  getQuery,
-  getResponseStatus,
-  getResponseStatusText,
-  getRouterParam,
-  readValidatedBody,
-  setResponseStatus,
-} from 'h3'
+import { getQuery, getRouterParam, readValidatedBody } from 'h3'
 import { Model } from 'mongoose'
-import { deleteCloudinaryImage } from '../../utils'
+import { apiError, deleteCloudinaryImage, parseObjectId } from '../../utils'
 import { UserController } from '../user/user.controller'
+
+const UNEXPECTED = 'Something went wrong, please try again.'
 
 export class PostController {
   private postModel: Model<PostModel>
@@ -31,61 +25,19 @@ export class PostController {
   }
 
   public getAllPost = async (): Promise<PostModel[]> => {
-    const allPost = await this.postModel
+    return await this.postModel
       .find({})
       .populate('author', 'name')
       .sort({ date: -1 })
-    if (!allPost) {
-      throw createError({
-        status: 404,
-        message: 'Not found',
-        statusMessage: 'Post not found',
-      })
-    }
-    return allPost
   }
   public getAllTrimmedPost = async (
     e: H3Event<EventHandlerRequest>,
   ): Promise<PostModel[]> => {
     const query = getQuery(e)
-    let allPost: PostModel[] = await this.postModel
-      .find({})
-      .sort({ date: -1 })
-      .select('id imageId')
     if (query.sort === 'asc') {
-      allPost = await this.postModel.find({}).select('id imageId')
+      return await this.postModel.find({}).select('id imageId')
     }
-    if (!allPost) {
-      throw createError({
-        status: 404,
-        message: 'Not found',
-        statusMessage: 'Post not found',
-      })
-    }
-    return allPost
-  }
-  public getPostById = async (
-    e: H3Event<EventHandlerRequest>,
-  ): Promise<PostModel> => {
-    const postId = getRouterParam(e, 'id')
-    if (!postId) {
-      throw createError({
-        status: 400,
-        message: 'Bad Request',
-        statusMessage: 'Missing required route parameter: id',
-      })
-    }
-    const post = await this.postModel
-      .findById(postId)
-      .populate('author', 'name')
-    if (!post) {
-      throw createError({
-        status: 404,
-        message: 'Not found',
-        statusMessage: 'Cannot find post with corresponding id',
-      })
-    }
-    return post
+    return await this.postModel.find({}).sort({ date: -1 }).select('id imageId')
   }
   public createNewPost = async (
     e: H3Event<EventHandlerRequest>,
@@ -95,51 +47,31 @@ export class PostController {
     const user = await this.userController.getCurrentUserData(e.context)
 
     if (user.role !== 'ADMIN' && user.role !== 'MANAGER') {
-      throw createError({
-        status: 401,
-        message: 'Access denied',
-        statusMessage: 'Access denied: unauthorized user',
-      })
+      throw apiError('FORBIDDEN', 'Access denied: unauthorized user')
     }
-    const newPost = new this.postModel({
+    const savePost = await new this.postModel({
       imageId: file.imageId,
       content,
       author: user._id,
-    })
-    const savePost = await newPost.save()
-
-    if (!savePost) {
-      throw createError({
-        status: 500,
-        message: 'Server error',
-        statusMessage: 'Unexpected error occurred, please try again.',
-      })
-    }
-
+    }).save()
     return await savePost.populate('author', 'name')
   }
   public updatePost = async (
     e: H3Event<EventHandlerRequest>,
   ): Promise<PostModel> => {
-    const postId = getRouterParam(e, 'id')
+    const postId = parseObjectId(getRouterParam(e, 'id'))
     const user = await this.userController.getCurrentUserData(e.context)
     // validate body
     const { content } = await readValidatedBody(e, updatePostInputSchema.parse)
     const post = await this.postModel.findById(postId)
     if (!post) {
-      throw createError({
-        status: 404,
-        message: 'Not found',
-        statusMessage: 'Post not found',
-      })
+      throw apiError('NOT_FOUND', 'Post not found')
     }
     if (!post.author?.equals(user._id)) {
-      throw createError({
-        status: 401,
-        message: 'Access denied',
-        statusMessage:
-          'Access denied: Only author of the post can update the post',
-      })
+      throw apiError(
+        'FORBIDDEN',
+        'Access denied: only the author of the post can update it.',
+      )
     }
     const updatedPost = await this.postModel
       .findByIdAndUpdate(
@@ -150,65 +82,27 @@ export class PostController {
       .populate('author', 'name')
 
     if (!updatedPost) {
-      throw createError({
-        status: 500,
-        message: 'Server error',
-        statusMessage: 'Unexpected error occurred, please try again.',
-      })
+      throw apiError('INTERNAL', UNEXPECTED)
     }
     return updatedPost
   }
   public deletePostById = async (e: H3Event<EventHandlerRequest>) => {
-    const postId = getRouterParam(e, 'id')
+    const postId = parseObjectId(getRouterParam(e, 'id'))
     const user = await this.userController.getCurrentUserData(e.context)
     const post = await this.postModel.findById(postId)
     if (!post) {
-      throw createError({
-        status: 404,
-        message: 'Not found',
-        statusMessage: 'Not found: post not found',
-      })
+      throw apiError('NOT_FOUND', 'Post not found')
     }
-    // check if user is authorized
     if (!post.author?.equals(user._id) && user.role !== 'ADMIN') {
-      throw createError({
-        status: 401,
-        message: 'Unauthorized',
-        statusMessage:
-          'Unauthorized: current user is not authorized for this action.',
-      })
+      throw apiError(
+        'FORBIDDEN',
+        'Access denied: you are not allowed to delete this post.',
+      )
     }
-    // delete comments belongs to this post
-    try {
-      await this.commentModel.deleteMany({ post: postId })
-    } catch {
-      throw createError({
-        status: 500,
-        message: 'Internal server error',
-        statusMessage:
-          'Internal server error: unexpected error happened, please try again.',
-      })
-    }
-    // delete cloudinary image
+    // the post's comments, its image, then the post itself
+    await this.commentModel.deleteMany({ post: postId })
     await deleteCloudinaryImage(post.imageId)
-    // delete post
-    try {
-      await this.postModel.findByIdAndDelete(postId)
-    } catch {
-      throw createError({
-        status: 500,
-        message: 'Internal server error',
-        statusMessage:
-          'Internal server error: unexpected error happened, please try again.',
-      })
-    }
-    // send message after deletion completed
-    setResponseStatus(e, 200, 'Successfuly deleted the post.')
-    const status = getResponseStatus(e)
-    const statusText = getResponseStatusText(e)
-    return {
-      status,
-      text: statusText,
-    }
+    await this.postModel.findByIdAndDelete(postId)
+    return { id: post.id as string }
   }
 }

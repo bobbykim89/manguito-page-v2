@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { api } from '../utils/api'
+import { api, expectApiError } from '../utils/api'
 import { insertUser } from '../utils/auth'
 import { cloudinaryCalls, resetFakes } from '../utils/fakes'
 
@@ -25,16 +25,16 @@ describe('POST /api/post', () => {
   it('a user cannot create a post and nothing is uploaded', async () => {
     const { token } = await insertUser('USER')
     const res = await api('POST', '/api/post', { token, raw: newPostForm() })
-    expect(res.status).toBe(401)
+    expectApiError(res, 'FORBIDDEN')
     expect(await uploads()).toHaveLength(0)
   })
 
   it('a manager creates a post', async () => {
     const { token } = await insertUser('MANAGER')
     const res = await api('POST', '/api/post', { token, raw: newPostForm() })
-    expect(res.status).toBe(200)
-    expect(res.json.imageId).toBe('fake-folder/fake-id')
-    expect(res.json.content).toBe('Manguito says hi')
+    expect(res.status).toBe(201)
+    expect(res.json.data.imageId).toBe('fake-folder/fake-id')
+    expect(res.json.data.content).toBe('Manguito says hi')
     expect(await uploads()).toHaveLength(1)
   })
 })

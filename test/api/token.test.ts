@@ -1,12 +1,13 @@
 import { createHash } from 'node:crypto'
 import mongoose from 'mongoose'
 import { beforeEach, describe, expect, inject, it } from 'vitest'
-import { api } from '../utils/api'
+import { api, expectApiError } from '../utils/api'
 import { insertUser } from '../utils/auth'
 import { db } from '../utils/db'
 import { resetFakes, resetLinkIn, sentMail } from '../utils/fakes'
 
 const GENERIC = "If that email has an account, we've sent a reset link."
+const RESET_LINK = 'This reset link is invalid or has expired.'
 
 const requestReset = (email: string, headers?: Record<string, string>) =>
   api('POST', '/api/token/send-token', {
@@ -69,8 +70,8 @@ describe('POST /api/token/send-token', () => {
     const known = await requestReset(email)
     const unknown = await requestReset('nobody@example.test')
     expect(unknown.status).toBe(known.status)
-    expect(JSON.stringify(unknown.json)).toBe(JSON.stringify(known.json))
-    expect(JSON.stringify(known.json)).toContain(GENERIC)
+    expect(known.json).toEqual({ ok: true, data: { message: GENERIC } })
+    expect(unknown.json).toEqual(known.json)
     const mail = await sentMail()
     expect(mail).toHaveLength(1)
     expect(mail[0]!.to).toBe(email)
@@ -95,7 +96,7 @@ describe('POST /api/token/send-token', () => {
     const first = (await emailedLink(email)).searchParams.get('token')!
     const second = (await emailedLink(email)).searchParams.get('token')!
     expect(await storedTokens(id)).toHaveLength(1)
-    expect((await resetWith(id, first)).status).toBe(400)
+    expectApiError(await resetWith(id, first), 'VALIDATION_FAILED', RESET_LINK)
     expect((await resetWith(id, second)).status).toBe(200)
   })
 })
@@ -109,16 +110,26 @@ describe('POST /api/token/reset-password', () => {
     const _id = new mongoose.Types.ObjectId(id)
     const before = (await users.findOne({ _id }))!.password
 
-    expect((await resetWith(id, token)).status).toBe(200)
+    const res = await resetWith(id, token)
+    expect(res.status).toBe(200)
+    expect(res.json).toEqual({ ok: true, data: null })
     expect((await users.findOne({ _id }))!.password).not.toBe(before)
     expect(await storedTokens(id)).toHaveLength(0)
-    expect((await resetWith(id, token)).status).toBe(400)
+    expectApiError(await resetWith(id, token), 'VALIDATION_FAILED', RESET_LINK)
   })
 
   it('rejects the stored value as a token', async () => {
     const { id, email } = await insertUser()
     await emailedLink(email)
     const stored = (await storedTokens(id))[0]!.token as string
-    expect((await resetWith(id, stored)).status).toBe(400)
+    expectApiError(await resetWith(id, stored), 'VALIDATION_FAILED', RESET_LINK)
+  })
+
+  it('answers the same for a user id with no account', async () => {
+    const res = await resetWith(
+      new mongoose.Types.ObjectId().toString(),
+      'a'.repeat(64),
+    )
+    expectApiError(res, 'VALIDATION_FAILED', RESET_LINK)
   })
 })

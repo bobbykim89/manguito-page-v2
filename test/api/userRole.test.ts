@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
 import { describe, expect, it } from 'vitest'
-import { api } from '../utils/api'
+import { api, expectApiError } from '../utils/api'
 import { insertUser } from '../utils/auth'
 import { db } from '../utils/db'
 
@@ -20,7 +20,7 @@ describe('PUT /api/user/admin/:id', () => {
       token: admin.token,
       body: { role: 'SUPERUSER' },
     })
-    expect(res.status).toBe(400)
+    expectApiError(res, 'VALIDATION_FAILED')
     expect(await storedRole(target.id)).toBe('USER')
   })
 
