@@ -34,3 +34,8 @@ export const resetLinkIn = (text: string): URL => {
   if (!match) throw new Error(`no reset link in:\n${text}`)
   return new URL(match[0])
 }
+
+/** Makes the next mail or the next Cloudinary call fail, once. */
+export const failNext = async (service: 'mail' | 'cloudinary') => {
+  await control<{ ok: true }>(`/__fail?service=${service}`, 'POST')
+}

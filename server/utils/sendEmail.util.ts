@@ -1,6 +1,6 @@
 import { useRuntimeConfig } from '#imports'
-import { createError } from 'h3'
 import nodemailer from 'nodemailer'
+import { apiError } from './apiError.util'
 
 export const sendEmail = async (
   email: string,
@@ -24,11 +24,8 @@ export const sendEmail = async (
       subject,
       text,
     })
-  } catch {
-    throw createError({
-      status: 500,
-      message: 'Internal Server Error',
-      statusMessage: 'Failed to send email, please try again',
-    })
+  } catch (err) {
+    console.error(err)
+    throw apiError('UPSTREAM_FAILED', 'Failed to send email, please try again')
   }
 }

@@ -1,6 +1,6 @@
 import { useRuntimeConfig } from '#imports'
 import { v2 as cloudinary } from 'cloudinary'
-import { createError, type H3Event, readMultipartFormData } from 'h3'
+import { type H3Event, readMultipartFormData } from 'h3'
 import { apiError } from './apiError.util'
 
 const config = useRuntimeConfig()
@@ -37,21 +37,18 @@ export const uploadCloudinary = async (
   const base64EncodedImage = Buffer.from(file.data).toString('base64')
   const dataUrl = `data:${file.type};base64,${base64EncodedImage}`
 
-  const { public_id } = await cloudinary.uploader.upload(
-    dataUrl,
-    {
+  let public_id: string
+  try {
+    ;({ public_id } = await cloudinary.uploader.upload(dataUrl, {
       folder: config.cloudinaryFolderName,
-    },
-    (err) => {
-      if (err) {
-        throw createError({
-          status: err.http_code,
-          message: err.message,
-          statusMessage: err.message,
-        })
-      }
-    },
-  )
+    }))
+  } catch (err) {
+    console.error(err)
+    throw apiError(
+      'UPSTREAM_FAILED',
+      'Could not upload the image, please try again.',
+    )
+  }
 
   e.context.file = { imageId: public_id }
 }
