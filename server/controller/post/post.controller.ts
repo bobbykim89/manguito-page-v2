@@ -6,15 +6,7 @@ import {
   type PostModel,
 } from '#shared/models'
 import type { EventHandlerRequest, H3Event } from 'h3'
-import {
-  createError,
-  getQuery,
-  getResponseStatus,
-  getResponseStatusText,
-  getRouterParam,
-  readValidatedBody,
-  setResponseStatus,
-} from 'h3'
+import { createError, getQuery, getRouterParam, readValidatedBody } from 'h3'
 import { Model } from 'mongoose'
 import { deleteCloudinaryImage } from '../../utils'
 import { UserController } from '../user/user.controller'
@@ -202,13 +194,6 @@ export class PostController {
           'Internal server error: unexpected error happened, please try again.',
       })
     }
-    // send message after deletion completed
-    setResponseStatus(e, 200, 'Successfuly deleted the post.')
-    const status = getResponseStatus(e)
-    const statusText = getResponseStatusText(e)
-    return {
-      status,
-      text: statusText,
-    }
+    return { id: post.id as string }
   }
 }

@@ -1,14 +1,7 @@
 import { commentInputSchema } from '#shared/dto/comment'
 import { type CommentModel, Comment } from '#shared/models'
 import type { EventHandlerRequest, H3Event } from 'h3'
-import {
-  createError,
-  getResponseStatus,
-  getResponseStatusText,
-  getRouterParam,
-  readValidatedBody,
-  setResponseStatus,
-} from 'h3'
+import { createError, getRouterParam, readValidatedBody } from 'h3'
 import { Model, Types } from 'mongoose'
 import { UserController } from '../user/user.controller'
 
@@ -108,12 +101,6 @@ export class CommentController {
       })
     }
     await this.commentModel.findByIdAndDelete(commentId)
-    setResponseStatus(e, 200, 'Successfuly deleted the comment.')
-    const status = getResponseStatus(e)
-    const statusText = getResponseStatusText(e)
-    return {
-      status,
-      text: statusText,
-    }
+    return { id: comment.id as string }
   }
 }

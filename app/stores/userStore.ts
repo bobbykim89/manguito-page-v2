@@ -13,7 +13,7 @@ import { computed, ref } from 'vue'
 import { useAlertStore } from './alertStore'
 
 interface AuthToken {
-  access_token: string
+  accessToken: string
 }
 
 export const useUserStore = defineStore('user', () => {
@@ -78,7 +78,7 @@ export const useUserStore = defineStore('user', () => {
         method: 'POST',
         body: payload,
       })
-      cookie.value = res.access_token
+      cookie.value = res.accessToken
       await authUser()
       alertStore.setAlert('Login Successful!', 'success')
     } catch (error) {
@@ -91,7 +91,7 @@ export const useUserStore = defineStore('user', () => {
         method: 'POST',
         body: payload,
       })
-      cookie.value = res.access_token
+      cookie.value = res.accessToken
       await authUser()
       alertStore.setAlert('Signup successful!', 'success')
     } catch (error) {

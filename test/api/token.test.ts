@@ -69,8 +69,8 @@ describe('POST /api/token/send-token', () => {
     const known = await requestReset(email)
     const unknown = await requestReset('nobody@example.test')
     expect(unknown.status).toBe(known.status)
-    expect(JSON.stringify(unknown.json)).toBe(JSON.stringify(known.json))
-    expect(JSON.stringify(known.json)).toContain(GENERIC)
+    expect(known.json).toEqual({ ok: true, data: { message: GENERIC } })
+    expect(unknown.json).toEqual(known.json)
     const mail = await sentMail()
     expect(mail).toHaveLength(1)
     expect(mail[0]!.to).toBe(email)
@@ -109,7 +109,9 @@ describe('POST /api/token/reset-password', () => {
     const _id = new mongoose.Types.ObjectId(id)
     const before = (await users.findOne({ _id }))!.password
 
-    expect((await resetWith(id, token)).status).toBe(200)
+    const res = await resetWith(id, token)
+    expect(res.status).toBe(200)
+    expect(res.json).toEqual({ ok: true, data: null })
     expect((await users.findOne({ _id }))!.password).not.toBe(before)
     expect(await storedTokens(id)).toHaveLength(0)
     expect((await resetWith(id, token)).status).toBe(400)

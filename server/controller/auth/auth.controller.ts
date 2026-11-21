@@ -2,13 +2,7 @@ import { authInputSchema } from '#shared/dto/auth'
 import { User, type UserModel } from '#shared/models'
 import bcrypt from 'bcryptjs'
 import type { EventHandlerRequest, H3Event } from 'h3'
-import {
-  createError,
-  getResponseStatus,
-  getResponseStatusText,
-  readValidatedBody,
-  setResponseStatus,
-} from 'h3'
+import { createError, readValidatedBody } from 'h3'
 import { Model } from 'mongoose'
 import { UserController } from '../user/user.controller'
 
@@ -63,15 +57,6 @@ export class AuthController {
       id: user.id,
     }
     const accessToken = this.userController.signToken(payload)
-
-    setResponseStatus(e, 200, 'Login successful!')
-    const status = getResponseStatus(e)
-    const text = getResponseStatusText(e)
-
-    return {
-      status,
-      message: text,
-      access_token: `Bearer ${accessToken}`,
-    }
+    return { accessToken: `Bearer ${accessToken}` }
   }
 }

@@ -10,13 +10,7 @@ import { User, type UserModel } from '#shared/models'
 import { type RuntimeConfig } from '@nuxt/schema'
 import bcrypt from 'bcryptjs'
 import type { EventHandlerRequest, H3Event, H3EventContext } from 'h3'
-import {
-  createError,
-  getResponseStatus,
-  getResponseStatusText,
-  readValidatedBody,
-  setResponseStatus,
-} from 'h3'
+import { createError, readValidatedBody } from 'h3'
 import jwt from 'jsonwebtoken'
 import type { Model } from 'mongoose'
 
@@ -55,16 +49,8 @@ export class UserController {
     const payload = {
       id: user.id,
     }
-    // set access token
     const accessToken = this.signToken(payload)
-    const status = getResponseStatus(e)
-    const text = getResponseStatusText(e)
-
-    return {
-      status,
-      message: text,
-      access_token: `Bearer ${accessToken}`,
-    }
+    return { accessToken: `Bearer ${accessToken}` }
   }
   public updatePassword = async (e: H3Event<EventHandlerRequest>) => {
     const user = await this.getRawCurrentUserData(e.context)
@@ -95,14 +81,7 @@ export class UserController {
         statusMessage: 'Unexpected error occurred, please try again.',
       })
     }
-    setResponseStatus(e, 200, 'Successfully updated user password')
-    const status = getResponseStatus(e)
-    const text = getResponseStatusText(e)
-
-    return {
-      status,
-      message: text,
-    }
+    return null
   }
   public updateUsername = async (
     e: H3Event<EventHandlerRequest>,

@@ -14,4 +14,5 @@ export default defineApiRoute({
     uploadPostImage,
   ],
   handler: postController.createNewPost,
+  status: 201,
 })

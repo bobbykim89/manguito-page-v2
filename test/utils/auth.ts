@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken'
+import { api } from './api'
 import mongoose from 'mongoose'
 import { db } from './db'
 
@@ -32,4 +33,25 @@ export const deleteUser = async (id: string): Promise<void> => {
   await conn.connection
     .collection('users')
     .deleteOne({ _id: new mongoose.Types.ObjectId(id) })
+}
+
+let signupCounter = 0
+
+/** Signs a new user up through the API and returns its credentials and token. */
+export const signup = async (): Promise<{
+  email: string
+  name: string
+  password: string
+  token: string
+}> => {
+  signupCounter += 1
+  const name = `signup-${signupCounter}-${Date.now()}`
+  const email = `${name}@example.test`
+  const password = 'Passw0rd!'
+  const res = await api('POST', '/api/user', {
+    body: { name, email, password },
+  })
+  if (!res.json?.data?.accessToken)
+    throw new Error(`signup failed: ${JSON.stringify(res.json)}`)
+  return { email, name, password, token: res.json.data.accessToken }
 }
