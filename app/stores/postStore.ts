@@ -101,7 +101,7 @@ export const usePostStore = defineStore('post', () => {
     try {
       const { isAuthenticated, role } = userStore.getCurrentAuthInfo
       if (!cookie.value || !isAuthenticated)
-        throw new Error('No user authentication found, please login')
+        return alertStore.setAlert('No user authentication found, please login')
 
       if (role !== 'ADMIN' && role !== 'MANAGER')
         throw new Error('Unauthorized action for current user')
@@ -120,7 +120,7 @@ export const usePostStore = defineStore('post', () => {
     try {
       const { isAuthenticated, currentUser } = userStore.getCurrentAuthInfo
       if (!cookie.value || !isAuthenticated)
-        throw new Error('No user authentication found, please login')
+        return alertStore.setAlert('No user authentication found, please login')
 
       const currentPost = posts.value.find(
         (item) => item._id.toString() === postId,
@@ -145,7 +145,7 @@ export const usePostStore = defineStore('post', () => {
       const { isAuthenticated, currentUser, role } =
         userStore.getCurrentAuthInfo
       if (!cookie.value || !isAuthenticated)
-        throw new Error('No user authentication found, please login')
+        return alertStore.setAlert('No user authentication found, please login')
 
       const currentPost = posts.value.find(
         (item) => item._id.toString() === postId,
@@ -162,12 +162,14 @@ export const usePostStore = defineStore('post', () => {
       handlePostError(error)
     }
   }
+  // a dead session logs out (like userStore); a refusal only alerts
   const handlePostError = (err: unknown) => {
     const errorMessage: string = errorCheck.extractMessage(err)
-
+    if (errorCheck.isAuthError(err)) userStore.expireSession()
     console.error(errorMessage)
     alertStore.setAlert(errorMessage)
   }
+
   return {
     posts,
     currentPost,

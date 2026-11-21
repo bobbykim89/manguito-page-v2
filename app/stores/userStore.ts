@@ -12,6 +12,8 @@ import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { useAlertStore } from './alertStore'
 
+const NO_SESSION = 'No user authentication found, please login'
+
 interface AuthToken {
   accessToken: string
 }
@@ -43,8 +45,7 @@ export const useUserStore = defineStore('user', () => {
   // USERS: actions
   const authUser = async () => {
     try {
-      if (!cookie.value)
-        throw new Error('No user authentication found, please login')
+      if (!cookie.value) return alertNoSession()
 
       const res = await $api<UserType>('/api/auth', {
         method: 'GET',
@@ -100,8 +101,7 @@ export const useUserStore = defineStore('user', () => {
   }
   const updateUsername = async (payload: NewUsernameInput) => {
     try {
-      if (!cookie.value)
-        throw new Error('No user authentication found, please login')
+      if (!cookie.value) return alertNoSession()
 
       await $api<UserType>('/api/user/user-info/username', {
         method: 'PUT',
@@ -115,8 +115,7 @@ export const useUserStore = defineStore('user', () => {
   }
   const updatePassword = async (payload: PwUpdateInput) => {
     try {
-      if (!cookie.value)
-        throw new Error('No user authentication found, please login')
+      if (!cookie.value) return alertNoSession()
 
       await $api('/api/user/user-info/password', {
         method: 'PUT',
@@ -137,8 +136,7 @@ export const useUserStore = defineStore('user', () => {
   }
   const setAdmin = async (payload: SetAdminInput) => {
     try {
-      if (!cookie.value)
-        throw new Error('No user authentication found, please login')
+      if (!cookie.value) return alertNoSession()
 
       await $api<UserType>('/api/user/admin', {
         method: 'PUT',
@@ -151,24 +149,30 @@ export const useUserStore = defineStore('user', () => {
     }
   }
   // quiet: the startup session check, where a rejected cookie logs out silently
+  // the session is gone: log out; guards send protected pages to login
+  const expireSession = () => {
+    cookie.value = null
+    currentUser.value = null
+    isAuthenticated.value = false
+    role.value = null
+    sessionExpired.value = true
+  }
+  const alertNoSession = () => {
+    alertStore.setAlert(NO_SESSION)
+  }
+  // quiet: the startup session check, where a dead session logs out silently.
+  // Only UNAUTHENTICATED ends the session; a refusal or a wrong password
+  // (FORBIDDEN, INVALID_CREDENTIALS) only alerts.
   const handleAuthError = (err: unknown, quiet = false) => {
     const errorMessage: string = errorCheck.extractMessage(err)
-    const checkAuthError: boolean = errorCheck.isAuthError(err)
-    if (checkAuthError) {
-      currentUser.value = null
-      isAuthenticated.value = false
-      role.value = null
-    }
-    // a rejected session logs out; guards send protected pages to login.
-    // Only an action the user started gets told about it.
-    if (checkAuthError) {
-      cookie.value = null
-      sessionExpired.value = true
+    if (errorCheck.isAuthError(err)) {
+      expireSession()
       if (quiet) return
     }
     console.error(errorMessage)
     alertStore.setAlert(errorMessage)
   }
+
   const ensureAuth = (): Promise<void> => {
     authCheck ??= getCurrentUser()
     return authCheck
@@ -187,5 +191,6 @@ export const useUserStore = defineStore('user', () => {
     updatePassword,
     logoutUser,
     setAdmin,
+    expireSession,
   }
 })
