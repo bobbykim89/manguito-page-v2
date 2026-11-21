@@ -17,5 +17,8 @@ export const readFormDataText = async (
     throw apiError('VALIDATION_FAILED', 'Content field not found')
   }
   const decodedContent = Buffer.from(content.data).toString()
+  if (!decodedContent.trim()) {
+    throw apiError('VALIDATION_FAILED', 'Please write a caption.')
+  }
   e.context[key] = decodedContent
 }

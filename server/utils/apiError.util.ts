@@ -96,8 +96,11 @@ export const toApiFailure = (
     }
   }
   if (err instanceof Error) {
-    if (['CastError', 'BSONError', 'ValidationError'].includes(err.name)) {
+    if (err.name === 'CastError' || err.name === 'BSONError') {
       return failure('VALIDATION_FAILED', 'That id is not valid.')
+    }
+    if (err.name === 'ValidationError') {
+      return failure('VALIDATION_FAILED', 'Some fields are invalid.')
     }
     if ((err as { code?: unknown }).code === 11000) {
       return failure('CONFLICT', 'That value is already in use.')

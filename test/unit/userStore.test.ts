@@ -48,6 +48,8 @@ describe('userStore session handling', () => {
     await user.ensureAuth()
     expect(useAlertStore().alertMessage).toBe('boom')
     expect(user.sessionExpired).toBe(false)
+    // only UNAUTHENTICATED ends the session
+    expect(useAuthToken().value).toBe('Bearer something')
   })
 
   it('ensureAuth calls /api/auth once', async () => {

@@ -58,16 +58,23 @@ describe('toApiFailure', () => {
     })
   })
 
-  it.each(['CastError', 'BSONError', 'ValidationError'])(
-    'maps a %s to a bad id',
-    (name) => {
-      expect(
-        failure(
-          Object.assign(new Error('Cast to ObjectId failed for "x"'), { name }),
-        ).body.error,
-      ).toEqual({ code: 'VALIDATION_FAILED', message: 'That id is not valid.' })
-    },
-  )
+  it('maps a Mongoose ValidationError to invalid fields, not a bad id', () => {
+    const err = Object.assign(new Error('Post validation failed: content'), {
+      name: 'ValidationError',
+    })
+    expect(failure(err).body.error).toEqual({
+      code: 'VALIDATION_FAILED',
+      message: 'Some fields are invalid.',
+    })
+  })
+
+  it.each(['CastError', 'BSONError'])('maps a %s to a bad id', (name) => {
+    expect(
+      failure(
+        Object.assign(new Error('Cast to ObjectId failed for "x"'), { name }),
+      ).body.error,
+    ).toEqual({ code: 'VALIDATION_FAILED', message: 'That id is not valid.' })
+  })
 
   it('maps a duplicate key to CONFLICT', () => {
     const r = failure(

@@ -69,8 +69,8 @@ export const useUserStore = defineStore('user', () => {
       role.value = res.role
       alertStore.setAlert('Successfully authenticated user', 'success')
     } catch (error) {
+      // only UNAUTHENTICATED ends the session (handleAuthError does that)
       handleAuthError(error, true)
-      cookie.value = null
     }
   }
   const loginWithCredential = async (payload: AuthInput) => {

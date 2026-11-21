@@ -157,6 +157,15 @@ describe('new post uploads', () => {
     expect(await uploads()).toHaveLength(0)
   })
 
+  it('with an empty caption: 400 and no upload', async () => {
+    const { token } = await insertUser('MANAGER')
+    const f = form({ image: 'png' })
+    f.append('content', '   ')
+    const res = await api('POST', '/api/post', { token, raw: f })
+    expectApiError(res, 'VALIDATION_FAILED', 'Please write a caption.')
+    expect(await uploads()).toHaveLength(0)
+  })
+
   it('with a file that is not png or jpeg: 415 and no upload', async () => {
     const { token } = await insertUser('MANAGER')
     const res = await api('POST', '/api/post', {
