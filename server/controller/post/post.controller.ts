@@ -37,9 +37,14 @@ export class PostController {
   ): Promise<PostModel[]> => {
     const query = getQuery(e)
     if (query.sort === 'asc') {
-      return await this.postModel.find({}).select('id imageId')
+      return await this.postModel.find({}).select('id imageId').lean()
     }
-    return await this.postModel.find({}).sort({ date: -1 }).select('id imageId')
+    // lean is safe here: neither field has a schema default
+    return await this.postModel
+      .find({})
+      .sort({ date: -1 })
+      .select('id imageId')
+      .lean()
   }
   public createNewPost = async (
     e: H3Event<EventHandlerRequest>,

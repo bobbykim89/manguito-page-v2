@@ -1,6 +1,5 @@
 import { Schema, model, type HydratedDocument, type Types } from 'mongoose'
 import { LIMITS } from '../dto/limits'
-import { UserModel } from './user.model'
 
 const modelName: string = 'post'
 
@@ -12,15 +11,6 @@ export interface PostModel {
   date: Date
   updatedAt: Date
 }
-export interface PopulatedPostModel {
-  _id: Types.ObjectId
-  content: string
-  imageId: string
-  author: UserModel
-  date: Date
-  updatedAt: Date
-}
-
 export type PostDocument = HydratedDocument<PostModel>
 
 const postSchema: Schema<PostModel> = new Schema<PostModel>({

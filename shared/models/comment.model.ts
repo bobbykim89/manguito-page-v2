@@ -11,14 +11,6 @@ export interface CommentModel {
   date: Date
 }
 
-// export interface PopulatedCommentModel {
-//   _id: Types.ObjectId
-//   text: string
-//   author: UserModel
-//   post: PostModel
-//   date: Date
-// }
-
 export type CommentDocument = HydratedDocument<CommentModel>
 
 const commentSchema: Schema<CommentModel> = new Schema<CommentModel>({
