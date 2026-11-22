@@ -24,6 +24,8 @@ const userSchema: Schema<UserModel> = new Schema<UserModel>(
     name: {
       type: String,
       required: true,
+      // exact match, as typed; checkUniqueUsername gives the friendly message
+      unique: true,
       maxlength: LIMITS.username,
     },
     email: {

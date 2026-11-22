@@ -15,7 +15,7 @@ export const insertUser = async (
   userCounter += 1
   const email = `user-${userCounter}-${Date.now()}@example.test`
   const res = await conn.connection.collection('users').insertOne({
-    name: `user-${userCounter}`,
+    name: `user-${userCounter}-${Date.now() % 1e8}`,
     email,
     password: 'not-a-real-hash',
     role,

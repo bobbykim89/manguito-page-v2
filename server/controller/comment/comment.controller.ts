@@ -1,5 +1,5 @@
 import { commentInputSchema } from '#shared/dto/comment'
-import { type CommentModel, Comment } from '#shared/models'
+import { type CommentModel, Comment, Post } from '#shared/models'
 import type { EventHandlerRequest, H3Event } from 'h3'
 import { getRouterParam, readValidatedBody } from 'h3'
 import { Model } from 'mongoose'
@@ -33,6 +33,10 @@ export class CommentController {
     const postId = parseObjectId(getRouterParam(e, 'id'))
     const user = await getCurrentUser(e)
     const { text } = await readValidatedBody(e, commentInputSchema.parse)
+    // no comments on a post that doesn't exist (they'd dangle)
+    if (!(await Post.exists({ _id: postId }))) {
+      throw apiError('NOT_FOUND', 'Post not found')
+    }
     const comment = await new this.commentModel({
       text,
       author: user._id,

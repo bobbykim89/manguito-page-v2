@@ -47,4 +47,7 @@ const postSchema: Schema<PostModel> = new Schema<PostModel>({
   },
 })
 
+// every list sorts by date, newest first
+postSchema.index({ date: -1 })
+
 export const Post = model<PostModel>(modelName, postSchema)

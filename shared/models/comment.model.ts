@@ -34,6 +34,8 @@ const commentSchema: Schema<CommentModel> = new Schema<CommentModel>({
   post: {
     type: Schema.Types.ObjectId,
     ref: 'post',
+    // comments by post, and the cascade when a post is deleted
+    index: true,
   },
   date: {
     type: Date,
