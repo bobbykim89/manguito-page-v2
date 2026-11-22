@@ -106,9 +106,10 @@ export class PostController {
         'Access denied: you are not allowed to delete this post.',
       )
     }
-    // the post's comments, its image, then the post itself
-    await this.commentModel.deleteMany({ post: postId })
+    // the image first, so a Cloudinary failure leaves the post and its
+    // comments intact; then the comments, then the post itself
     await deleteCloudinaryImage(post.imageId)
+    await this.commentModel.deleteMany({ post: postId })
     await this.postModel.findByIdAndDelete(postId)
     return { id: post.id as string }
   }

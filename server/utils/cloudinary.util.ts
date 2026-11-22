@@ -53,6 +53,15 @@ export const uploadCloudinary = async (
   e.context.file = { imageId: public_id }
 }
 
+/** Deletes an image. One that's already gone (`result: 'not found'`) is fine. */
 export const deleteCloudinaryImage = async (id: string): Promise<void> => {
-  await cloudinary.uploader.destroy(id)
+  try {
+    await cloudinary.uploader.destroy(id)
+  } catch (err) {
+    console.error(err)
+    throw apiError(
+      'UPSTREAM_FAILED',
+      'Could not delete the image, please try again.',
+    )
+  }
 }

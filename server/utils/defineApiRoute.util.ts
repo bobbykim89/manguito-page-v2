@@ -19,7 +19,7 @@ export const defineApiRoute = <T>(route: {
       for (const step of route.middleware ?? []) await step(e)
       const data = await route.handler(e)
       setResponseStatus(e, route.status ?? 200)
-      return { ok: true, data }
+      return { ok: true, data: (data ?? null) as Awaited<T> }
     } catch (err) {
       const failure = toApiFailure(err)
       setResponseStatus(e, failure.status)

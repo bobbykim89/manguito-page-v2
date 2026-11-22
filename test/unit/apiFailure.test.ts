@@ -102,6 +102,16 @@ describe('toApiFailure', () => {
     expect(r.status).toBe(API_ERROR_STATUS[code as ApiErrorCode])
   })
 
+  it('replaces a bare reason phrase with a sentence', () => {
+    expect(
+      failure(createError({ statusCode: 400, statusMessage: 'Bad Request' }))
+        .body.error,
+    ).toEqual({
+      code: 'VALIDATION_FAILED',
+      message: 'The request could not be read.',
+    })
+  })
+
   it('hides anything else behind INTERNAL and logs it', () => {
     const log = vi.spyOn(console, 'error').mockImplementation(() => {})
     const r = failure(new Error('MongoServerError: secret at /srv/app.js:1'))
