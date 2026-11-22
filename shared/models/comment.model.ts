@@ -1,4 +1,5 @@
 import { Schema, model, type HydratedDocument, type Types } from 'mongoose'
+import { LIMITS } from '../dto/limits'
 
 const modelName: string = 'comment'
 
@@ -24,6 +25,7 @@ const commentSchema: Schema<CommentModel> = new Schema<CommentModel>({
   text: {
     type: String,
     required: true,
+    maxlength: LIMITS.comment,
   },
   author: {
     type: Schema.Types.ObjectId,

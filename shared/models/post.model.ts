@@ -1,4 +1,5 @@
 import { Schema, model, type HydratedDocument, type Types } from 'mongoose'
+import { LIMITS } from '../dto/limits'
 import { UserModel } from './user.model'
 
 const modelName: string = 'post'
@@ -26,6 +27,7 @@ const postSchema: Schema<PostModel> = new Schema<PostModel>({
   content: {
     type: String,
     required: true,
+    maxlength: LIMITS.caption,
   },
   imageId: {
     type: String,

@@ -1,4 +1,5 @@
 import { HydratedDocument, Schema, model, type Types } from 'mongoose'
+import { LIMITS } from '../dto/limits'
 
 const modelName: string = 'user'
 
@@ -20,11 +21,15 @@ const userSchema: Schema<UserModel> = new Schema<UserModel>({
   name: {
     type: String,
     required: true,
+    maxlength: LIMITS.username,
   },
   email: {
     type: String,
     required: true,
     unique: true,
+    lowercase: true,
+    trim: true,
+    maxlength: LIMITS.email,
   },
   password: {
     type: String,
