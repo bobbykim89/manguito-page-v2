@@ -11,9 +11,13 @@ import { type RuntimeConfig } from '@nuxt/schema'
 import bcrypt from 'bcryptjs'
 import type { EventHandlerRequest, H3Event } from 'h3'
 import { getRouterParam, readValidatedBody } from 'h3'
-import jwt from 'jsonwebtoken'
 import type { Model } from 'mongoose'
-import { apiError, getCurrentUser, parseObjectId } from '../../utils'
+import {
+  apiError,
+  getCurrentUser,
+  parseObjectId,
+  signSessionToken,
+} from '../../utils'
 
 export class UserController {
   private config: RuntimeConfig
@@ -45,11 +49,7 @@ export class UserController {
 
     user.password = await this.hashPassword(password)
     await user.save()
-    const payload = {
-      id: user.id,
-    }
-    const accessToken = this.signToken(payload)
-    return { accessToken: `Bearer ${accessToken}` }
+    return { accessToken: signSessionToken(user) }
   }
   public updatePassword = async (e: H3Event<EventHandlerRequest>) => {
     const user = await getCurrentUser(e)
@@ -182,10 +182,5 @@ export class UserController {
         `Username '${username}' is already in use, please use a different one.`,
       )
     }
-  }
-  public signToken = (payload: { id: string }) => {
-    return jwt.sign(payload, this.config.jwtSecret, {
-      expiresIn: '7d',
-    })
   }
 }

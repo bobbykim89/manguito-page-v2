@@ -4,16 +4,13 @@ import bcrypt from 'bcryptjs'
 import type { EventHandlerRequest, H3Event } from 'h3'
 import { readValidatedBody } from 'h3'
 import { Model } from 'mongoose'
-import { apiError, getCurrentUser } from '../../utils'
-import { UserController } from '../user/user.controller'
+import { apiError, getCurrentUser, signSessionToken } from '../../utils'
 
 export class AuthController {
   private userModel: Model<UserModel>
-  private userController: UserController
 
   constructor() {
     this.userModel = User
-    this.userController = new UserController()
   }
   public getCurrentUser = async (
     e: H3Event<EventHandlerRequest>,
@@ -40,10 +37,6 @@ export class AuthController {
         'Invalid credential: please check email or password again',
       )
     }
-    const payload = {
-      id: user.id,
-    }
-    const accessToken = this.userController.signToken(payload)
-    return { accessToken: `Bearer ${accessToken}` }
+    return { accessToken: signSessionToken(user) }
   }
 }

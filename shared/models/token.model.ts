@@ -16,6 +16,8 @@ const tokenSchema = new Schema<TokenModel>({
     type: Schema.Types.ObjectId,
     required: true,
     ref: 'user',
+    // one live reset link per user
+    unique: true,
   },
   token: {
     type: String,
