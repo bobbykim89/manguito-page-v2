@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { useRequestURL } from '#app'
+import { LIMIT_MESSAGES, LIMITS } from '#shared/dto/limits'
 import { ImageUrl } from '@/composables/useImageUrl'
 import { useAlertStore, usePostStore, useUserStore } from '@/stores'
 import { Modal } from '@bobbykim/manguito-theme'
 import { MclFormGroup, MclInputFile, MclTextArea } from '@bobbykim/mcl-forms'
 import imageCompression from 'browser-image-compression'
 import { storeToRefs } from 'pinia'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
 const url = useRequestURL()
 
@@ -66,8 +67,12 @@ const onModalClose = () => {
   imageFileRef.value = undefined
   contentRef.value = ''
 }
+const isCaptionTooLong = computed(
+  () => contentRef.value.trim().length > LIMITS.caption,
+)
 const onSubmit = async (): Promise<void> => {
   const fileFormData = new FormData()
+  if (isCaptionTooLong.value) return
   if (isAuthorizedUser.value === false) return
   if (typeof imageFileRef.value === 'undefined') return
   try {
@@ -178,6 +183,8 @@ const onSubmit = async (): Promise<void> => {
               <MclTextArea
                 id="content-input"
                 v-model="contentRef"
+                :invalid="isCaptionTooLong"
+                :invalid-feedback="LIMIT_MESSAGES.captionLong"
                 required
                 rounded
                 show-border
@@ -188,6 +195,7 @@ const onSubmit = async (): Promise<void> => {
                 type="submit"
                 role="button"
                 class="btn text-light-1 btn-primary"
+                :disabled="isCaptionTooLong"
               >
                 Save
               </button>

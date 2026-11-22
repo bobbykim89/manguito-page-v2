@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import type { PostType } from '#shared/types'
 import { MclFormGroup, MclTextArea } from '@bobbykim/mcl-forms'
-import { ref } from 'vue'
+import { LIMIT_MESSAGES, LIMITS } from '#shared/dto/limits'
+import { computed, ref } from 'vue'
 
 const props = defineProps<{
   isAdmin: boolean
@@ -25,7 +26,11 @@ const onToggle = (e: Event) => {
   isEditMode.value = !isEditMode.value
   emit('on-toggle', e)
 }
+const isTooLong = computed(
+  () => contentTextRef.value.trim().length > LIMITS.caption,
+)
 const onSave = () => {
+  if (isTooLong.value) return
   emit('on-save', contentTextRef.value)
   isEditMode.value = false
 }
@@ -98,6 +103,8 @@ const onDelete = (e: Event) => {
               rounded
               :rows="3"
               v-model="contentTextRef"
+              :invalid="isTooLong"
+              :invalid-feedback="LIMIT_MESSAGES.captionLong"
             />
           </MclFormGroup>
           <div class="mt-3xs flex justify-end gap-2 text-dark-1">
@@ -126,6 +133,7 @@ const onDelete = (e: Event) => {
               type="submit"
               role="button"
               aria-label="save changes"
+              :disabled="isTooLong"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"

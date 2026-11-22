@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useRequestURL } from '#app'
+import { LIMITS } from '#shared/dto/limits'
 import { UserInput } from '#shared/dto/user'
 import { useUserStore } from '@/stores'
 import { MclFormGroup, MclInputText } from '@bobbykim/mcl-forms'
@@ -58,6 +59,7 @@ const onSubmit = async () => {
         <MclFormGroup field-id="signup-name" label="Name:" class="mb-xs">
           <MclInputText
             id="signup-name"
+            :max-length="LIMITS.username"
             rounded
             requird
             v-model="userInfo.name"
