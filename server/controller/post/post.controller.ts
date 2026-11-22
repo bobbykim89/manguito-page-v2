@@ -8,20 +8,22 @@ import {
 import type { EventHandlerRequest, H3Event } from 'h3'
 import { getQuery, getRouterParam, readValidatedBody } from 'h3'
 import { Model } from 'mongoose'
-import { apiError, deleteCloudinaryImage, parseObjectId } from '../../utils'
-import { UserController } from '../user/user.controller'
+import {
+  apiError,
+  deleteCloudinaryImage,
+  getCurrentUser,
+  parseObjectId,
+} from '../../utils'
 
 const UNEXPECTED = 'Something went wrong, please try again.'
 
 export class PostController {
   private postModel: Model<PostModel>
   private commentModel: Model<CommentModel>
-  private userController: UserController
 
   constructor() {
     this.postModel = Post
     this.commentModel = Comment
-    this.userController = new UserController()
   }
 
   public getAllPost = async (): Promise<PostModel[]> => {
@@ -44,7 +46,7 @@ export class PostController {
   ): Promise<PostModel> => {
     const file = e.context.file
     const content = e.context.content
-    const user = await this.userController.getCurrentUserData(e.context)
+    const user = await getCurrentUser(e)
 
     if (user.role !== 'ADMIN' && user.role !== 'MANAGER') {
       throw apiError('FORBIDDEN', 'Access denied: unauthorized user')
@@ -60,7 +62,7 @@ export class PostController {
     e: H3Event<EventHandlerRequest>,
   ): Promise<PostModel> => {
     const postId = parseObjectId(getRouterParam(e, 'id'))
-    const user = await this.userController.getCurrentUserData(e.context)
+    const user = await getCurrentUser(e)
     // validate body
     const { content } = await readValidatedBody(e, updatePostInputSchema.parse)
     const post = await this.postModel.findById(postId)
@@ -88,7 +90,7 @@ export class PostController {
   }
   public deletePostById = async (e: H3Event<EventHandlerRequest>) => {
     const postId = parseObjectId(getRouterParam(e, 'id'))
-    const user = await this.userController.getCurrentUserData(e.context)
+    const user = await getCurrentUser(e)
     const post = await this.postModel.findById(postId)
     if (!post) {
       throw apiError('NOT_FOUND', 'Post not found')

@@ -2,9 +2,16 @@ import { useRuntimeConfig } from '#imports'
 import type { EventHandlerRequest, H3Event } from 'h3'
 import { getRequestHeader } from 'h3'
 import { apiError } from './apiError.util'
+import { getCurrentUser } from './userLoader.util'
 import jwt from 'jsonwebtoken'
 
-export const checkAuth = (event: H3Event<EventHandlerRequest>) => {
+/**
+ * Verifies the access token and loads its user (through this request's
+ * loader, so later steps reuse it). A missing user answers 401.
+ */
+export const checkAuth = async (
+  event: H3Event<EventHandlerRequest>,
+): Promise<void> => {
   const config = useRuntimeConfig()
   const bearerToken = getRequestHeader(event, 'Authorization')
 
@@ -22,4 +29,5 @@ export const checkAuth = (event: H3Event<EventHandlerRequest>) => {
       'Access token is not valid, please log in again.',
     )
   }
+  await getCurrentUser(event)
 }
