@@ -132,7 +132,7 @@ The limits are enforced in the DTOs. Captions on new posts also go through `read
 
 - A Zod failure answers 400 `VALIDATION_FAILED` "Some fields are invalid.", with the sentence in `details`. That's the existing behavior.
 - `readFormDataText` throws `apiError('VALIDATION_FAILED', <sentence>)` directly. Its existing empty check already says "Please write a caption.".
-- **My call:** the caption, comment and username inputs on the client get a matching `maxlength` attribute, so the limit is hard to hit from the UI.
+- **My call:** the client forms enforce the same limits. The username inputs get `maxlength` (`MclInputText`'s `max-length`). `MclTextArea` can't take one, so the caption and comment textareas show the "too long" sentence through `:invalid` + `invalid-feedback` and disable submit while over the limit.
 
 ### Atomic reset requests and reset links
 
