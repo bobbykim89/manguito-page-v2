@@ -8,7 +8,8 @@ export const QUALITY_MAX = 0.92
 export const QUALITY_MIN = 0.6
 /** How much the dimensions shrink when even QUALITY_MIN doesn't fit. */
 export const SHRINK = 0.85
-/** Below this long edge it gives up (unreachable for real photos). */
+/** Shrinking stops before the long edge would drop below this (unreachable
+ * for real photos); a photo that starts smaller is still uploaded as it is. */
 export const MIN_EDGE = 600
 /** Bigger inputs are refused before decoding. */
 export const MAX_INPUT_BYTES = 50 * 1024 * 1024
@@ -52,7 +53,8 @@ export const fitImage = async (
   let w = Math.round(width * scale)
   let h = Math.round(height * scale)
 
-  while (Math.max(w, h) >= MIN_EDGE) {
+  // the starting size is always tried; MIN_EDGE only limits the shrinking
+  for (;;) {
     const top = await encode(w, h, QUALITY_MAX)
     if (top.size <= UPLOAD_BUDGET)
       return { blob: top, width: w, height: h, quality: QUALITY_MAX }
@@ -81,8 +83,9 @@ export const fitImage = async (
       return best
     }
 
+    if (Math.max(w, h) * SHRINK < MIN_EDGE)
+      throw new UploadError(UPLOAD_MESSAGES.tooLarge)
     w = Math.round(w * SHRINK)
     h = Math.round(h * SHRINK)
   }
-  throw new UploadError(UPLOAD_MESSAGES.tooLarge)
 }

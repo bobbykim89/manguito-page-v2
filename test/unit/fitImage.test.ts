@@ -70,4 +70,11 @@ describe('fitImage', () => {
     for (const c of calls) perSize.set(c.w, (perSize.get(c.w) ?? 0) + 1)
     for (const count of perSize.values()) expect(count).toBeLessThanOrEqual(7)
   })
+
+  it('keeps a photo under 600 px as it is', async () => {
+    const { encode, calls } = encoder(1)
+    const out = await fitImage(400, 300, encode)
+    expect(out).toMatchObject({ width: 400, height: 300, quality: 0.92 })
+    expect(calls).toHaveLength(1)
+  })
 })
