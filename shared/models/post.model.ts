@@ -41,3 +41,9 @@ const postSchema: Schema<PostModel> = new Schema<PostModel>({
 postSchema.index({ date: -1 })
 
 export const Post = model<PostModel>(modelName, postSchema)
+
+// autoIndex builds indexes in the background and swallows a failure (e.g. a
+// duplicate blocking a unique index); log it so it shows in the server logs
+Post.on('index', (err?: Error) => {
+  if (err) console.error('[post] index build failed:', err)
+})

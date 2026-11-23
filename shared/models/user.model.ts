@@ -70,3 +70,9 @@ const userSchema: Schema<UserModel> = new Schema<UserModel>(
 )
 
 export const User = model<UserModel>(modelName, userSchema)
+
+// autoIndex builds indexes in the background and swallows a failure (e.g. a
+// duplicate blocking a unique index); log it so it shows in the server logs
+User.on('index', (err?: Error) => {
+  if (err) console.error('[user] index build failed:', err)
+})

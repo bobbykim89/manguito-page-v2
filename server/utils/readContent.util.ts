@@ -17,7 +17,11 @@ export const readFormDataText = async (
   if (!content) {
     throw apiError('VALIDATION_FAILED', 'Content field not found')
   }
-  const decodedContent = Buffer.from(content.data).toString().trim()
+  // browsers send multipart line breaks as CRLF; count each one once
+  const decodedContent = Buffer.from(content.data)
+    .toString()
+    .replace(/\r\n?/g, '\n')
+    .trim()
   if (!decodedContent) {
     throw apiError('VALIDATION_FAILED', LIMIT_MESSAGES.captionEmpty)
   }
