@@ -1,185 +1,66 @@
-import { navigateTo } from '#app'
 import { type UpdatePostInput } from '#shared/dto/post'
-import { PostType } from '#shared/types'
-import { useAuthToken } from '@/composables/useAuthToken'
+import type { PostType } from '#shared/types'
+import { useApiAction } from '@/composables/useApiAction'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
-import { useAlertStore } from './alertStore'
-import { useUserStore } from './userStore'
 
+/**
+ * The post list every page shares, and the actions that change it. The
+ * server decides who may change what; a refusal comes back as an alert.
+ */
 export const usePostStore = defineStore('post', () => {
-  const errorCheck = useErrorCheck()
-  const alertStore = useAlertStore()
-  const userStore = useUserStore()
-  const cookie = useAuthToken()
   const { $api } = useNuxtApp()
+  const { run } = useApiAction()
+
   // POST: states
   const posts = ref<PostType[]>([])
-  const currentPost = ref<PostType | null>(null)
-  const postIdx = ref<number>(0)
-  const postLoading = ref<boolean>(false)
 
   // POST: getters
-  const getRecentPosts = computed<PostType[]>(() => {
-    return posts.value.slice(0, 7)
-  })
+  const getRecentPosts = computed<PostType[]>(() => posts.value.slice(0, 7))
 
   // POST: actions
-  const setPostLoadnigTimeout = () => {
-    postLoading.value = true
-    setTimeout(() => {
-      postLoading.value = false
-    }, 500)
-  }
   const getAllPosts = async () => {
     const { data, error } = await useApi<PostType[]>('/api/post')
-    if (error.value) return handlePostError(error.value)
+    if (error.value) {
+      // a failed load alerts (and ends a dead session) like any action
+      await run(() => Promise.reject(error.value))
+      return
+    }
     posts.value = data.value ?? []
   }
-  const setCurrentPost = (postId: string) => {
-    setPostLoadnigTimeout()
-
-    for (let i = 0; i < posts.value.length; i++) {
-      const post = posts.value[i]
-      if (post && post._id === postId) {
-        currentPost.value = post
-        postIdx.value = i
-      }
-    }
-    if (currentPost.value === null) {
-      alertStore.setAlert('Error: Invalid Post ID ')
-      setTimeout(() => {
-        return navigateTo('/posts')
-      }, 500)
-    }
-  }
-  const setNextPost = (): string => {
-    setPostLoadnigTimeout()
-
-    const basePath: string = '/posts'
-    if (posts.value.length === 0) return basePath
-    const nextIdx = (postIdx.value + 1) % posts.value.length
-    const targetPost = posts.value[nextIdx]
-    return targetPost ? `${basePath}/${targetPost._id}` : basePath
-    // let postId: string = ''
-    // if (postIdx.value < posts.value.length - 1) {
-    //   const targetPost = posts.value[postIdx.value + 1]
-    //   postId = targetPost ? targetPost._id : ''
-    // }
-    // if (postIdx.value === posts.value.length - 1) {
-    //   const targetPost = posts.value[0]
-    //   postId = targetPost ? targetPost._id : ''
-    // }
-    // return `/posts/${postId}`
-  }
-  const setPrevPost = (): string => {
-    setPostLoadnigTimeout()
-    const basePath: string = '/posts'
-    if (posts.value.length === 0) return basePath
-
-    const prevIdx =
-      (postIdx.value - 1 + posts.value.length) % posts.value.length
-    const targetPost = posts.value[prevIdx]
-    return targetPost ? `${basePath}/${targetPost._id}` : basePath
-    // let postId: string = ''
-    // if (postIdx.value > 0) {
-    //   const targetPost = posts.value[postIdx.value - 1]
-    //   postId = targetPost ? targetPost._id : ''
-    // }
-    // if (postIdx.value === 0) {
-    //   const targetPost = posts.value[posts.value.length - 1]
-    //   postId = targetPost ? targetPost._id : ''
-    // }
-    // return `/posts/${postId}`
-  }
-  const resetCurrent = () => {
-    currentPost.value = null
-    postIdx.value = 0
-    postLoading.value = false
-  }
   const createNewPost = async (payload: FormData) => {
-    try {
-      const { isAuthenticated, role } = userStore
-      if (!cookie.value || !isAuthenticated)
-        return alertStore.setAlert('No user authentication found, please login')
-
-      if (role !== 'ADMIN' && role !== 'MANAGER')
-        throw new Error('Unauthorized action for current user')
-
-      const res = await $api<PostType>('/api/post', {
-        method: 'POST',
-        body: payload,
-      })
-      posts.value = [res, ...posts.value]
-      alertStore.setAlert('Successfully created a new post', 'success')
-    } catch (error) {
-      handlePostError(error)
-    }
+    const res = await run(
+      () => $api<PostType>('/api/post', { method: 'POST', body: payload }),
+      { success: 'Successfully created a new post' },
+    )
+    if (res.ok) posts.value = [res.data, ...posts.value]
   }
   const updatePost = async (postId: string, payload: UpdatePostInput) => {
-    try {
-      const { isAuthenticated, currentUser } = userStore
-      if (!cookie.value || !isAuthenticated)
-        return alertStore.setAlert('No user authentication found, please login')
-
-      const currentPost = posts.value.find(
-        (item) => item._id.toString() === postId,
-      )
-      if (currentPost?.author._id !== currentUser?._id)
-        throw new Error('Unauthorized user')
-
-      const res = await $api<PostType>(`/api/post/${postId}`, {
-        method: 'PUT',
-        body: payload,
-      })
+    const res = await run(
+      () =>
+        $api<PostType>(`/api/post/${postId}`, { method: 'PUT', body: payload }),
+      { success: 'Successfully updated post!' },
+    )
+    if (res.ok) {
       posts.value = posts.value.map((post) =>
-        post._id.toString() === postId ? res : post,
+        post._id === postId ? res.data : post,
       )
-      alertStore.setAlert('Successfully updated post!', 'success')
-    } catch (error) {
-      handlePostError(error)
     }
   }
-  const deletePostById = async (postId: string) => {
-    try {
-      const { isAuthenticated, currentUser, role } = userStore
-      if (!cookie.value || !isAuthenticated)
-        return alertStore.setAlert('No user authentication found, please login')
-
-      const currentPost = posts.value.find(
-        (item) => item._id.toString() === postId,
-      )
-      if (currentPost?.author._id !== currentUser?._id && role !== 'ADMIN')
-        throw new Error('Unauthorized user')
-
-      await $api(`/api/post/${postId}`, {
-        method: 'DELETE',
-      })
-      posts.value = posts.value.filter((post) => post._id.toString() !== postId)
-      alertStore.setAlert('Successfully deleted post!', 'success')
-    } catch (error) {
-      handlePostError(error)
-    }
-  }
-  // a dead session logs out (like userStore); a refusal only alerts
-  const handlePostError = (err: unknown) => {
-    const errorMessage: string = errorCheck.extractMessage(err)
-    if (errorCheck.isAuthError(err)) userStore.expireSession()
-    console.error(errorMessage)
-    alertStore.setAlert(errorMessage)
+  /** Deletes a post; true when it's gone, so the page can leave it. */
+  const deletePostById = async (postId: string): Promise<boolean> => {
+    const res = await run(
+      () => $api(`/api/post/${postId}`, { method: 'DELETE' }),
+      { success: 'Successfully deleted post!' },
+    )
+    if (res.ok) posts.value = posts.value.filter((post) => post._id !== postId)
+    return res.ok
   }
 
   return {
     posts,
-    currentPost,
-    postIdx,
     getRecentPosts,
-    postLoading,
     getAllPosts,
-    setCurrentPost,
-    setNextPost,
-    setPrevPost,
-    resetCurrent,
     createNewPost,
     updatePost,
     deletePostById,

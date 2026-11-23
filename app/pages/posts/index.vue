@@ -36,7 +36,6 @@ const modalRef = ref<InstanceType<typeof Modal>>()
 const postPerLoad: number = 30
 const numPostsDisplayed = ref<number>(30)
 const numberOfLoads = ref<number>(0)
-postStore.resetCurrent()
 const formatPostUrl = (id: string) => {
   const imgUrl = new ImageUrl(id)
   return imgUrl.getNuxtImageCardUrl()

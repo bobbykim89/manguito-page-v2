@@ -18,13 +18,13 @@ const url = useRequestURL()
 const alertStore = useAlertStore()
 const postStore = usePostStore()
 const userStore = useUserStore()
-const { currentPost, postLoading } = storeToRefs(postStore)
+const { currentPost, prevUrl, nextUrl } = usePostNavigation(
+  () => route.params.id as string,
+)
 const { currentUser, isAuthenticated, isAdmin, isManagerOrUp } =
   storeToRefs(userStore)
 const contentRef = ref<HTMLDivElement>()
 const { copy, isSupported } = useClipboard()
-
-postStore.setCurrentPost(route.params.id as string)
 
 const { $api } = useNuxtApp()
 const reportError = useReportApiError()
@@ -59,12 +59,10 @@ useHead({
   ],
 })
 const handlePrevClick = () => {
-  const prevPostUrl = postStore.setPrevPost()
-  router.push({ path: prevPostUrl })
+  router.push({ path: prevUrl.value })
 }
 const handleNextClick = () => {
-  const nextPostUrl = postStore.setNextPost()
-  router.push({ path: nextPostUrl })
+  router.push({ path: nextUrl.value })
 }
 const copyUrl = () => {
   copy(url.href)
@@ -84,7 +82,6 @@ const saveEdit = async (text: string) => {
       content: text,
     })
   }
-  postStore.setCurrentPost(route.params.id)
 }
 const deletePost = async () => {
   if (typeof route.params.id !== 'string') return
@@ -93,9 +90,9 @@ const deletePost = async () => {
     import.meta.client &&
     window.confirm('Please confirm to permanently delete this post')
   ) {
-    await postStore.deletePostById(route.params.id)
+    const deleted = await postStore.deletePostById(route.params.id)
+    if (deleted) router.push({ path: '/posts' })
   }
-  router.push({ path: '/posts' })
 }
 const onCommentSubmit = async (text: string) => {
   if (!cookie.value) return
@@ -170,7 +167,7 @@ const handleRouterEvent = () => {
               <div class="relative">
                 <Transition mode="out-in">
                   <NuxtImg
-                    v-if="!postLoading"
+                    :key="currentPost?.imageId"
                     provider="cloudinary"
                     :src="currentPost?.imageId"
                     alt="a picture of manguito"
@@ -181,14 +178,6 @@ const handleRouterEvent = () => {
                     height="645"
                     fit="cover"
                   />
-                  <div
-                    v-else
-                    class="relative flex aspect-[3/4] w-full flex-col items-center justify-center rounded-md bg-light-3"
-                  >
-                    <div
-                      class="h-2xl w-2xl animate-spin rounded-full border-8 border-light-1 border-r-primary"
-                    ></div>
-                  </div>
                 </Transition>
                 <!-- share button -->
                 <button
