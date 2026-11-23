@@ -45,4 +45,39 @@ describe('form length limits', () => {
     })
     expect(panels.find('#user-name').attributes('maxlength')).toBe('30')
   })
+
+  it('a comment of only spaces is not sent and stays in the box', async () => {
+    const wrapper = await mountSuspended(CommentInput)
+    await wrapper.find('textarea').setValue('   ')
+    expect(
+      wrapper.find('button[type="submit"]').attributes('disabled'),
+    ).toBeDefined()
+    await wrapper.find('form').trigger('submit')
+    expect(wrapper.emitted('submit-comment')).toBeUndefined()
+    expect(
+      (wrapper.find('textarea').element as HTMLTextAreaElement).value,
+    ).toBe('   ')
+  })
+
+  it('a caption edit of only spaces is not saved', async () => {
+    const wrapper = await mountSuspended(ContentBlock, {
+      props: { isAdmin: false, isAuthor: true, post: post as never },
+    })
+    await wrapper.find('button[aria-label="edit-post"]').trigger('click')
+    await wrapper.find('textarea').setValue('   ')
+    await wrapper.find('form').trigger('submit')
+    expect(wrapper.emitted('on-save')).toBeUndefined()
+  })
+
+  it('a username of only spaces is not submitted', async () => {
+    const wrapper = await mountSuspended(UpdateUserInfo, {
+      global: { stubs: { transition: false } },
+    })
+    await wrapper.find('#user-name').setValue('   ')
+    await wrapper
+      .find('#user-name')
+      .element.closest('form')!
+      .dispatchEvent(new Event('submit', { cancelable: true }))
+    expect(wrapper.emitted('on-username-update')).toBeUndefined()
+  })
 })
