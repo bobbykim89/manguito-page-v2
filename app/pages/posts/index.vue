@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useRequestURL } from '#app'
 import { LIMIT_MESSAGES, LIMITS } from '#shared/dto/limits'
+import LoadMoreStatus from '@/components/posts/LoadMoreStatus.vue'
 import { ImageUrl } from '@/composables/useImageUrl'
 import { useAlertStore, usePostStore, useUserStore } from '@/stores'
 import { Modal } from '@bobbykim/manguito-theme'
@@ -125,6 +126,7 @@ const onSubmit = async (): Promise<void> => {
             />
           </NuxtLink>
         </div>
+        <LoadMoreStatus class="col-span-3" />
       </div>
     </div>
     <Modal

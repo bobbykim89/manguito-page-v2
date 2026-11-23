@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import LoadMoreStatus from '@/components/posts/LoadMoreStatus.vue'
 import { usePostStore } from '@/stores'
 import { storeToRefs } from 'pinia'
 
@@ -84,5 +85,6 @@ const onDelete = async (id: string) => {
         </div>
       </div>
     </div>
+    <LoadMoreStatus />
   </div>
 </template>
