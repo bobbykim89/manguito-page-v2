@@ -3,6 +3,7 @@ import {
   Comment,
   type CommentModel,
   Post,
+  type PostDocument,
   type PostModel,
 } from '#shared/models'
 import type { EventHandlerRequest, H3Event } from 'h3'
@@ -12,6 +13,8 @@ import {
   apiError,
   deleteCloudinaryImage,
   getCurrentUser,
+  newerThan,
+  olderThan,
   parseObjectId,
 } from '../../utils'
 
@@ -31,6 +34,38 @@ export class PostController {
       .find({})
       .populate('author', 'name')
       .sort({ date: -1 })
+  }
+  /**
+   * One post with the ids of its neighbours in the list order (newest
+   * first). `prevId` is the next newer post and `nextId` the next older one;
+   * both wrap around at the ends.
+   */
+  public getPostWithNeighbours = async (
+    e: H3Event<EventHandlerRequest>,
+  ): Promise<{ post: PostDocument; prevId: string; nextId: string }> => {
+    const postId = parseObjectId(getRouterParam(e, 'id'))
+    // hydrated: author is populated from users that may lack schema defaults
+    const post = await this.postModel
+      .findById(postId)
+      .populate('author', 'name')
+    if (!post) throw apiError('NOT_FOUND', "This post doesn't exist.")
+    const newestFirst = { date: -1, _id: -1 } as const
+    const oldestFirst = { date: 1, _id: 1 } as const
+    const idOnly = (
+      filter: object,
+      sort: typeof newestFirst | typeof oldestFirst,
+    ) => this.postModel.findOne(filter).sort(sort).select('_id').lean()
+    const next =
+      (await idOnly(olderThan(post.date, post._id), newestFirst)) ??
+      (await idOnly({}, newestFirst))
+    const prev =
+      (await idOnly(newerThan(post.date, post._id), oldestFirst)) ??
+      (await idOnly({}, oldestFirst))
+    return {
+      post,
+      prevId: String(prev?._id ?? post._id),
+      nextId: String(next?._id ?? post._id),
+    }
   }
   public getAllTrimmedPost = async (
     e: H3Event<EventHandlerRequest>,
