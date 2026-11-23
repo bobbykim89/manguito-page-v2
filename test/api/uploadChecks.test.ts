@@ -1,6 +1,8 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { api, expectApiError } from '../utils/api'
 import { insertUser } from '../utils/auth'
+import { insertPost } from '../utils/content'
+import { db } from '../utils/db'
 import { cloudinaryCalls, resetFakes } from '../utils/fakes'
 
 // the server judges a file by its leading signature bytes, so these stand in
@@ -73,5 +75,36 @@ describe('new post file checks', () => {
     const res = await post(form(Buffer.alloc(0), 'image/jpeg'))
     expectApiError(res, 'VALIDATION_FAILED', 'Please choose a photo to upload.')
     expect(await uploads()).toHaveLength(0)
+  })
+
+  it('a post that fails to save deletes its uploaded image', async () => {
+    const { id, token } = await insertUser('MANAGER')
+    // the collection must exist before it can take a validator
+    await insertPost(id)
+    const conn = await db()
+    const native = conn.connection.db!
+    await native.command({
+      collMod: 'posts',
+      validator: { content: { $ne: 'reject me' } },
+    })
+    try {
+      const f = new FormData()
+      f.append('image', new Blob([JPEG], { type: 'image/jpeg' }), 'bird.jpg')
+      f.append('content', 'reject me')
+      const res = await api('POST', '/api/post', { token, raw: f })
+      expectApiError(res, 'INTERNAL')
+      const paths = (await cloudinaryCalls()).map((c) => c.path)
+      const uploaded = paths.findIndex((p) => p.endsWith('/image/upload'))
+      const destroyed = paths.findIndex((p) => p.endsWith('/image/destroy'))
+      expect(uploaded).toBeGreaterThanOrEqual(0)
+      expect(destroyed).toBeGreaterThan(uploaded)
+      expect(
+        await native
+          .collection('posts')
+          .countDocuments({ content: 'reject me' }),
+      ).toBe(0)
+    } finally {
+      await native.command({ collMod: 'posts', validator: {} })
+    }
   })
 })
