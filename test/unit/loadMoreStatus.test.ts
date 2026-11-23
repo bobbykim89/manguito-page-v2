@@ -24,19 +24,29 @@ const flush = (ms = 60) => new Promise((resolve) => setTimeout(resolve, ms))
 
 type Entry = { isIntersecting: boolean }
 let observers: Array<(entries: Entry[]) => void> = []
+/** Whether the sentinel is in range right now, as a real observer would see it. */
+let current = false
 class FakeObserver {
-  constructor(callback: (entries: Entry[]) => void) {
+  constructor(private callback: (entries: Entry[]) => void) {
     observers.push(callback)
   }
-  observe() {}
+  // a real IntersectionObserver reports the target's state once it starts
+  // observing, after layout
+  observe() {
+    setTimeout(() => this.callback([{ isIntersecting: current }]), 0)
+  }
   unobserve() {}
-  disconnect() {}
+  disconnect() {
+    observers = observers.filter((cb) => cb !== this.callback)
+  }
   takeRecords() {
     return []
   }
 }
-const setInView = (isIntersecting: boolean) =>
+const setInView = (isIntersecting: boolean) => {
+  current = isIntersecting
   observers.forEach((callback) => callback([{ isIntersecting }]))
+}
 
 const store = () => usePostStore(useNuxtApp().$pinia as Pinia)
 // mounted components outlive a test unless unmounted, and would react to the
@@ -75,6 +85,7 @@ describe('LoadMoreStatus', () => {
   beforeEach(() => {
     resetState()
     observers = []
+    current = false
     requests = []
     vi.stubGlobal('IntersectionObserver', FakeObserver)
     store().$patch({
@@ -169,5 +180,20 @@ describe('LoadMoreStatus', () => {
     store().$patch({ status: 'done', nextCursor: null })
     const wrapper = await mount()
     expect(wrapper.find('[role="status"]').text()).toBe('')
+  })
+
+  it('loads one page per trigger when the new tiles push the sentinel away', async () => {
+    pages(
+      { posts: ['p2'], nextCursor: 'c2' },
+      { posts: ['p3'], nextCursor: null },
+    )
+    await mount()
+    await flush(10) // the observer's first report (out of range)
+    setInView(true)
+    // the page lands and its tiles push the sentinel out of range
+    current = false
+    await flush(200)
+    expect(requests.map((q) => q.cursor)).toEqual(['c'])
+    expect(store().status).toBe('idle')
   })
 })

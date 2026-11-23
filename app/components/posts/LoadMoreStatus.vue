@@ -16,7 +16,7 @@ const { posts, status, loaded, nextCursor } = storeToRefs(postStore)
 
 const sentinel = ref<HTMLElement | null>(null)
 const inView = ref<boolean>(false)
-useIntersectionObserver(
+const { pause, resume } = useIntersectionObserver(
   sentinel,
   (entries) => {
     const entry = entries.at(-1)
@@ -26,15 +26,19 @@ useIntersectionObserver(
   { rootMargin: '0px 0px 100% 0px' },
 )
 
-// also runs when a load settles back to 'idle', so a sentinel that's still
-// in view (a tall screen) loads again; never on 'error'
-watch([inView, status], () => {
-  if (
-    inView.value &&
-    status.value === 'idle' &&
-    loaded.value &&
-    nextCursor.value
-  )
+watch([inView, status], ([visible, now], [, before]) => {
+  if (before === 'loading' && now === 'idle') {
+    // A page just landed, and its tiles may have pushed the sentinel away;
+    // the last reading predates them. Observe afresh: a new observer reports
+    // where the sentinel is now, and if it's still in view (a tall screen)
+    // that loads the next page.
+    inView.value = false
+    pause()
+    resume()
+    return
+  }
+  // never on 'error': that waits for Try again
+  if (visible && now === 'idle' && loaded.value && nextCursor.value)
     postStore.loadMore()
 })
 
