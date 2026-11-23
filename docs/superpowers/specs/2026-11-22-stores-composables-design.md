@@ -112,7 +112,7 @@ posts.value = [res.data, ...posts.value]
   - any other error → the alert `extractMessage(err)`;
   - in both cases it returns `{ ok: false }` and never throws.
 - On success: `alertStore.setAlert(success, 'success')` when `success` is given, then `{ ok: true, data }`.
-- **It must work inside `userStore`'s own setup.** `userStore` uses it, so it must not call `useUserStore()` at setup time. It captures the app's own Pinia (`useNuxtApp().$pinia`) at setup and resolves `useUserStore(pinia)` and `useAlertStore(pinia)` only when a call fails or succeeds. Calling `useUserStore()` with no Pinia argument in an async continuation is how SSR requests would leak into each other.
+- **It must work inside `userStore`'s own setup, and never resolve a store after an `await`.** It calls `useUserStore()` and `useAlertStore()` once, synchronously, when `useApiAction()` is called. Pinia 4 registers a store before running its setup (`pinia._s.set` precedes `setup()`), so inside `userStore`'s setup that returns the store being built, with no recursion. Elsewhere it resolves through the component's injected Pinia. It must never call `useUserStore()` from an async continuation, which is how SSR requests would leak into each other.
 - `useReportApiError()` is removed. Its callers use `run`.
 
 ### `userStore`
