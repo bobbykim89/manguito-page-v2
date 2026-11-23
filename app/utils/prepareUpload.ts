@@ -51,21 +51,36 @@ export const prepareUpload = async (file: File): Promise<File> => {
     throw new UploadError(UPLOAD_MESSAGES.unreadable)
   }
 
+  // one canvas per size, drawn once and re-encoded at each quality: fewer
+  // full-size canvases alive at once (iOS Safari caps their total memory)
+  let drawn: {
+    width: number
+    height: number
+    canvas: OffscreenCanvas | HTMLCanvasElement
+  } | null = null
+  const draw = (width: number, height: number) => {
+    if (drawn && drawn.width === width && drawn.height === height)
+      return drawn.canvas
+    const canvas = makeCanvas(width, height)
+    const ctx = canvas.getContext('2d') as
+      CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D | null
+    if (!ctx) throw new UploadError(UPLOAD_MESSAGES.unreadable)
+    // JPEG has no transparency: a white background, not black
+    ctx.fillStyle = '#fff'
+    ctx.fillRect(0, 0, width, height)
+    // the default ('low') aliases a big downscale, e.g. 6000 → 2400 px
+    ctx.imageSmoothingEnabled = true
+    ctx.imageSmoothingQuality = 'high'
+    ctx.drawImage(bitmap, 0, 0, width, height)
+    drawn = { width, height, canvas }
+    return canvas
+  }
+
   try {
     const { blob } = await fitImage(
       bitmap.width,
       bitmap.height,
-      (width, height, quality) => {
-        const canvas = makeCanvas(width, height)
-        const ctx = canvas.getContext('2d') as
-          CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D | null
-        if (!ctx) throw new UploadError(UPLOAD_MESSAGES.unreadable)
-        // JPEG has no transparency: a white background, not black
-        ctx.fillStyle = '#fff'
-        ctx.fillRect(0, 0, width, height)
-        ctx.drawImage(bitmap, 0, 0, width, height)
-        return toJpeg(canvas, quality)
-      },
+      (width, height, quality) => toJpeg(draw(width, height), quality),
     )
     const base = file.name.replace(/\.[^.]*$/, '') || 'photo'
     return new File([blob], `${base}.jpg`, { type: 'image/jpeg' })

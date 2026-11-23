@@ -42,4 +42,43 @@ describe('prepareUpload', () => {
       UPLOAD_MESSAGES.unreadable,
     )
   })
+
+  it('draws each size once, with high-quality smoothing', async () => {
+    vi.stubGlobal(
+      'createImageBitmap',
+      vi.fn().mockResolvedValue({ width: 4000, height: 3000, close: vi.fn() }),
+    )
+    const canvases: Array<{ width: number; height: number }> = []
+    const draws: string[] = []
+    class FakeCanvas {
+      constructor(
+        public width: number,
+        public height: number,
+      ) {
+        canvases.push({ width, height })
+      }
+      getContext() {
+        const ctx = {
+          fillStyle: '',
+          imageSmoothingEnabled: true,
+          imageSmoothingQuality: 'low',
+          fillRect: () => {},
+          drawImage: () => draws.push(ctx.imageSmoothingQuality),
+        }
+        return ctx
+      }
+      // over budget above 0.8, so the search runs several encodes at 2400×1800
+      async convertToBlob({ quality }: { quality: number }) {
+        return new Blob([new Uint8Array(quality > 0.8 ? 5 * 1024 * 1024 : 10)])
+      }
+    }
+    vi.stubGlobal('OffscreenCanvas', FakeCanvas)
+    const out = await prepareUpload(
+      new File(['x'], 'bird.png', { type: 'image/png' }),
+    )
+    expect(out.name).toBe('bird.jpg')
+    expect(out.type).toBe('image/jpeg')
+    expect(canvases).toEqual([{ width: 2400, height: 1800 }])
+    expect(draws).toEqual(['high'])
+  })
 })
