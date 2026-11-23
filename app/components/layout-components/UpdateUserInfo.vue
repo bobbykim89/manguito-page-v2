@@ -24,6 +24,10 @@ const passwordTrigger = useCollapseTrigger(passwordPanel, {
 })
 
 const onUsernameUpdateSubmit = (e: Event) => {
+  if (usernameRef.value.trim() === '') {
+    e.preventDefault()
+    return
+  }
   emit('on-username-update', e, usernameRef.value)
   usernameRef.value = ''
 }

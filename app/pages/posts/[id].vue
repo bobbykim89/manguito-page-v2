@@ -1,10 +1,8 @@
 <script setup lang="ts">
 import { useRequestURL } from '#app'
-import type { CommentType } from '#shared/types'
 import CommentInput from '@/components/posts/CommentInput.vue'
 import CommentItem from '@/components/posts/CommentItem.vue'
 import ContentBlock from '@/components/posts/ContentBlock.vue'
-import { useAuthToken } from '@/composables/useAuthToken'
 import { ImageUrl } from '@/composables/useImageUrl'
 import { useAlertStore, usePostStore, useUserStore } from '@/stores'
 import { useClipboard } from '@vueuse/core'
@@ -13,22 +11,20 @@ import { computed, ref } from 'vue'
 
 const route = useRoute()
 const router = useRouter()
-const cookie = useAuthToken()
 const url = useRequestURL()
 const alertStore = useAlertStore()
 const postStore = usePostStore()
 const userStore = useUserStore()
-const { currentPost, postLoading } = storeToRefs(postStore)
-const { currentUser, role, isAuthenticated } = storeToRefs(userStore)
+const { currentPost, prevUrl, nextUrl } = usePostNavigation(
+  () => route.params.id as string,
+)
+const { currentUser, isAuthenticated, isAdmin, isManagerOrUp } =
+  storeToRefs(userStore)
 const contentRef = ref<HTMLDivElement>()
 const { copy, isSupported } = useClipboard()
 
-postStore.setCurrentPost(route.params.id as string)
-
-const { $api } = useNuxtApp()
-const reportError = useReportApiError()
-const { data: comments, refresh } = await useApi<CommentType[]>(
-  `/api/comment/${route.params.id}`,
+const { comments, addComment, removeComment } = await usePostComments(
+  () => route.params.id as string,
 )
 
 const resolveMetaImage = (img: string) => {
@@ -58,31 +54,15 @@ useHead({
   ],
 })
 const handlePrevClick = () => {
-  const prevPostUrl = postStore.setPrevPost()
-  router.push({ path: prevPostUrl })
+  router.push({ path: prevUrl.value })
 }
 const handleNextClick = () => {
-  const nextPostUrl = postStore.setNextPost()
-  router.push({ path: nextPostUrl })
+  router.push({ path: nextUrl.value })
 }
 const copyUrl = () => {
   copy(url.href)
   alertStore.setAlert('Copied url to clipboard', 'info')
 }
-const isAdmin = computed<boolean>(() => {
-  if (isAuthenticated.value === false) return false
-  if (currentUser.value === null) return false
-  if (role.value === null) return false
-  if (role.value !== 'ADMIN') return false
-  return true
-})
-const isManagerOrUp = computed<boolean>(() => {
-  if (isAuthenticated.value === false) return false
-  if (currentUser.value === null) return false
-  if (role.value === null) return false
-  if (role.value !== 'ADMIN' && role.value !== 'MANAGER') return false
-  return true
-})
 const isAuthor = computed<boolean>(() => {
   if (isAuthenticated.value === false) return false
   if (currentUser.value === null) return false
@@ -97,7 +77,6 @@ const saveEdit = async (text: string) => {
       content: text,
     })
   }
-  postStore.setCurrentPost(route.params.id)
 }
 const deletePost = async () => {
   if (typeof route.params.id !== 'string') return
@@ -106,33 +85,16 @@ const deletePost = async () => {
     import.meta.client &&
     window.confirm('Please confirm to permanently delete this post')
   ) {
-    await postStore.deletePostById(route.params.id)
+    const deleted = await postStore.deletePostById(route.params.id)
+    if (deleted) router.push({ path: '/posts' })
   }
-  router.push({ path: '/posts' })
 }
 const onCommentSubmit = async (text: string) => {
-  if (!cookie.value) return
-  try {
-    await $api(`/api/comment/${route.params.id}`, {
-      method: 'POST',
-      body: { text },
-    })
-  } catch (err) {
-    return reportError(err)
-  }
-  alertStore.setAlert('Successfully created a comment!', 'success')
-  refresh()
+  await addComment(text)
 }
 const onCommentDelete = async (id: string) => {
   if (isManagerOrUp.value === false && isAuthor.value === false) return
-  if (!cookie.value) return
-  try {
-    await $api(`/api/comment/${id}`, { method: 'DELETE' })
-  } catch (err) {
-    return reportError(err)
-  }
-  alertStore.setAlert('Successfully deleted a comment!', 'success')
-  refresh()
+  await removeComment(id)
 }
 const handleRouterEvent = () => {
   router.push({ path: '/posts' })
@@ -183,7 +145,7 @@ const handleRouterEvent = () => {
               <div class="relative">
                 <Transition mode="out-in">
                   <NuxtImg
-                    v-if="!postLoading"
+                    :key="currentPost?.imageId"
                     provider="cloudinary"
                     :src="currentPost?.imageId"
                     alt="a picture of manguito"
@@ -194,14 +156,6 @@ const handleRouterEvent = () => {
                     height="645"
                     fit="cover"
                   />
-                  <div
-                    v-else
-                    class="relative flex aspect-[3/4] w-full flex-col items-center justify-center rounded-md bg-light-3"
-                  >
-                    <div
-                      class="h-2xl w-2xl animate-spin rounded-full border-8 border-light-1 border-r-primary"
-                    ></div>
-                  </div>
                 </Transition>
                 <!-- share button -->
                 <button

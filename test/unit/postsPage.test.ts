@@ -17,8 +17,6 @@ const mountAsAdmin = async () => {
   const user = useUserStore(useNuxtApp().$pinia as Pinia)
   user.$patch({
     currentUser: admin as never,
-    isAuthenticated: true,
-    role: 'ADMIN',
   })
   // test-utils stubs <Transition> by default, so the Modal's after-enter hook
   // (which lets it close) would never run

@@ -36,3 +36,9 @@ const commentSchema: Schema<CommentModel> = new Schema<CommentModel>({
 })
 
 export const Comment = model<CommentModel>(modelName, commentSchema)
+
+// autoIndex builds indexes in the background and swallows a failure (e.g. a
+// duplicate blocking a unique index); log it so it shows in the server logs
+Comment.on('index', (err?: Error) => {
+  if (err) console.error('[comment] index build failed:', err)
+})

@@ -31,3 +31,9 @@ const tokenSchema = new Schema<TokenModel>({
 })
 
 export const Token = model<TokenModel>(modelName, tokenSchema)
+
+// autoIndex builds indexes in the background and swallows a failure (e.g. a
+// duplicate blocking a unique index); log it so it shows in the server logs
+Token.on('index', (err?: Error) => {
+  if (err) console.error('[token] index build failed:', err)
+})

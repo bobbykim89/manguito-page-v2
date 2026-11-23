@@ -11,8 +11,9 @@ const isTooLong = computed(
 const emit = defineEmits<{
   (e: 'submit-comment', content: string): void
 }>()
+const isBlank = computed(() => commentRef.value.trim() === '')
 const submitComment = () => {
-  if (commentRef.value === '' || isTooLong.value) return
+  if (isBlank.value || isTooLong.value) return
   emit('submit-comment', commentRef.value)
   commentRef.value = ''
 }
@@ -40,7 +41,7 @@ const submitComment = () => {
             type="submit"
             role="button"
             aria-label="post comment"
-            :disabled="commentRef === '' || isTooLong"
+            :disabled="isBlank || isTooLong"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

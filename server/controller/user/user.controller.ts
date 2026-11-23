@@ -90,6 +90,8 @@ export class UserController {
       e,
       newUsernameInputSchema.parse,
     )
+    // already this name: nothing to change (and not a conflict with yourself)
+    if (username === user.name) return user
     await this.checkUniqueUsername(username)
     const updatedUser = await this.userModel
       .findByIdAndUpdate(

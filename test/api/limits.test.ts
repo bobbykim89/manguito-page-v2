@@ -108,4 +108,24 @@ describe('length limits', () => {
     })
     expectDetail(res, 'email', 'Email addresses can be at most 254 characters.')
   })
+
+  it("counts a caption's line breaks once", async () => {
+    const { token } = await insertUser('MANAGER')
+    // 999 characters with one line break; the browser sends it as CRLF
+    const res = await newPost(token, 'x'.repeat(498) + '\r\n' + 'x'.repeat(500))
+    expect(res.status).toBe(201)
+    expect(res.json.data.content).not.toContain('\r')
+    expect(res.json.data.content).toHaveLength(999)
+  })
+
+  it('refuses a whitespace-only name at signup', async () => {
+    const res = await api('POST', '/api/user', {
+      body: {
+        name: '   ',
+        email: `blank-${Date.now()}@example.test`,
+        password: 'Passw0rd!',
+      },
+    })
+    expectDetail(res, 'name', 'Please enter a username.')
+  })
 })

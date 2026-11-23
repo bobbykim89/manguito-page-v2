@@ -97,4 +97,44 @@ describe('$api', () => {
       error: { code: 'NOT_FOUND', message: 'Post not found' },
     })
   })
+
+  it('a per-call onResponse still gets unwrapped data', async () => {
+    mockApi('GET', '/api/thing', () => okEnvelope({ n: 1 }))
+    let called = false
+    const res = await useNuxtApp().$api('/api/thing', {
+      onResponse: () => {
+        called = true
+      },
+    })
+    expect(res).toEqual({ n: 1 })
+    expect(called).toBe(true)
+  })
+
+  it('a per-call onRequest still sends the token', async () => {
+    useAuthToken().value = 'Bearer abc'
+    let auth: string | undefined
+    mockApi('GET', '/api/thing', (e) => {
+      auth = getRequestHeader(e, 'authorization')
+      return okEnvelope(null)
+    })
+    await useNuxtApp().$api('/api/thing', { onRequest: () => {} })
+    expect(auth).toBe('Bearer abc')
+  })
+
+  it('keeps the real status of a response without an envelope', () => {
+    const html = Object.assign(new Error('504'), {
+      status: 504,
+      data: '<html>Gateway</html>',
+    })
+    expect(toApiError(html)).toMatchObject({ status: 504, code: 'INTERNAL' })
+  })
+
+  it('two useApi call sites for one URL fetch separately', async () => {
+    let calls = 0
+    mockApi('GET', '/api/shared', () => okEnvelope(++calls))
+    const first = await useApi<number>('/api/shared')
+    const second = await useApi<number>('/api/shared')
+    expect(calls).toBe(2)
+    expect([first.data.value, second.data.value]).toEqual([1, 2])
+  })
 })

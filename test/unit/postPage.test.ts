@@ -1,7 +1,8 @@
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import type { Pinia } from 'pinia'
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import CommentInput from '@/components/posts/CommentInput.vue'
+import ContentBlock from '@/components/posts/ContentBlock.vue'
 import PostPage from '@/pages/posts/[id].vue'
 import { useAlertStore, usePostStore, useUserStore } from '@/stores'
 import {
@@ -30,9 +31,7 @@ describe('post page comments', () => {
     useAuthToken().value = 'Bearer live'
     const pinia = useNuxtApp().$pinia as Pinia
     useUserStore(pinia).$patch({
-      isAuthenticated: true,
       currentUser: me as never,
-      role: 'USER',
     })
     usePostStore(pinia).$patch({ posts: [post] as never })
     mockApi('GET', '/api/comment/p1', () => {
@@ -40,7 +39,11 @@ describe('post page comments', () => {
       return okEnvelope([])
     })
   })
-  afterEach(clearApiMocks)
+  afterEach(() => {
+    clearApiMocks()
+    vi.restoreAllMocks()
+    vi.unstubAllGlobals()
+  })
 
   it('alerts a failed comment instead of success', async () => {
     mockApi('POST', '/api/comment/p1', (e) =>
@@ -55,5 +58,27 @@ describe('post page comments', () => {
       'Something went wrong, please try again.',
     )
     expect(reads).toBe(readsBefore)
+  })
+
+  it('deleting the open post alerts once and goes to /posts', async () => {
+    const pinia = useNuxtApp().$pinia as Pinia
+    useUserStore(pinia).$patch({
+      currentUser: { ...me, role: 'ADMIN' } as never,
+    })
+    mockApi('DELETE', '/api/post/p1', () => okEnvelope({ id: 'p1' }))
+    vi.stubGlobal('confirm', () => true)
+    const wrapper = await mountSuspended(PostPage, { route: '/posts/p1' })
+    const push = vi.spyOn(useRouter(), 'push')
+    const alertStore = useAlertStore(pinia)
+    const setAlert = vi.spyOn(alertStore, 'setAlert')
+    wrapper
+      .findComponent(ContentBlock)
+      .vm.$emit('on-delete', new Event('click'))
+    await new Promise((resolve) => setTimeout(resolve, 700))
+    expect(setAlert.mock.calls.map((c) => c[0])).toEqual([
+      'Successfully deleted post!',
+    ])
+    expect(push).toHaveBeenCalledTimes(1)
+    expect(push).toHaveBeenCalledWith({ path: '/posts' })
   })
 })

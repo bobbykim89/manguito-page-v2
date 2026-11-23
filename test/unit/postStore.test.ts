@@ -21,9 +21,7 @@ const post = {
 const loggedIn = () => {
   useAuthToken().value = 'Bearer live'
   useUserStore().$patch({
-    isAuthenticated: true,
     currentUser: me as never,
-    role: 'ADMIN',
   })
   const posts = usePostStore()
   posts.$patch({ posts: [post] as never })
@@ -85,5 +83,58 @@ describe('postStore session handling', () => {
     const posts = usePostStore()
     await posts.getAllPosts()
     expect(posts.posts.map((p) => p._id)).toEqual(['p1'])
+  })
+
+  it('create prepends the new post and alerts', async () => {
+    const fresh = { ...post, _id: 'p2', content: 'new' }
+    mockApi('POST', '/api/post', () => okEnvelope(fresh))
+    const posts = loggedIn()
+    await posts.createNewPost(new FormData())
+    expect(posts.posts.map((p) => p._id)).toEqual(['p2', 'p1'])
+    expect(useAlertStore().alertMessage).toBe('Successfully created a new post')
+  })
+
+  it('update replaces the post in the list', async () => {
+    mockApi('PUT', '/api/post/p1', () =>
+      okEnvelope({ ...post, content: 'edited' }),
+    )
+    const posts = loggedIn()
+    await posts.updatePost('p1', { content: 'edited' })
+    expect(posts.posts[0]!.content).toBe('edited')
+    expect(useAlertStore().alertMessage).toBe('Successfully updated post!')
+  })
+
+  it('delete removes it and returns true', async () => {
+    mockApi('DELETE', '/api/post/p1', () => okEnvelope({ id: 'p1' }))
+    const posts = loggedIn()
+    expect(await posts.deletePostById('p1')).toBe(true)
+    expect(posts.posts).toEqual([])
+    expect(useAlertStore().alertMessage).toBe('Successfully deleted post!')
+  })
+
+  it('a refused delete only alerts and returns false', async () => {
+    mockApi('DELETE', '/api/post/p1', (e) =>
+      failEnvelope(e, 'FORBIDDEN', 'Access denied.'),
+    )
+    const posts = loggedIn()
+    expect(await posts.deletePostById('p1')).toBe(false)
+    expect(posts.posts.map((p) => p._id)).toEqual(['p1'])
+  })
+
+  it('no client-side permission check', async () => {
+    let hit = false
+    mockApi('DELETE', '/api/post/p1', (e) => {
+      hit = true
+      return failEnvelope(e, 'FORBIDDEN', 'Access denied.')
+    })
+    const posts = loggedIn()
+    // someone else's post, and a plain USER
+    posts.$patch({
+      posts: [{ ...post, author: { _id: 'u9', name: 'kiwi' } }] as never,
+    })
+    useUserStore().$patch({ currentUser: { ...me, role: 'USER' } as never })
+    await posts.deletePostById('p1')
+    expect(hit).toBe(true)
+    expect(useAlertStore().alertMessage).toBe('Access denied.')
   })
 })

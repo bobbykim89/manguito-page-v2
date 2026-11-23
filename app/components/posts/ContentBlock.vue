@@ -29,8 +29,9 @@ const onToggle = (e: Event) => {
 const isTooLong = computed(
   () => contentTextRef.value.trim().length > LIMITS.caption,
 )
+const isBlank = computed(() => contentTextRef.value.trim() === '')
 const onSave = () => {
-  if (isTooLong.value) return
+  if (isBlank.value || isTooLong.value) return
   emit('on-save', contentTextRef.value)
   isEditMode.value = false
 }
@@ -133,7 +134,7 @@ const onDelete = (e: Event) => {
               type="submit"
               role="button"
               aria-label="save changes"
-              :disabled="isTooLong"
+              :disabled="isBlank || isTooLong"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
