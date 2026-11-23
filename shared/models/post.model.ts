@@ -1,5 +1,5 @@
 import { Schema, model, type HydratedDocument, type Types } from 'mongoose'
-import { UserModel } from './user.model'
+import { LIMITS } from '../dto/limits'
 
 const modelName: string = 'post'
 
@@ -11,21 +11,13 @@ export interface PostModel {
   date: Date
   updatedAt: Date
 }
-export interface PopulatedPostModel {
-  _id: Types.ObjectId
-  content: string
-  imageId: string
-  author: UserModel
-  date: Date
-  updatedAt: Date
-}
-
 export type PostDocument = HydratedDocument<PostModel>
 
 const postSchema: Schema<PostModel> = new Schema<PostModel>({
   content: {
     type: String,
     required: true,
+    maxlength: LIMITS.caption,
   },
   imageId: {
     type: String,
@@ -44,5 +36,8 @@ const postSchema: Schema<PostModel> = new Schema<PostModel>({
     default: Date.now,
   },
 })
+
+// every list sorts by date, newest first
+postSchema.index({ date: -1 })
 
 export const Post = model<PostModel>(modelName, postSchema)

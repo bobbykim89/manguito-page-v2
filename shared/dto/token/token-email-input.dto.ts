@@ -1,7 +1,8 @@
 import { z } from 'zod'
+import { emailSchema } from '../limits'
 
 export const tokenEmailInputSchema = z.object({
-  email: z.string().email({ message: 'Invalid email address' }),
+  email: emailSchema,
 })
 
 export type TokenEmailInput = z.infer<typeof tokenEmailInputSchema>

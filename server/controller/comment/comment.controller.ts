@@ -1,10 +1,9 @@
 import { commentInputSchema } from '#shared/dto/comment'
-import { type CommentModel, Comment } from '#shared/models'
+import { type CommentModel, Comment, Post } from '#shared/models'
 import type { EventHandlerRequest, H3Event } from 'h3'
 import { getRouterParam, readValidatedBody } from 'h3'
 import { Model } from 'mongoose'
-import { apiError, parseObjectId } from '../../utils'
-import { UserController } from '../user/user.controller'
+import { apiError, getCurrentUser, parseObjectId } from '../../utils'
 
 const COMMENT_FIELDS = [
   { path: 'author', select: 'id name' },
@@ -13,11 +12,9 @@ const COMMENT_FIELDS = [
 
 export class CommentController {
   private commentModel: Model<CommentModel>
-  private userController: UserController
 
   constructor() {
     this.commentModel = Comment
-    this.userController = new UserController()
   }
   public getAllComment = async (): Promise<CommentModel[]> => {
     return await this.commentModel.find({}).populate(COMMENT_FIELDS)
@@ -34,8 +31,12 @@ export class CommentController {
     e: H3Event<EventHandlerRequest>,
   ): Promise<CommentModel> => {
     const postId = parseObjectId(getRouterParam(e, 'id'))
-    const user = await this.userController.getCurrentUserData(e.context)
+    const user = await getCurrentUser(e)
     const { text } = await readValidatedBody(e, commentInputSchema.parse)
+    // no comments on a post that doesn't exist (they'd dangle)
+    if (!(await Post.exists({ _id: postId }))) {
+      throw apiError('NOT_FOUND', 'Post not found')
+    }
     const comment = await new this.commentModel({
       text,
       author: user._id,
@@ -45,7 +46,7 @@ export class CommentController {
   }
   public deleteCommentById = async (e: H3Event<EventHandlerRequest>) => {
     const commentId = parseObjectId(getRouterParam(e, 'id'))
-    const user = await this.userController.getCurrentUserData(e.context)
+    const user = await getCurrentUser(e)
     const comment = await this.commentModel.findById(commentId)
     if (!comment) {
       throw apiError('NOT_FOUND', 'Comment not found')

@@ -36,14 +36,21 @@ export class TokenController {
     const user = await this.userModel.findOne({ email })
     if (!user) return RESET_REQUESTED
 
-    // a new request replaces any earlier link
-    await this.tokenModel.deleteMany({ userId: user._id })
+    // A new request replaces any earlier link, in one step: with the unique
+    // userId index, two requests at once still leave one token. Setting
+    // createdAt restarts the hour on the TTL index.
     const { token, digest } = createResetToken()
-    await new this.tokenModel({ userId: user._id, token: digest }).save()
+    await this.tokenModel.findOneAndUpdate(
+      { userId: user._id },
+      { token: digest, createdAt: new Date() },
+      { upsert: true },
+    )
 
     // The link points at the host this request reached. Never take it from
     // the body or X-Forwarded-Host, or anyone could send a real token to their
     // own site. The scheme comes from the proxy (Vercel terminates HTTPS).
+    // It trusts the Host header, which Vercel sets to the domain that was
+    // reached; behind any other proxy, make sure Host can't be spoofed.
     const origin = getRequestURL(e, { xForwardedProto: true }).origin
     const link = `${origin}/auth/reset-password?user=${user.id}&token=${token}`
 
@@ -63,17 +70,19 @@ export class TokenController {
     } catch {
       throw badResetLink()
     }
-    const user = await this.userModel.findById(id)
-    if (!user) throw badResetLink()
-    const pwResetToken = await this.tokenModel.findOne({
+    // Consume the token first, so a link used twice at once resets once.
+    const pwResetToken = await this.tokenModel.findOneAndDelete({
       userId: id,
       token: digestResetToken(token),
     })
     if (!pwResetToken) throw badResetLink()
     const hashedPassword = await this.userController.hashPassword(password)
-    user.password = hashedPassword
-    await user.save()
-    await pwResetToken.deleteOne()
+    // A new tokenVersion logs out every device that had a session.
+    const result = await this.userModel.updateOne(
+      { _id: id },
+      { password: hashedPassword, $inc: { tokenVersion: 1 } },
+    )
+    if (result.matchedCount === 0) throw badResetLink()
     return null
   }
 }

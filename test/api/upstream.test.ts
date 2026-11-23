@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { api, expectApiError } from '../utils/api'
 import { insertUser } from '../utils/auth'
+import { exists, insertComment, insertPost } from '../utils/content'
 import { db } from '../utils/db'
 import { failNext, resetFakes } from '../utils/fakes'
 
@@ -41,5 +42,24 @@ describe('upstream failures: 502 UPSTREAM_FAILED', () => {
       'UPSTREAM_FAILED',
       'Failed to send email, please try again',
     )
+  })
+})
+
+describe('deleting a post when Cloudinary fails', () => {
+  it('a failed image delete keeps the post and its comments', async () => {
+    const admin = await insertUser('ADMIN')
+    const postId = await insertPost(admin.id)
+    const commentId = await insertComment(admin.id, postId)
+    await failNext('cloudinary')
+    const res = await api('DELETE', `/api/post/${postId}`, {
+      token: admin.token,
+    })
+    expectApiError(
+      res,
+      'UPSTREAM_FAILED',
+      'Could not delete the image, please try again.',
+    )
+    expect(await exists('posts', postId)).toBe(true)
+    expect(await exists('comments', commentId)).toBe(true)
   })
 })

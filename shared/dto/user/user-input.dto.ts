@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { emailSchema, usernameSchema } from '../limits'
 
 export const passwordSchema = z
   .string()
@@ -17,8 +18,8 @@ export const passwordSchema = z
   })
 
 export const userInputSchema = z.object({
-  email: z.email({ message: 'Invalid email address' }),
-  name: z.string(),
+  email: emailSchema,
+  name: usernameSchema,
   password: passwordSchema,
 })
 

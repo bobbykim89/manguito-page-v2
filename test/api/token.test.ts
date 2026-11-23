@@ -99,6 +99,26 @@ describe('POST /api/token/send-token', () => {
     expectApiError(await resetWith(id, first), 'VALIDATION_FAILED', RESET_LINK)
     expect((await resetWith(id, second)).status).toBe(200)
   })
+
+  it('two reset requests at once leave one token', async () => {
+    const { id, email } = await insertUser()
+    const before = (await sentMail()).length
+    const answers = await Promise.all([
+      requestReset(email),
+      requestReset(email),
+    ])
+    expect(answers.map((r) => r.status)).toEqual([200, 200])
+    expect(await storedTokens(id)).toHaveLength(1)
+    const mail = await sentMail()
+    expect(mail).toHaveLength(before + 2)
+    const tokens = mail
+      .slice(-2)
+      .map((m) => resetLinkIn(m.text).searchParams.get('token')!)
+    const statuses = []
+    for (const token of tokens)
+      statuses.push((await resetWith(id, token)).status)
+    expect(statuses.sort()).toEqual([200, 400])
+  })
 })
 
 describe('POST /api/token/reset-password', () => {
@@ -116,6 +136,18 @@ describe('POST /api/token/reset-password', () => {
     expect((await users.findOne({ _id }))!.password).not.toBe(before)
     expect(await storedTokens(id)).toHaveLength(0)
     expectApiError(await resetWith(id, token), 'VALIDATION_FAILED', RESET_LINK)
+  })
+
+  it('a reset link works once even when used twice at once', async () => {
+    const { id, email } = await insertUser()
+    const token = (await emailedLink(email)).searchParams.get('token')!
+    const answers = await Promise.all([
+      resetWith(id, token),
+      resetWith(id, token),
+    ])
+    expect(answers.map((r) => r.status).sort()).toEqual([200, 400])
+    const refused = answers.find((r) => r.status === 400)!
+    expectApiError(refused, 'VALIDATION_FAILED', RESET_LINK)
   })
 
   it('rejects the stored value as a token', async () => {

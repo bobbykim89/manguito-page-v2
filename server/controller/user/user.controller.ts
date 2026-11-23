@@ -9,11 +9,15 @@ import {
 import { User, type UserModel } from '#shared/models'
 import { type RuntimeConfig } from '@nuxt/schema'
 import bcrypt from 'bcryptjs'
-import type { EventHandlerRequest, H3Event, H3EventContext } from 'h3'
+import type { EventHandlerRequest, H3Event } from 'h3'
 import { getRouterParam, readValidatedBody } from 'h3'
-import jwt from 'jsonwebtoken'
 import type { Model } from 'mongoose'
-import { apiError, parseObjectId } from '../../utils'
+import {
+  apiError,
+  getCurrentUser,
+  parseObjectId,
+  signSessionToken,
+} from '../../utils'
 
 export class UserController {
   private config: RuntimeConfig
@@ -45,21 +49,22 @@ export class UserController {
 
     user.password = await this.hashPassword(password)
     await user.save()
-    const payload = {
-      id: user.id,
-    }
-    const accessToken = this.signToken(payload)
-    return { accessToken: `Bearer ${accessToken}` }
+    return { accessToken: signSessionToken(user) }
   }
   public updatePassword = async (e: H3Event<EventHandlerRequest>) => {
-    const user = await this.getRawCurrentUserData(e.context)
+    const user = await getCurrentUser(e)
     // validate body
     const { currentPassword, newPassword } = await readValidatedBody(
       e,
       pwUpdateInputSchema.parse,
     )
+    // the loader leaves the hash out, so read it here
+    const withHash = await this.userModel.findById(user._id).select('password')
+    if (!withHash) {
+      throw apiError('UNAUTHENTICATED', 'Session expired, please log in again')
+    }
     // check if current password matches
-    const isMatch = await bcrypt.compare(currentPassword, user.password)
+    const isMatch = await bcrypt.compare(currentPassword, withHash.password)
     if (!isMatch) {
       throw apiError(
         'INVALID_CREDENTIALS',
@@ -80,7 +85,7 @@ export class UserController {
   public updateUsername = async (
     e: H3Event<EventHandlerRequest>,
   ): Promise<UserModel> => {
-    const user = await this.getRawCurrentUserData(e.context)
+    const user = await getCurrentUser(e)
     const { username } = await readValidatedBody(
       e,
       newUsernameInputSchema.parse,
@@ -101,7 +106,7 @@ export class UserController {
   public setAdmin = async (
     e: H3Event<EventHandlerRequest>,
   ): Promise<UserModel> => {
-    const user = await this.getRawCurrentUserData(e.context)
+    const user = await getCurrentUser(e)
     const { phrase } = await readValidatedBody(e, setAdminInputSchema.parse)
     if (phrase !== this.config.adminSecretPhrase) {
       throw apiError('FORBIDDEN', 'Access denied.')
@@ -127,7 +132,7 @@ export class UserController {
   public getUserList = async (
     e: H3Event<EventHandlerRequest>,
   ): Promise<UserModel[]> => {
-    const currentUser = await this.getRawCurrentUserData(e.context)
+    const currentUser = await getCurrentUser(e)
     if (currentUser.role !== 'ADMIN') {
       throw apiError(
         'FORBIDDEN',
@@ -142,7 +147,7 @@ export class UserController {
     e: H3Event<EventHandlerRequest>,
   ): Promise<UserModel> => {
     const userId = parseObjectId(getRouterParam(e, 'id'))
-    const user = await this.getRawCurrentUserData(e.context)
+    const user = await getCurrentUser(e)
     if (user.role !== 'ADMIN') {
       throw apiError(
         'FORBIDDEN',
@@ -177,28 +182,5 @@ export class UserController {
         `Username '${username}' is already in use, please use a different one.`,
       )
     }
-  }
-  public getRawCurrentUserData = async (
-    ctx: H3EventContext,
-  ): Promise<UserModel> => {
-    const user = await this.userModel.findById(ctx.user.id)
-    if (!user) {
-      throw apiError('UNAUTHENTICATED', 'Session expired, please log in again')
-    }
-    return user
-  }
-  public getCurrentUserData = async (
-    ctx: H3EventContext,
-  ): Promise<UserModel> => {
-    const user = await this.userModel.findById(ctx.user.id).select('-password')
-    if (!user) {
-      throw apiError('UNAUTHENTICATED', 'Session expired, please log in again')
-    }
-    return user
-  }
-  public signToken = (payload: { id: string }) => {
-    return jwt.sign(payload, this.config.jwtSecret, {
-      expiresIn: '7d',
-    })
   }
 }

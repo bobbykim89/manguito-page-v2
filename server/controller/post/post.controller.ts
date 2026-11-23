@@ -8,20 +8,22 @@ import {
 import type { EventHandlerRequest, H3Event } from 'h3'
 import { getQuery, getRouterParam, readValidatedBody } from 'h3'
 import { Model } from 'mongoose'
-import { apiError, deleteCloudinaryImage, parseObjectId } from '../../utils'
-import { UserController } from '../user/user.controller'
+import {
+  apiError,
+  deleteCloudinaryImage,
+  getCurrentUser,
+  parseObjectId,
+} from '../../utils'
 
 const UNEXPECTED = 'Something went wrong, please try again.'
 
 export class PostController {
   private postModel: Model<PostModel>
   private commentModel: Model<CommentModel>
-  private userController: UserController
 
   constructor() {
     this.postModel = Post
     this.commentModel = Comment
-    this.userController = new UserController()
   }
 
   public getAllPost = async (): Promise<PostModel[]> => {
@@ -35,16 +37,21 @@ export class PostController {
   ): Promise<PostModel[]> => {
     const query = getQuery(e)
     if (query.sort === 'asc') {
-      return await this.postModel.find({}).select('id imageId')
+      return await this.postModel.find({}).select('id imageId').lean()
     }
-    return await this.postModel.find({}).sort({ date: -1 }).select('id imageId')
+    // lean is safe here: neither field has a schema default
+    return await this.postModel
+      .find({})
+      .sort({ date: -1 })
+      .select('id imageId')
+      .lean()
   }
   public createNewPost = async (
     e: H3Event<EventHandlerRequest>,
   ): Promise<PostModel> => {
     const file = e.context.file
     const content = e.context.content
-    const user = await this.userController.getCurrentUserData(e.context)
+    const user = await getCurrentUser(e)
 
     if (user.role !== 'ADMIN' && user.role !== 'MANAGER') {
       throw apiError('FORBIDDEN', 'Access denied: unauthorized user')
@@ -60,7 +67,7 @@ export class PostController {
     e: H3Event<EventHandlerRequest>,
   ): Promise<PostModel> => {
     const postId = parseObjectId(getRouterParam(e, 'id'))
-    const user = await this.userController.getCurrentUserData(e.context)
+    const user = await getCurrentUser(e)
     // validate body
     const { content } = await readValidatedBody(e, updatePostInputSchema.parse)
     const post = await this.postModel.findById(postId)
@@ -88,7 +95,7 @@ export class PostController {
   }
   public deletePostById = async (e: H3Event<EventHandlerRequest>) => {
     const postId = parseObjectId(getRouterParam(e, 'id'))
-    const user = await this.userController.getCurrentUserData(e.context)
+    const user = await getCurrentUser(e)
     const post = await this.postModel.findById(postId)
     if (!post) {
       throw apiError('NOT_FOUND', 'Post not found')
@@ -99,9 +106,10 @@ export class PostController {
         'Access denied: you are not allowed to delete this post.',
       )
     }
-    // the post's comments, its image, then the post itself
-    await this.commentModel.deleteMany({ post: postId })
+    // the image first, so a Cloudinary failure leaves the post and its
+    // comments intact; then the comments, then the post itself
     await deleteCloudinaryImage(post.imageId)
+    await this.commentModel.deleteMany({ post: postId })
     await this.postModel.findByIdAndDelete(postId)
     return { id: post.id as string }
   }

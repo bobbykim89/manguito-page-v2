@@ -4,27 +4,18 @@ import bcrypt from 'bcryptjs'
 import type { EventHandlerRequest, H3Event } from 'h3'
 import { readValidatedBody } from 'h3'
 import { Model } from 'mongoose'
-import { apiError } from '../../utils'
-import { UserController } from '../user/user.controller'
+import { apiError, getCurrentUser, signSessionToken } from '../../utils'
 
 export class AuthController {
   private userModel: Model<UserModel>
-  private userController: UserController
 
   constructor() {
     this.userModel = User
-    this.userController = new UserController()
   }
   public getCurrentUser = async (
     e: H3Event<EventHandlerRequest>,
   ): Promise<UserModel> => {
-    const user = await this.userModel
-      .findById(e.context.user.id)
-      .select('-password')
-    if (!user) {
-      throw apiError('UNAUTHENTICATED', 'Session expired, please log in again')
-    }
-    return user
+    return await getCurrentUser(e)
   }
   public loginUser = async (e: H3Event<EventHandlerRequest>) => {
     // validate body
@@ -46,10 +37,6 @@ export class AuthController {
         'Invalid credential: please check email or password again',
       )
     }
-    const payload = {
-      id: user.id,
-    }
-    const accessToken = this.userController.signToken(payload)
-    return { accessToken: `Bearer ${accessToken}` }
+    return { accessToken: signSessionToken(user) }
   }
 }

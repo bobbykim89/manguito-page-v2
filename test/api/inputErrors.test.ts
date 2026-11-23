@@ -196,3 +196,13 @@ describe('new post uploads', () => {
     expect(res.json.data.content).toBe('Manguito says hi')
   })
 })
+
+describe('unreadable bodies', () => {
+  it('answers malformed JSON with a sentence', async () => {
+    const res = await api('POST', '/api/auth', {
+      raw: '{bad',
+      headers: { 'content-type': 'application/json' },
+    })
+    expectApiError(res, 'VALIDATION_FAILED', 'The request could not be read.')
+  })
+})

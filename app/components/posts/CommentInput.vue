@@ -1,14 +1,18 @@
 <script setup lang="ts">
 import { MclFormGroup, MclTextArea } from '@bobbykim/mcl-forms'
-import { ref } from 'vue'
+import { LIMIT_MESSAGES, LIMITS } from '#shared/dto/limits'
+import { computed, ref } from 'vue'
 
 const commentRef = ref<string>('')
+const isTooLong = computed(
+  () => commentRef.value.trim().length > LIMITS.comment,
+)
 
 const emit = defineEmits<{
   (e: 'submit-comment', content: string): void
 }>()
 const submitComment = () => {
-  if (commentRef.value === '') return
+  if (commentRef.value === '' || isTooLong.value) return
   emit('submit-comment', commentRef.value)
   commentRef.value = ''
 }
@@ -27,6 +31,8 @@ const submitComment = () => {
           :rows="3"
           placeholder="Please write comment here"
           v-model="commentRef"
+          :invalid="isTooLong"
+          :invalid-feedback="LIMIT_MESSAGES.commentLong"
         />
         <div class="mt-3xs flex justify-end gap-2 text-dark-1">
           <button
@@ -34,7 +40,7 @@ const submitComment = () => {
             type="submit"
             role="button"
             aria-label="post comment"
-            :disabled="commentRef === ''"
+            :disabled="commentRef === '' || isTooLong"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

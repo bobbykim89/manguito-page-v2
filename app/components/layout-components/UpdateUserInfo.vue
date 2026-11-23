@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { AccordionGroup, Collapse } from '@bobbykim/manguito-theme'
 import { useCollapseTrigger } from '@bobbykim/manguito-theme/composable'
+import { LIMITS } from '#shared/dto/limits'
 import { MclFormGroup, MclInputText } from '@bobbykim/mcl-forms'
 import { ref } from 'vue'
 
@@ -55,6 +56,7 @@ const onPwUpdateSubmit = (e: Event) => {
             <MclFormGroup field-id="user-name" label="Username:">
               <MclInputText
                 id="user-name"
+                :max-length="LIMITS.username"
                 v-model="usernameRef"
                 rounded
                 required

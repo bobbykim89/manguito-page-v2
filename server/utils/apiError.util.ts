@@ -5,8 +5,10 @@ import {
   type ApiFailure,
 } from '#shared/types'
 import { createError, type H3Error, isError } from 'h3'
+import { STATUS_CODES } from 'node:http'
 
 const GENERIC = 'Something went wrong, please try again.'
+const UNREADABLE = 'The request could not be read.'
 
 interface ApiErrorData {
   code: ApiErrorCode
@@ -107,10 +109,11 @@ export const toApiFailure = (
     }
   }
   if (isError(err) && err.statusCode >= 400 && err.statusCode < 500) {
-    return failure(
-      codeForStatus(err.statusCode),
-      err.statusMessage || err.message || GENERIC,
-    )
+    // H3's own errors (e.g. malformed JSON) carry only the bare reason
+    // phrase, like "Bad Request"; answer those with a sentence
+    const phrase = err.statusMessage
+    const bare = !phrase || phrase === STATUS_CODES[err.statusCode]
+    return failure(codeForStatus(err.statusCode), bare ? UNREADABLE : phrase)
   }
   console.error(err)
   return failure('INTERNAL', GENERIC)

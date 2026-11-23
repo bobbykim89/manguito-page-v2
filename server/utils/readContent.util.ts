@@ -1,3 +1,4 @@
+import { LIMIT_MESSAGES, LIMITS } from '#shared/dto/limits'
 import { type H3Event, readMultipartFormData } from 'h3'
 import { apiError } from './apiError.util'
 
@@ -16,9 +17,12 @@ export const readFormDataText = async (
   if (!content) {
     throw apiError('VALIDATION_FAILED', 'Content field not found')
   }
-  const decodedContent = Buffer.from(content.data).toString()
-  if (!decodedContent.trim()) {
-    throw apiError('VALIDATION_FAILED', 'Please write a caption.')
+  const decodedContent = Buffer.from(content.data).toString().trim()
+  if (!decodedContent) {
+    throw apiError('VALIDATION_FAILED', LIMIT_MESSAGES.captionEmpty)
+  }
+  if (decodedContent.length > LIMITS.caption) {
+    throw apiError('VALIDATION_FAILED', LIMIT_MESSAGES.captionLong)
   }
   e.context[key] = decodedContent
 }

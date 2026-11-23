@@ -66,6 +66,16 @@ describe('posts page new-post modal', () => {
     ).toBeDefined()
   })
 
+  it('new-post form flags a caption over 1000 characters', async () => {
+    const wrapper = await mountAsAdmin()
+    await openModal(wrapper)
+    await wrapper.find('textarea').setValue('x'.repeat(1001))
+    expect(wrapper.text()).toContain('Captions can be at most 1000 characters.')
+    expect(
+      wrapper.find('button[type="submit"]').attributes('disabled'),
+    ).toBeDefined()
+  })
+
   it('opens again after Cancel, with an empty form', async () => {
     const wrapper = await mountAsAdmin()
     await openModal(wrapper)
