@@ -33,7 +33,9 @@ describe('post page comments', () => {
     useUserStore(pinia).$patch({
       currentUser: me as never,
     })
-    usePostStore(pinia).$patch({ posts: [post] as never })
+    mockApi('GET', '/api/post/p1', () =>
+      okEnvelope({ post, prevId: 'p0', nextId: 'p2' }),
+    )
     mockApi('GET', '/api/comment/p1', () => {
       reads += 1
       return okEnvelope([])
@@ -80,5 +82,31 @@ describe('post page comments', () => {
     ])
     expect(push).toHaveBeenCalledTimes(1)
     expect(push).toHaveBeenCalledWith({ path: '/posts' })
+  })
+
+  it("prev and next go to the server's neighbours", async () => {
+    const wrapper = await mountSuspended(PostPage, { route: '/posts/p1' })
+    const push = vi.spyOn(useRouter(), 'push').mockResolvedValue(undefined)
+    await wrapper.find('button[aria-label="previous post"]').trigger('click')
+    expect(push).toHaveBeenLastCalledWith({ path: '/posts/p0' })
+    await wrapper.find('button[aria-label="next post"]').trigger('click')
+    expect(push).toHaveBeenLastCalledWith({ path: '/posts/p2' })
+  })
+
+  it('saving an edit shows the new caption', async () => {
+    const pinia = useNuxtApp().$pinia as Pinia
+    useUserStore(pinia).$patch({
+      currentUser: { ...me, _id: post.author._id } as never,
+    })
+    usePostStore(pinia).$patch({ posts: [] })
+    vi.stubGlobal('confirm', () => true)
+    mockApi('PUT', '/api/post/p1', () =>
+      okEnvelope({ ...post, content: 'new words' }),
+    )
+    const wrapper = await mountSuspended(PostPage, { route: '/posts/p1' })
+    wrapper.findComponent(ContentBlock).vm.$emit('on-save', 'new words')
+    await new Promise((resolve) => setTimeout(resolve, 50))
+    expect(wrapper.text()).toContain('new words')
+    expect(usePostStore(pinia).posts).toEqual([])
   })
 })

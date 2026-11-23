@@ -1,17 +1,27 @@
-import { updatePostInputSchema } from '#shared/dto/post'
+import { postPageQuerySchema, updatePostInputSchema } from '#shared/dto/post'
 import {
   Comment,
   type CommentModel,
   Post,
+  type PostDocument,
   type PostModel,
 } from '#shared/models'
 import type { EventHandlerRequest, H3Event } from 'h3'
-import { getQuery, getRouterParam, readValidatedBody } from 'h3'
+import {
+  getQuery,
+  getRouterParam,
+  getValidatedQuery,
+  readValidatedBody,
+} from 'h3'
 import { Model } from 'mongoose'
 import {
   apiError,
+  decodePostCursor,
   deleteCloudinaryImage,
+  encodePostCursor,
   getCurrentUser,
+  newerThan,
+  olderThan,
   parseObjectId,
 } from '../../utils'
 
@@ -26,11 +36,63 @@ export class PostController {
     this.commentModel = Comment
   }
 
-  public getAllPost = async (): Promise<PostModel[]> => {
-    return await this.postModel
-      .find({})
+  /**
+   * One page of the list, newest first (`date`, then `_id`, descending). The
+   * next page starts strictly after `cursor`, so posts created or deleted in
+   * between neither repeat nor shift the rest.
+   */
+  public getPostPage = async (
+    e: H3Event<EventHandlerRequest>,
+  ): Promise<{ posts: PostDocument[]; nextCursor: string | null }> => {
+    const { limit, cursor } = await getValidatedQuery(
+      e,
+      postPageQuerySchema.parse,
+    )
+    const after = cursor ? decodePostCursor(cursor) : null
+    // hydrated: author is populated from users that may lack schema defaults
+    const found = await this.postModel
+      .find(after ? olderThan(after.date, after.id) : {})
+      .sort({ date: -1, _id: -1 })
+      .limit(limit + 1)
       .populate('author', 'name')
-      .sort({ date: -1 })
+    const posts = found.slice(0, limit)
+    const last = posts.at(-1)
+    return {
+      posts,
+      nextCursor: found.length > limit && last ? encodePostCursor(last) : null,
+    }
+  }
+  /**
+   * One post with the ids of its neighbours in the list order (newest
+   * first). `prevId` is the next newer post and `nextId` the next older one;
+   * both wrap around at the ends.
+   */
+  public getPostWithNeighbours = async (
+    e: H3Event<EventHandlerRequest>,
+  ): Promise<{ post: PostDocument; prevId: string; nextId: string }> => {
+    const postId = parseObjectId(getRouterParam(e, 'id'))
+    // hydrated: author is populated from users that may lack schema defaults
+    const post = await this.postModel
+      .findById(postId)
+      .populate('author', 'name')
+    if (!post) throw apiError('NOT_FOUND', "This post doesn't exist.")
+    const newestFirst = { date: -1, _id: -1 } as const
+    const oldestFirst = { date: 1, _id: 1 } as const
+    const idOnly = (
+      filter: object,
+      sort: typeof newestFirst | typeof oldestFirst,
+    ) => this.postModel.findOne(filter).sort(sort).select('_id').lean()
+    const next =
+      (await idOnly(olderThan(post.date, post._id), newestFirst)) ??
+      (await idOnly({}, newestFirst))
+    const prev =
+      (await idOnly(newerThan(post.date, post._id), oldestFirst)) ??
+      (await idOnly({}, oldestFirst))
+    return {
+      post,
+      prevId: String(prev?._id ?? post._id),
+      nextId: String(next?._id ?? post._id),
+    }
   }
   public getAllTrimmedPost = async (
     e: H3Event<EventHandlerRequest>,

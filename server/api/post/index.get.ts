@@ -1,5 +1,5 @@
 import { postController } from '../../controller'
 
 export default defineApiRoute({
-  handler: postController.getAllPost,
+  handler: postController.getPostPage,
 })

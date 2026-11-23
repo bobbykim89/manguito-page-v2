@@ -19,3 +19,17 @@ export interface CommentType extends WithParsedId<
   /** null when the post was deleted before comments were removed with it */
   post: Pick<PostType, '_id' | 'date' | 'updatedAt'> | null
 }
+
+/** GET /api/post/:id: a post and its neighbours (newest first, wrapping). */
+export interface PostWithNeighbours {
+  post: PostType
+  prevId: string
+  nextId: string
+}
+
+/** GET /api/post: one page of the list, newest first. */
+export interface PostPage {
+  posts: PostType[]
+  /** pass back as `cursor` for the next page; null on the last page */
+  nextCursor: string | null
+}

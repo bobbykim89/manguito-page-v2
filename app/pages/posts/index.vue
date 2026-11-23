@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useRequestURL } from '#app'
 import { LIMIT_MESSAGES, LIMITS } from '#shared/dto/limits'
+import LoadMoreStatus from '@/components/posts/LoadMoreStatus.vue'
 import { ImageUrl } from '@/composables/useImageUrl'
 import { useAlertStore, usePostStore, useUserStore } from '@/stores'
 import { Modal } from '@bobbykim/manguito-theme'
@@ -33,9 +34,8 @@ const { isManagerOrUp: isAuthorizedUser } = storeToRefs(userStore)
 const imageFileRef = ref<File | undefined>(undefined)
 const contentRef = ref<string>('')
 const modalRef = ref<InstanceType<typeof Modal>>()
-const postPerLoad: number = 30
-const numPostsDisplayed = ref<number>(30)
-const numberOfLoads = ref<number>(0)
+// page one renders on the server; later pages load as the grid scrolls
+await postStore.loadFirstPage()
 const formatPostUrl = (id: string) => {
   const imgUrl = new ImageUrl(id)
   return imgUrl.getNuxtImageCardUrl()
@@ -43,19 +43,6 @@ const formatPostUrl = (id: string) => {
 const resolveLinkPath = (id: string) => {
   return `/posts/${id}`
 }
-const displayedPost = computed(() => {
-  const slicedPosts = posts.value.slice(0, numPostsDisplayed.value)
-  return slicedPosts
-})
-const onLoadMore = () => {
-  numPostsDisplayed.value = numPostsDisplayed.value + postPerLoad
-  numberOfLoads.value = numberOfLoads.value + 1
-}
-const showLoadMore = computed(() => {
-  const lastLoad = Math.floor(posts.value.length / postPerLoad)
-  if (numberOfLoads.value < lastLoad) return true
-  return false
-})
 const onModalClose = () => {
   imageFileRef.value = undefined
   contentRef.value = ''
@@ -125,7 +112,7 @@ const onSubmit = async (): Promise<void> => {
       </div>
       <div class="grid grid-cols-3 gap-1 px-3xs md:px-xs lg:gap-2 lg:px-md">
         <!-- cards -->
-        <div v-for="(post, idx) in displayedPost" :key="idx">
+        <div v-for="post in posts" :key="post._id">
           <NuxtLink
             :to="resolveLinkPath(post._id.toString())"
             class="relative aspect-square h-auto w-full overflow-hidden after:absolute after:inset-0 after:bg-primary after:opacity-0 after:transition-opacity after:duration-300 after:ease-linear hover:after:opacity-30"
@@ -139,14 +126,7 @@ const onSubmit = async (): Promise<void> => {
             />
           </NuxtLink>
         </div>
-        <div v-if="showLoadMore" class="col-span-3">
-          <button
-            class="w-full bg-primary px-xs py-2xs font-semibold text-light-1 transition-colors duration-300 ease-linear hover:bg-primary/60"
-            @click="onLoadMore"
-          >
-            Load More
-          </button>
-        </div>
+        <LoadMoreStatus class="col-span-3" />
       </div>
     </div>
     <Modal

@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import type { PostType } from '#shared/types'
+import LoadMoreStatus from '@/components/posts/LoadMoreStatus.vue'
+import { usePostStore } from '@/stores'
+import { storeToRefs } from 'pinia'
 
 definePageMeta({
   layout: 'admin',
@@ -11,9 +13,10 @@ useHead({
   meta: [{ property: 'og:title', content: 'Admin - Posts | Manguito Page' }],
 })
 
-const { $api } = useNuxtApp()
-const { run } = useApiAction()
-const { data: res, refresh } = await useApi<PostType[]>('/api/post')
+// the grid's shared list, so a delete here shows there too
+const postStore = usePostStore()
+const { posts } = storeToRefs(postStore)
+await postStore.loadFirstPage()
 
 const formattedUrl = (id: string): string => {
   const imageUrl = new ImageUrl(id)
@@ -25,8 +28,7 @@ const onDelete = async (id: string) => {
     !window.confirm('Please confirm to permanently delete this post')
   )
     return
-  const done = await run(() => $api(`/api/post/${id}`, { method: 'DELETE' }))
-  if (done.ok) refresh()
+  await postStore.deletePostById(id)
 }
 </script>
 
@@ -35,8 +37,8 @@ const onDelete = async (id: string) => {
     <h2 class="h2-md mb-xs">Posts</h2>
     <div class="grid gap-2">
       <div
-        v-for="post in res"
-        :key="post._id!.toString()"
+        v-for="post in posts"
+        :key="post._id"
         class="flex flex-col overflow-x-hidden rounded-md bg-light-4 drop-shadow-md md:flex-row"
       >
         <NuxtImg
@@ -83,5 +85,6 @@ const onDelete = async (id: string) => {
         </div>
       </div>
     </div>
+    <LoadMoreStatus />
   </div>
 </template>
