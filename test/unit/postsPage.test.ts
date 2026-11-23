@@ -270,6 +270,16 @@ describe('posts page upload', () => {
     )
     await openModal(wrapper)
     expect(textarea(wrapper)).toBe(caption)
+    // the picker was rebuilt empty, but the photo is kept: it says so, the
+    // browser doesn't demand a new pick, and Save sends it again
+    expect(wrapper.text()).toContain('Photo kept: bird.jpg')
+    expect(
+      wrapper.find('input[type="file"]').attributes('required'),
+    ).toBeUndefined()
+    await wrapper.find('form').trigger('submit')
+    await flush()
+    expect(FakeXhr.sent).toHaveLength(2)
+    FakeXhr.last.respond(201, okEnvelope(fresh))
   })
 
   it("a format the browser can't read alerts and keeps the form", async () => {

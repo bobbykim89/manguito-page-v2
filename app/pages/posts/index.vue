@@ -49,14 +49,31 @@ const uploadState = ref<UploadState>('idle')
 const progress = ref<number>(0)
 const busy = computed(() => uploadState.value !== 'idle')
 
+/**
+ * The modal rebuilds its body when it reopens, and a file input can't be
+ * refilled from script: a photo kept across a close is shown by name instead,
+ * and the input stops being required.
+ */
+const photoKept = ref<boolean>(false)
 const clearForm = () => {
   imageFileRef.value = undefined
   contentRef.value = ''
+  photoKept.value = false
 }
 // closing mid-upload doesn't cancel it: the form is kept until it succeeds,
 // so a failure (or reopening) finds the caption and photo as they were
 const onModalClose = () => {
-  if (!busy.value) clearForm()
+  if (busy.value) photoKept.value = true
+  else clearForm()
+}
+const onPick = (file: File | null) => {
+  if (file) {
+    imageFileRef.value = file
+    photoKept.value = false
+  } else if (!photoKept.value) {
+    // a rebuilt, empty input says nothing about the kept photo
+    imageFileRef.value = undefined
+  }
 }
 const isCaptionTooLong = computed(
   () => contentRef.value.trim().length > LIMITS.caption,
@@ -155,15 +172,22 @@ const onSubmit = async (): Promise<void> => {
             <MclFormGroup field-id="file-input" class="mt-sm">
               <MclInputFile
                 id="file-input"
-                v-model="imageFileRef"
+                :model-value="imageFileRef ?? null"
                 accept="image/jpeg,image/png,image/webp"
                 rounded
-                required
+                :required="!imageFileRef"
                 button-text="Browse"
                 button-color="primary"
                 button-text-color="light-1"
                 show-border
+                @update:model-value="onPick"
               />
+              <p
+                v-if="photoKept && imageFileRef"
+                class="mt-3xs text-sm text-dark-1"
+              >
+                Photo kept: {{ imageFileRef.name }}
+              </p>
             </MclFormGroup>
             <MclFormGroup field-id="content-input" class="mt-sm">
               <MclTextArea
