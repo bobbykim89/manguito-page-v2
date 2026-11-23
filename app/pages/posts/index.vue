@@ -29,7 +29,7 @@ const postStore = usePostStore()
 const userStore = useUserStore()
 const alertStore = useAlertStore()
 const { posts } = storeToRefs(postStore)
-const { currentUser, isAuthenticated, role } = storeToRefs(userStore)
+const { isManagerOrUp: isAuthorizedUser } = storeToRefs(userStore)
 const imageFileRef = ref<File | undefined>(undefined)
 const contentRef = ref<string>('')
 const modalRef = ref<InstanceType<typeof Modal>>()
@@ -44,12 +44,6 @@ const formatPostUrl = (id: string) => {
 const resolveLinkPath = (id: string) => {
   return `/posts/${id}`
 }
-const isAuthorizedUser = computed<boolean>(() => {
-  if (isAuthenticated.value === false) return false
-  if (currentUser.value === null) return false
-  if (role.value !== 'ADMIN' && role.value !== 'MANAGER') return false
-  return true
-})
 const displayedPost = computed(() => {
   const slicedPosts = posts.value.slice(0, numPostsDisplayed.value)
   return slicedPosts

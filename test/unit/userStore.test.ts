@@ -124,11 +124,7 @@ describe('userStore session handling', () => {
       failEnvelope(e, 'FORBIDDEN', 'Access denied.'),
     )
     const user = useUserStore()
-    user.$patch({
-      isAuthenticated: true,
-      currentUser: liveUser as never,
-      role: 'USER',
-    })
+    user.$patch({ currentUser: liveUser as never })
     await user.setAdmin({ phrase: 'wrong' })
     expect(useAlertStore().alertMessage).toBe('Access denied.')
     expect(user.isAuthenticated).toBe(true)
@@ -136,29 +132,96 @@ describe('userStore session handling', () => {
     expect(useAuthToken().value).toBe('Bearer live')
   })
 
-  it('an action without a session makes no request', async () => {
-    let calls = 0
-    mockApi('PUT', '/api/user/user-info/username', () => {
-      calls += 1
-      return okEnvelope(liveUser)
-    })
+  it("a 401 without a cookie alerts but doesn't mark the session expired", async () => {
+    mockApi('PUT', '/api/user/user-info/username', (e) =>
+      failEnvelope(
+        e,
+        'UNAUTHENTICATED',
+        'No access token found, please log in.',
+      ),
+    )
     const user = useUserStore()
     await user.updateUsername({ username: 'new-name' })
-    expect(calls).toBe(0)
     expect(useAlertStore().alertMessage).toBe(
-      'No user authentication found, please login',
+      'No access token found, please log in.',
     )
     expect(user.sessionExpired).toBe(false)
+  })
+
+  it('logout clears an earlier expired flag', () => {
+    useAuthToken().value = 'Bearer live'
+    const user = useUserStore()
+    user.$patch({ currentUser: liveUser as never })
+    user.expireSession()
+    expect(user.sessionExpired).toBe(true)
+    user.logoutUser()
+    expect(user.sessionExpired).toBe(false)
+    expect(useAlertStore().alertMessage).toBe('Logout successful!')
+  })
+
+  it('login clears an earlier expired flag', async () => {
+    mockApi('POST', '/api/auth', () =>
+      okEnvelope({ accessToken: 'Bearer new' }),
+    )
+    mockApi('GET', '/api/auth', () => okEnvelope(liveUser))
+    const user = useUserStore()
+    user.$patch({ sessionExpired: true })
+    await user.loginWithCredential({
+      email: 'm@example.test',
+      password: 'Passw0rd!',
+    })
+    expect(user.sessionExpired).toBe(false)
+    expect(user.isAuthenticated).toBe(true)
+    expect(useAlertStore().alertMessage).toBe('Login Successful!')
+  })
+
+  it('updateUsername uses the response, with no second call', async () => {
+    useAuthToken().value = 'Bearer live'
+    let gets = 0
+    mockApi('GET', '/api/auth', () => {
+      gets += 1
+      return okEnvelope(liveUser)
+    })
+    mockApi('PUT', '/api/user/user-info/username', () =>
+      okEnvelope({ ...liveUser, name: 'new' }),
+    )
+    const user = useUserStore()
+    user.$patch({ currentUser: liveUser as never })
+    await user.updateUsername({ username: 'new' })
+    expect(user.currentUser?.name).toBe('new')
+    expect(gets).toBe(0)
+    expect(useAlertStore().alertMessage).toBe('Successfully updated username')
+  })
+
+  it('setAdmin sets the user from the response', async () => {
+    useAuthToken().value = 'Bearer live'
+    mockApi('PUT', '/api/user/admin', () =>
+      okEnvelope({ ...liveUser, role: 'ADMIN' }),
+    )
+    const user = useUserStore()
+    user.$patch({ currentUser: liveUser as never })
+    await user.setAdmin({ phrase: 'right' })
+    expect(user.isAdmin).toBe(true)
+    expect(useAlertStore().alertMessage).toBe(
+      'Successfully set user as an admin!',
+    )
+  })
+
+  it('getters follow currentUser', () => {
+    const user = useUserStore()
+    expect(user.isAuthenticated).toBe(false)
+    expect(user.role).toBeNull()
+    user.$patch({ currentUser: { ...liveUser, role: 'MANAGER' } as never })
+    expect(user.isAuthenticated).toBe(true)
+    expect(user.role).toBe('MANAGER')
+    expect(user.isManagerOrUp).toBe(true)
+    expect(user.isAdmin).toBe(false)
   })
 
   it('expireSession logs out and marks the session expired', () => {
     useAuthToken().value = 'Bearer live'
     const user = useUserStore()
-    user.$patch({
-      isAuthenticated: true,
-      currentUser: liveUser as never,
-      role: 'USER',
-    })
+    user.$patch({ currentUser: liveUser as never })
     user.expireSession()
     expect(user.isAuthenticated).toBe(false)
     expect(user.currentUser).toBeNull()

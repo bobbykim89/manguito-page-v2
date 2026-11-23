@@ -21,9 +21,7 @@ const post = {
 const loggedIn = () => {
   useAuthToken().value = 'Bearer live'
   useUserStore().$patch({
-    isAuthenticated: true,
     currentUser: me as never,
-    role: 'ADMIN',
   })
   const posts = usePostStore()
   posts.$patch({ posts: [post] as never })

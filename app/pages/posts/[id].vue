@@ -19,7 +19,8 @@ const alertStore = useAlertStore()
 const postStore = usePostStore()
 const userStore = useUserStore()
 const { currentPost, postLoading } = storeToRefs(postStore)
-const { currentUser, role, isAuthenticated } = storeToRefs(userStore)
+const { currentUser, isAuthenticated, isAdmin, isManagerOrUp } =
+  storeToRefs(userStore)
 const contentRef = ref<HTMLDivElement>()
 const { copy, isSupported } = useClipboard()
 
@@ -69,20 +70,6 @@ const copyUrl = () => {
   copy(url.href)
   alertStore.setAlert('Copied url to clipboard', 'info')
 }
-const isAdmin = computed<boolean>(() => {
-  if (isAuthenticated.value === false) return false
-  if (currentUser.value === null) return false
-  if (role.value === null) return false
-  if (role.value !== 'ADMIN') return false
-  return true
-})
-const isManagerOrUp = computed<boolean>(() => {
-  if (isAuthenticated.value === false) return false
-  if (currentUser.value === null) return false
-  if (role.value === null) return false
-  if (role.value !== 'ADMIN' && role.value !== 'MANAGER') return false
-  return true
-})
 const isAuthor = computed<boolean>(() => {
   if (isAuthenticated.value === false) return false
   if (currentUser.value === null) return false

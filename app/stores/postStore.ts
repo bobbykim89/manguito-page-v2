@@ -99,7 +99,7 @@ export const usePostStore = defineStore('post', () => {
   }
   const createNewPost = async (payload: FormData) => {
     try {
-      const { isAuthenticated, role } = userStore.getCurrentAuthInfo
+      const { isAuthenticated, role } = userStore
       if (!cookie.value || !isAuthenticated)
         return alertStore.setAlert('No user authentication found, please login')
 
@@ -118,7 +118,7 @@ export const usePostStore = defineStore('post', () => {
   }
   const updatePost = async (postId: string, payload: UpdatePostInput) => {
     try {
-      const { isAuthenticated, currentUser } = userStore.getCurrentAuthInfo
+      const { isAuthenticated, currentUser } = userStore
       if (!cookie.value || !isAuthenticated)
         return alertStore.setAlert('No user authentication found, please login')
 
@@ -142,8 +142,7 @@ export const usePostStore = defineStore('post', () => {
   }
   const deletePostById = async (postId: string) => {
     try {
-      const { isAuthenticated, currentUser, role } =
-        userStore.getCurrentAuthInfo
+      const { isAuthenticated, currentUser, role } = userStore
       if (!cookie.value || !isAuthenticated)
         return alertStore.setAlert('No user authentication found, please login')
 

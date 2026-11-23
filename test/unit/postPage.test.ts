@@ -30,9 +30,7 @@ describe('post page comments', () => {
     useAuthToken().value = 'Bearer live'
     const pinia = useNuxtApp().$pinia as Pinia
     useUserStore(pinia).$patch({
-      isAuthenticated: true,
       currentUser: me as never,
-      role: 'USER',
     })
     usePostStore(pinia).$patch({ posts: [post] as never })
     mockApi('GET', '/api/comment/p1', () => {
