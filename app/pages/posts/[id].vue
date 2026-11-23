@@ -112,7 +112,7 @@ const handleRouterEvent = () => {
           <!-- close button -->
           <NuxtLink
             to="/posts"
-            class="absolute top-0 right-0 mt-2xs mr-3 text-dark-2 transition-opacity duration-300 ease-linear hover:opacity-60"
+            class="absolute top-0 right-0 z-10 mt-2xs mr-3 text-dark-2 transition-opacity duration-300 ease-linear hover:opacity-60"
             aria-label="close button"
           >
             <svg
