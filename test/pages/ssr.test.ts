@@ -1,4 +1,7 @@
+import mongoose from 'mongoose'
 import { describe, expect, it } from 'vitest'
+import { insertUser } from '../utils/auth'
+import { db } from '../utils/db'
 import { page } from '../utils/page'
 
 describe('server-rendered pages', () => {
@@ -16,9 +19,38 @@ describe('server-rendered pages', () => {
 })
 
 describe('post page', () => {
-  it('renders a post page with a bad id without a server error', async () => {
+  const notFound = /This page doesn(?:'|&#39;)t exist/
+
+  it('answers 404 for a malformed post id', async () => {
     const res = await page('/posts/not-an-id')
-    expect(res.status).toBeLessThan(500)
+    expect(res.status).toBe(404)
+    expect(res.html).toMatch(notFound)
+  })
+
+  it('answers 404 for an unknown post id', async () => {
+    const res = await page(`/posts/${new mongoose.Types.ObjectId().toString()}`)
+    expect(res.status).toBe(404)
+    expect(res.html).toMatch(notFound)
+  })
+
+  it('server-renders a post', async () => {
+    const { id } = await insertUser('MANAGER')
+    const conn = await db()
+    const posts = conn.connection.collection('posts')
+    const inserted = await posts.insertOne({
+      content: 'a server-rendered caption',
+      imageId: 'test/manguito-image',
+      author: new mongoose.Types.ObjectId(id),
+      date: new Date(),
+      updatedAt: new Date(),
+    })
+    try {
+      const res = await page(`/posts/${inserted.insertedId.toString()}`)
+      expect(res.status).toBe(200)
+      expect(res.html).toContain('a server-rendered caption')
+    } finally {
+      await posts.deleteOne({ _id: inserted.insertedId })
+    }
   })
 })
 

@@ -15,17 +15,15 @@ const url = useRequestURL()
 const alertStore = useAlertStore()
 const postStore = usePostStore()
 const userStore = useUserStore()
-const { currentPost, prevUrl, nextUrl } = usePostNavigation(
-  () => route.params.id as string,
-)
 const { currentUser, isAuthenticated, isAdmin, isManagerOrUp } =
   storeToRefs(userStore)
 const contentRef = ref<HTMLDivElement>()
 const { copy, isSupported } = useClipboard()
 
-const { comments, addComment, removeComment } = await usePostComments(
-  () => route.params.id as string,
-)
+// both start before either is awaited; an unknown id throws a fatal 404
+const postId = () => route.params.id as string
+const [{ post, prevUrl, nextUrl }, { comments, addComment, removeComment }] =
+  await Promise.all([usePost(postId), usePostComments(postId)])
 
 const resolveMetaImage = (img: string) => {
   const imgUrl = new ImageUrl(img)
@@ -38,14 +36,14 @@ useHead({
     { property: 'og:title', content: 'Post | Manguito Page' },
     {
       property: 'og:image',
-      content: resolveMetaImage(currentPost.value?.imageId as string),
+      content: resolveMetaImage(post.value.imageId),
     },
     { property: 'og:url', content: url.href },
     { property: 'twitter:domain', content: url.host },
     { property: 'twitter:url', content: url.href },
     {
       property: 'twitter:image',
-      content: resolveMetaImage(currentPost.value?.imageId as string),
+      content: resolveMetaImage(post.value.imageId),
     },
     {
       name: 'twitter:title',
@@ -66,16 +64,17 @@ const copyUrl = () => {
 const isAuthor = computed<boolean>(() => {
   if (isAuthenticated.value === false) return false
   if (currentUser.value === null) return false
-  if (currentUser.value._id !== currentPost.value?.author._id) return false
+  if (currentUser.value._id !== post.value.author._id) return false
   return true
 })
 const saveEdit = async (text: string) => {
   if (typeof route.params.id !== 'string') return
   if (isAuthor.value === false) return
   if (import.meta.client && window.confirm('Please confirm to save changes.')) {
-    await postStore.updatePost(route.params.id, {
+    const updated = await postStore.updatePost(route.params.id, {
       content: text,
     })
+    if (updated) post.value = updated
   }
 }
 const deletePost = async () => {
@@ -129,34 +128,23 @@ const handleRouterEvent = () => {
             </svg>
           </NuxtLink>
           <div
-            v-if="currentPost === null"
-            class="flex w-full justify-center py-lg"
-          >
-            <div
-              class="aspect-square w-3xl animate-spin rounded-full border-8 border-r-primary"
-            ></div>
-          </div>
-          <div
-            v-else
             class="relative grid gap-6 px-xs pt-10 pb-sm md:grid-cols-2 md:pb-md"
           >
             <!-- left side -->
             <div>
               <div class="relative">
-                <Transition mode="out-in">
-                  <NuxtImg
-                    :key="currentPost?.imageId"
-                    provider="cloudinary"
-                    :src="currentPost?.imageId"
-                    alt="a picture of manguito"
-                    class="relative w-full rounded-md object-cover object-center"
-                    :placeholder="[484, 645]"
-                    placeholder-class="img-placeholder"
-                    width="484"
-                    height="645"
-                    fit="cover"
-                  />
-                </Transition>
+                <!-- the fade between posts comes from the page transition -->
+                <NuxtImg
+                  provider="cloudinary"
+                  :src="post.imageId"
+                  alt="a picture of manguito"
+                  class="relative w-full rounded-md object-cover object-center"
+                  :placeholder="[484, 645]"
+                  placeholder-class="img-placeholder"
+                  width="484"
+                  height="645"
+                  fit="cover"
+                />
                 <!-- share button -->
                 <button
                   v-if="isSupported"
@@ -215,10 +203,9 @@ const handleRouterEvent = () => {
             <!-- right side -->
             <div class="flex flex-col gap-3">
               <ContentBlock
-                v-if="currentPost !== null"
                 :is-admin="isAdmin"
                 :is-author="isAuthor"
-                :post="currentPost"
+                :post="post"
                 @on-delete="deletePost"
                 @on-save="saveEdit"
               />
