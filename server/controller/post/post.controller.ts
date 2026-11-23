@@ -1,4 +1,4 @@
-import { updatePostInputSchema } from '#shared/dto/post'
+import { postPageQuerySchema, updatePostInputSchema } from '#shared/dto/post'
 import {
   Comment,
   type CommentModel,
@@ -7,11 +7,18 @@ import {
   type PostModel,
 } from '#shared/models'
 import type { EventHandlerRequest, H3Event } from 'h3'
-import { getQuery, getRouterParam, readValidatedBody } from 'h3'
+import {
+  getQuery,
+  getRouterParam,
+  getValidatedQuery,
+  readValidatedBody,
+} from 'h3'
 import { Model } from 'mongoose'
 import {
   apiError,
+  decodePostCursor,
   deleteCloudinaryImage,
+  encodePostCursor,
   getCurrentUser,
   newerThan,
   olderThan,
@@ -29,11 +36,31 @@ export class PostController {
     this.commentModel = Comment
   }
 
-  public getAllPost = async (): Promise<PostModel[]> => {
-    return await this.postModel
-      .find({})
+  /**
+   * One page of the list, newest first (`date`, then `_id`, descending). The
+   * next page starts strictly after `cursor`, so posts created or deleted in
+   * between neither repeat nor shift the rest.
+   */
+  public getPostPage = async (
+    e: H3Event<EventHandlerRequest>,
+  ): Promise<{ posts: PostDocument[]; nextCursor: string | null }> => {
+    const { limit, cursor } = await getValidatedQuery(
+      e,
+      postPageQuerySchema.parse,
+    )
+    const after = cursor ? decodePostCursor(cursor) : null
+    // hydrated: author is populated from users that may lack schema defaults
+    const found = await this.postModel
+      .find(after ? olderThan(after.date, after.id) : {})
+      .sort({ date: -1, _id: -1 })
+      .limit(limit + 1)
       .populate('author', 'name')
-      .sort({ date: -1 })
+    const posts = found.slice(0, limit)
+    const last = posts.at(-1)
+    return {
+      posts,
+      nextCursor: found.length > limit && last ? encodePostCursor(last) : null,
+    }
   }
   /**
    * One post with the ids of its neighbours in the list order (newest

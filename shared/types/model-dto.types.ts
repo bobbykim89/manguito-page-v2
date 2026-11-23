@@ -26,3 +26,10 @@ export interface PostWithNeighbours {
   prevId: string
   nextId: string
 }
+
+/** GET /api/post: one page of the list, newest first. */
+export interface PostPage {
+  posts: PostType[]
+  /** pass back as `cursor` for the next page; null on the last page */
+  nextCursor: string | null
+}
