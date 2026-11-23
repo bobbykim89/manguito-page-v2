@@ -36,4 +36,24 @@ describe('useErrorCheck', () => {
       'Could not reach the server, please try again.',
     )
   })
+
+  it("shows the one invalid field's message", () => {
+    const one = [{ path: 'text', message: 'Please write a comment.' }]
+    const two = [...one, { path: 'name', message: 'Please enter a username.' }]
+    const generic = 'Some fields are invalid.'
+    expect(
+      extractMessage(new ApiError(400, 'VALIDATION_FAILED', generic, one)),
+    ).toBe('Please write a comment.')
+    expect(
+      extractMessage(new ApiError(400, 'VALIDATION_FAILED', generic, two)),
+    ).toBe(generic)
+    expect(
+      extractMessage({
+        data: {
+          ok: false,
+          error: { code: 'VALIDATION_FAILED', message: generic, details: one },
+        },
+      }),
+    ).toBe('Please write a comment.')
+  })
 })

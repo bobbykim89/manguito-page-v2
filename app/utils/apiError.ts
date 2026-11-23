@@ -33,11 +33,16 @@ export const isApiFailure = (value: unknown): value is ApiFailure =>
  */
 export const toApiError = (err: unknown): ApiError => {
   if (err instanceof ApiError) return err
+  // the HTTP status of a response, or 0 when the request got none
+  let status = 0
+  if (err && typeof err === 'object') {
+    if ('status' in err && typeof err.status === 'number') status = err.status
+    else if ('statusCode' in err && typeof err.statusCode === 'number')
+      status = err.statusCode
+  }
   if (err && typeof err === 'object' && 'data' in err) {
     const data = err.data
     if (isApiFailure(data)) {
-      const status =
-        'status' in err && typeof err.status === 'number' ? err.status : 0
       return new ApiError(
         status,
         data.error.code,
@@ -46,5 +51,5 @@ export const toApiError = (err: unknown): ApiError => {
       )
     }
   }
-  return new ApiError(0, 'INTERNAL', UNREACHABLE)
+  return new ApiError(status, 'INTERNAL', UNREACHABLE)
 }
