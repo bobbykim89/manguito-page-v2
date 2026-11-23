@@ -143,7 +143,7 @@ describe('new post uploads', () => {
       token,
       raw: form({ content: true }),
     })
-    expectApiError(res, 'VALIDATION_FAILED', 'File not found')
+    expectApiError(res, 'VALIDATION_FAILED', 'Please choose a photo to upload.')
     expect(await uploads()).toHaveLength(0)
   })
 
