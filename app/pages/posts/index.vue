@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { useRequestURL } from '#app'
-import { LIMIT_MESSAGES, LIMITS } from '#shared/dto/limits'
+import { LIMIT_MESSAGES, LIMITS, UPLOAD_MESSAGES } from '#shared/dto/limits'
 import LoadMoreStatus from '@/components/posts/LoadMoreStatus.vue'
 import { ImageUrl } from '@/composables/useImageUrl'
 import { useAlertStore, usePostStore, useUserStore } from '@/stores'
 import { Modal } from '@bobbykim/manguito-theme'
 import { MclFormGroup, MclInputFile, MclTextArea } from '@bobbykim/mcl-forms'
-import imageCompression from 'browser-image-compression'
+import { UploadError } from '@/utils/fitImage'
+import { prepareUpload } from '@/utils/prepareUpload'
 import { storeToRefs } from 'pinia'
 import { computed, ref } from 'vue'
 
@@ -43,45 +44,56 @@ const formatPostUrl = (id: string) => {
 const resolveLinkPath = (id: string) => {
   return `/posts/${id}`
 }
-const onModalClose = () => {
+type UploadState = 'idle' | 'preparing' | 'uploading'
+const uploadState = ref<UploadState>('idle')
+const progress = ref<number>(0)
+const busy = computed(() => uploadState.value !== 'idle')
+
+const clearForm = () => {
   imageFileRef.value = undefined
   contentRef.value = ''
+}
+// closing mid-upload doesn't cancel it: the form is kept until it succeeds,
+// so a failure (or reopening) finds the caption and photo as they were
+const onModalClose = () => {
+  if (!busy.value) clearForm()
 }
 const isCaptionTooLong = computed(
   () => contentRef.value.trim().length > LIMITS.caption,
 )
 const onSubmit = async (): Promise<void> => {
-  const fileFormData = new FormData()
-  if (isCaptionTooLong.value) return
+  if (busy.value || isCaptionTooLong.value) return
   if (isAuthorizedUser.value === false) return
-  if (typeof imageFileRef.value === 'undefined') return
+  const picked = imageFileRef.value
+  if (!picked) return
   try {
-    const compressedFile = await imageCompression(imageFileRef.value, {
-      maxSizeMB: 2,
-      maxWidthOrHeight: 1200,
-      useWebWorker: true,
-    })
-    const postCompressionFileInfo = {
-      fileName: compressedFile.name,
-      size: compressedFile.size / 1024 / 1024,
-      type: compressedFile.type,
+    uploadState.value = 'preparing'
+    let photo: File
+    try {
+      photo = await prepareUpload(picked)
+    } catch (err) {
+      if (!(err instanceof UploadError)) console.error(err)
+      alertStore.setAlert(
+        err instanceof UploadError ? err.message : UPLOAD_MESSAGES.unreadable,
+      )
+      return
     }
-    fileFormData.append('image', compressedFile)
-    fileFormData.append('content', contentRef.value)
-    console.info(postCompressionFileInfo)
-    await postStore.createNewPost(fileFormData)
-    // reset ref data
-    imageFileRef.value = undefined
-    contentRef.value = ''
-  } catch (err) {
-    alertStore.setAlert(
-      // 'An error occurred while uploading image, please try again'
-      (err as Error).message,
-    )
-    console.error(err)
+    const form = new FormData()
+    form.append('image', photo)
+    form.append('content', contentRef.value)
+    uploadState.value = 'uploading'
+    const created = await postStore.createNewPost(form, {
+      onProgress: (percent) => (progress.value = percent),
+    })
+    if (created) {
+      uploadState.value = 'idle'
+      clearForm()
+      modalRef.value?.close()
+    }
+  } finally {
+    uploadState.value = 'idle'
+    progress.value = 0
   }
-  // close modal
-  modalRef.value?.close()
 }
 </script>
 
@@ -144,6 +156,7 @@ const onSubmit = async (): Promise<void> => {
               <MclInputFile
                 id="file-input"
                 v-model="imageFileRef"
+                accept="image/jpeg,image/png,image/webp"
                 rounded
                 required
                 button-text="Browse"
@@ -163,18 +176,43 @@ const onSubmit = async (): Promise<void> => {
                 show-border
               />
             </MclFormGroup>
+            <div
+              v-if="busy"
+              class="mt-xs text-sm text-dark-1"
+              aria-live="polite"
+            >
+              <p v-if="uploadState === 'preparing'">Preparing photo…</p>
+              <template v-else-if="progress < 100">
+                <div
+                  role="progressbar"
+                  aria-label="Upload progress"
+                  :aria-valuenow="progress"
+                  aria-valuemin="0"
+                  aria-valuemax="100"
+                  class="h-2 w-full overflow-hidden rounded-full bg-light-3"
+                >
+                  <div
+                    class="h-full bg-primary transition-[width] duration-200 ease-linear"
+                    :style="{ width: `${progress}%` }"
+                  ></div>
+                </div>
+                <p class="mt-3xs">Uploading… {{ progress }}%</p>
+              </template>
+              <p v-else>Saving…</p>
+            </div>
             <div class="mt-xs flex items-center justify-end gap-2">
               <button
                 type="submit"
                 role="button"
                 class="btn text-light-1 btn-primary"
-                :disabled="isCaptionTooLong"
+                :disabled="isCaptionTooLong || busy"
               >
                 Save
               </button>
               <button
                 type="reset"
                 class="btn text-light-1 btn-warning"
+                :disabled="busy"
                 @click="close"
               >
                 Cancel
