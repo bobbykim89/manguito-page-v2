@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useRequestURL } from '#app'
 import Hero from '@/components/home/Hero.vue'
-import { usePostStore } from '@/stores'
+import type { PostPage } from '#shared/types'
 import { MclContainerA } from '@bobbykim/mcl-container'
 import { defineAsyncComponent, reactive } from 'vue'
 
@@ -15,7 +15,10 @@ useHead({
   ],
 })
 
-const postStore = usePostStore()
+// the 7 newest, for the grid under the story
+const { data: recent } = await useApi<PostPage>('/api/post', {
+  query: { limit: 7 },
+})
 const heroContent = reactive<{
   heading: string
   paragraph: string
@@ -142,7 +145,7 @@ const AsyncParallax = defineAsyncComponent({
         </div>
       </template>
     </MclContainerA>
-    <AsyncGrid :cards="postStore.getRecentPosts" />
+    <AsyncGrid :cards="recent?.posts ?? []" />
     <AsyncParallax
       :image-source="thankYouComponentContent.imgSrc"
       :image-alt="thankYouComponentContent.imgAlt"

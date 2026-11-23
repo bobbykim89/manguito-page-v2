@@ -8,7 +8,10 @@ describe('API envelopes', () => {
     await clearContent()
     const res = await api('GET', '/api/post')
     expect(res.status).toBe(200)
-    expect(res.json).toEqual({ ok: true, data: [] })
+    expect(res.json).toEqual({
+      ok: true,
+      data: { posts: [], nextCursor: null },
+    })
   })
 
   it('answers an unknown path with a 404 envelope', async () => {

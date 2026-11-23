@@ -1,12 +1,17 @@
 import { type UpdatePostInput } from '#shared/dto/post'
-import type { PostType } from '#shared/types'
+import type { PostPage, PostType } from '#shared/types'
 import { useApiAction } from '@/composables/useApiAction'
 import { defineStore } from 'pinia'
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
+
+/** Where the list stands: `done` means the last page has arrived. */
+export type PostListStatus = 'idle' | 'loading' | 'error' | 'done'
 
 /**
- * The post list every page shares, and the actions that change it. The
- * server decides who may change what; a refusal comes back as an alert.
+ * The post list the grid and /admin/posts share, loaded a page at a time and
+ * kept for the life of the app (so coming back to the grid shows the same
+ * photos), and the actions that change it. The server decides who may change
+ * what; a refusal comes back as an alert.
  */
 export const usePostStore = defineStore('post', () => {
   const { $api } = useNuxtApp()
@@ -14,20 +19,51 @@ export const usePostStore = defineStore('post', () => {
 
   // POST: states
   const posts = ref<PostType[]>([])
-
-  // POST: getters
-  const getRecentPosts = computed<PostType[]>(() => posts.value.slice(0, 7))
+  const nextCursor = ref<string | null>(null)
+  const status = ref<PostListStatus>('idle')
+  /** Page one has arrived (in SSR, this hydrates, so the client skips it). */
+  const loaded = ref<boolean>(false)
 
   // POST: actions
-  const getAllPosts = async () => {
-    const { data, error } = await useApi<PostType[]>('/api/post')
-    if (error.value) {
-      // a failed load alerts (and ends a dead session) like any action
-      await run(() => Promise.reject(error.value))
+  const settle = (page: PostPage) => {
+    nextCursor.value = page.nextCursor
+    status.value = page.nextCursor ? 'idle' : 'done'
+  }
+  /** Loads page one, unless it's already here or on its way. */
+  const loadFirstPage = async () => {
+    if (loaded.value || status.value === 'loading') return
+    status.value = 'loading'
+    const res = await run(() => $api<PostPage>('/api/post'))
+    if (!res.ok) {
+      status.value = 'error'
       return
     }
-    posts.value = data.value ?? []
+    posts.value = res.data.posts
+    loaded.value = true
+    settle(res.data)
   }
+  /** Appends the page after the last one, once at a time, until the end. */
+  const loadMore = async () => {
+    const cursor = nextCursor.value
+    if (!loaded.value || !cursor || status.value === 'loading') return
+    status.value = 'loading'
+    const res = await run(() =>
+      $api<PostPage>('/api/post', { query: { cursor } }),
+    )
+    if (!res.ok) {
+      status.value = 'error'
+      return
+    }
+    const seen = new Set(posts.value.map((post) => post._id))
+    posts.value = [
+      ...posts.value,
+      ...res.data.posts.filter((post) => !seen.has(post._id)),
+    ]
+    settle(res.data)
+  }
+  /** After an error: tries again whichever page failed. */
+  const retry = () => (loaded.value ? loadMore() : loadFirstPage())
+
   const createNewPost = async (payload: FormData) => {
     const res = await run(
       () => $api<PostType>('/api/post', { method: 'POST', body: payload }),
@@ -35,17 +71,21 @@ export const usePostStore = defineStore('post', () => {
     )
     if (res.ok) posts.value = [res.data, ...posts.value]
   }
-  const updatePost = async (postId: string, payload: UpdatePostInput) => {
+  /** Saves a caption; returns the updated post, or null when it failed. */
+  const updatePost = async (
+    postId: string,
+    payload: UpdatePostInput,
+  ): Promise<PostType | null> => {
     const res = await run(
       () =>
         $api<PostType>(`/api/post/${postId}`, { method: 'PUT', body: payload }),
       { success: 'Successfully updated post!' },
     )
-    if (res.ok) {
-      posts.value = posts.value.map((post) =>
-        post._id === postId ? res.data : post,
-      )
-    }
+    if (!res.ok) return null
+    posts.value = posts.value.map((post) =>
+      post._id === postId ? res.data : post,
+    )
+    return res.data
   }
   /** Deletes a post; true when it's gone, so the page can leave it. */
   const deletePostById = async (postId: string): Promise<boolean> => {
@@ -59,8 +99,12 @@ export const usePostStore = defineStore('post', () => {
 
   return {
     posts,
-    getRecentPosts,
-    getAllPosts,
+    nextCursor,
+    status,
+    loaded,
+    loadFirstPage,
+    loadMore,
+    retry,
     createNewPost,
     updatePost,
     deletePostById,

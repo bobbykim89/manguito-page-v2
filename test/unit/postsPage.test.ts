@@ -2,7 +2,7 @@ import { mountSuspended } from '@nuxt/test-utils/runtime'
 import type { Pinia } from 'pinia'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import PostsPage from '@/pages/posts/index.vue'
-import { useUserStore } from '@/stores'
+import { usePostStore, useUserStore } from '@/stores'
 import { clearApiMocks, mockApi, okEnvelope, resetState } from './helpers'
 
 const admin = {
@@ -37,7 +37,9 @@ const openModal = async (wrapper: Awaited<ReturnType<typeof mountAsAdmin>>) => {
 describe('posts page new-post modal', () => {
   beforeEach(() => {
     resetState()
-    mockApi('GET', '/api/post', () => okEnvelope([]))
+    mockApi('GET', '/api/post', () =>
+      okEnvelope({ posts: [], nextCursor: null }),
+    )
   })
   afterEach(() => {
     clearApiMocks()
@@ -86,5 +88,40 @@ describe('posts page new-post modal', () => {
     expect(
       (wrapper.find('textarea').element as HTMLTextAreaElement).value,
     ).toBe('')
+  })
+})
+
+describe('posts page grid', () => {
+  beforeEach(() => {
+    resetState()
+    // the mounted page reads the Nuxt app's Pinia, which outlives each test
+    usePostStore(useNuxtApp().$pinia as Pinia).$patch({
+      posts: [],
+      nextCursor: null,
+      status: 'idle',
+      loaded: false,
+    })
+  })
+  afterEach(clearApiMocks)
+
+  it("renders the first page's tiles", async () => {
+    const tile = (id: string) => ({
+      _id: id,
+      content: 'hi',
+      imageId: `fake/${id}`,
+      author: { _id: 'a1', name: 'mango' },
+      date: '2026-11-20T00:00:00.000Z',
+      updatedAt: '2026-11-20T00:00:00.000Z',
+    })
+    mockApi('GET', '/api/post', () =>
+      okEnvelope({ posts: [tile('p1'), tile('p2')], nextCursor: null }),
+    )
+    const wrapper = await mountSuspended(PostsPage)
+    const links = wrapper
+      .findAll('a')
+      .map((a) => a.attributes('href'))
+      .filter((href) => href?.startsWith('/posts/'))
+    expect(links).toEqual(['/posts/p1', '/posts/p2'])
+    expect(wrapper.text()).not.toContain('Load More')
   })
 })

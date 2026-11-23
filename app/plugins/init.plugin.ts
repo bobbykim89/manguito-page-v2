@@ -1,17 +1,15 @@
-import { usePostStore, useUserStore } from '@/stores'
+import { useUserStore } from '@/stores'
 
 /**
- * Loads the post list and checks the session at the same time; neither
- * depends on the other, and the server render waits for both.
+ * Checks the session once at startup. Posts aren't loaded here: each page
+ * that shows them asks for what it needs.
  */
 export const startStores = async ({
-  postStore,
   userStore,
 }: {
-  postStore: ReturnType<typeof usePostStore>
   userStore: ReturnType<typeof useUserStore>
 }): Promise<void> => {
-  await Promise.all([postStore.getAllPosts(), userStore.ensureAuth()])
+  await userStore.ensureAuth()
 }
 
 export default defineNuxtPlugin({
@@ -20,7 +18,7 @@ export default defineNuxtPlugin({
   dependsOn: ['api'],
   setup(nuxtApp) {
     // resolved here, in the plugin's context, not inside the hook
-    const stores = { postStore: usePostStore(), userStore: useUserStore() }
+    const stores = { userStore: useUserStore() }
     nuxtApp.hook('app:created', () => startStores(stores))
   },
 })
