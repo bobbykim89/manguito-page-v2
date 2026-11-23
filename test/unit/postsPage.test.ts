@@ -100,6 +100,7 @@ describe('posts page grid', () => {
       nextCursor: null,
       status: 'idle',
       loaded: false,
+      gridScrollTop: null,
     })
   })
   afterEach(clearApiMocks)
@@ -123,5 +124,25 @@ describe('posts page grid', () => {
       .filter((href) => href?.startsWith('/posts/'))
     expect(links).toEqual(['/posts/p1', '/posts/p2'])
     expect(wrapper.text()).not.toContain('Load More')
+  })
+
+  it('remembers the scroll position when leaving for a post', async () => {
+    mockApi('GET', '/api/post', () =>
+      okEnvelope({ posts: [], nextCursor: null }),
+    )
+    await mountSuspended(PostsPage, { route: '/posts' })
+    Object.defineProperty(window, 'scrollY', { value: 400, configurable: true })
+    await useRouter().push('/posts/p1')
+    expect(usePostStore(useNuxtApp().$pinia as Pinia).gridScrollTop).toBe(400)
+  })
+
+  it('leaving for another page leaves it alone', async () => {
+    mockApi('GET', '/api/post', () =>
+      okEnvelope({ posts: [], nextCursor: null }),
+    )
+    await mountSuspended(PostsPage, { route: '/posts' })
+    Object.defineProperty(window, 'scrollY', { value: 400, configurable: true })
+    await useRouter().push('/about')
+    expect(usePostStore(useNuxtApp().$pinia as Pinia).gridScrollTop).toBeNull()
   })
 })

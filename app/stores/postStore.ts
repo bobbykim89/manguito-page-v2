@@ -23,6 +23,8 @@ export const usePostStore = defineStore('post', () => {
   const status = ref<PostListStatus>('idle')
   /** Page one has arrived (in SSR, this hydrates, so the client skips it). */
   const loaded = ref<boolean>(false)
+  /** How far down the grid was when a post was opened (browser only). */
+  const gridScrollTop = ref<number | null>(null)
 
   // POST: actions
   const settle = (page: PostPage) => {
@@ -102,6 +104,7 @@ export const usePostStore = defineStore('post', () => {
     nextCursor,
     status,
     loaded,
+    gridScrollTop,
     loadFirstPage,
     loadMore,
     retry,
