@@ -75,23 +75,10 @@ const handleUserBlockClick = () => {
 const onScrollToTop = () => {
   y.value = 0
 }
-const onUsernameUpdateSubmit = async (e: Event, name: string) => {
-  e.preventDefault()
-  if (import.meta.client && window.confirm('Please confirm username update')) {
-    await userStore.updateUsername({ username: name })
-  }
-  sidebarRef.value?.close()
-}
-const onPwUpdateSubmit = async (e: Event, currentPw: string, newPw: string) => {
-  e.preventDefault()
-  if (import.meta.client && window.confirm('Please confirm password update.')) {
-    await userStore.updatePassword({
-      currentPassword: currentPw,
-      newPassword: newPw,
-    })
-  }
-  sidebarRef.value?.close()
-}
+const {
+  submitUsername: onUsernameUpdateSubmit,
+  submitPassword: onPwUpdateSubmit,
+} = useAccountSettings(() => sidebarRef.value?.close())
 const getLayoutBgColor = computed(() => {
   const path = route.path
   if (path !== '/' && path !== '/posts' && path !== '/about') {
