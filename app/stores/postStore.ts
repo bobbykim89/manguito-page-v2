@@ -1,6 +1,7 @@
 import { type UpdatePostInput } from '#shared/dto/post'
 import type { PostPage, PostType } from '#shared/types'
 import { useApiAction } from '@/composables/useApiAction'
+import { uploadWithProgress } from '@/utils/uploadWithProgress'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
@@ -16,6 +17,7 @@ export type PostListStatus = 'idle' | 'loading' | 'error' | 'done'
 export const usePostStore = defineStore('post', () => {
   const { $api } = useNuxtApp()
   const { run } = useApiAction()
+  const token = useAuthToken()
 
   // POST: states
   const posts = ref<PostType[]>([])
@@ -66,12 +68,24 @@ export const usePostStore = defineStore('post', () => {
   /** After an error: tries again whichever page failed. */
   const retry = () => (loaded.value ? loadMore() : loadFirstPage())
 
-  const createNewPost = async (payload: FormData) => {
+  /**
+   * Uploads a new post over XHR (for progress); true when it was created.
+   * Failures alert like any action, and the caller keeps its form.
+   */
+  const createNewPost = async (
+    payload: FormData,
+    opts: { onProgress?: (percent: number) => void } = {},
+  ): Promise<boolean> => {
     const res = await run(
-      () => $api<PostType>('/api/post', { method: 'POST', body: payload }),
+      () =>
+        uploadWithProgress<PostType>('/api/post', payload, {
+          token: token.value,
+          onProgress: opts.onProgress,
+        }),
       { success: 'Successfully created a new post' },
     )
     if (res.ok) posts.value = [res.data, ...posts.value]
+    return res.ok
   }
   /** Saves a caption; returns the updated post, or null when it failed. */
   const updatePost = async (
