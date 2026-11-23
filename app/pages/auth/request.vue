@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useRequestURL } from '#app'
-import { useAlertStore } from '@/stores'
 import { MclFormGroup, MclInputText } from '@bobbykim/mcl-forms'
 
 const url = useRequestURL()
@@ -24,25 +23,21 @@ useHead({
 })
 
 const router = useRouter()
-const alertStore = useAlertStore()
+const { run } = useApiAction()
 const { $api } = useNuxtApp()
 const emailInputRef = ref<string>('')
 
 const handleFormSubmit = async () => {
   if (emailInputRef.value === '') return
-  try {
-    await $api('/api/token/send-token', {
-      method: 'POST',
-      body: { email: emailInputRef.value },
-    })
-    alertStore.setAlert(
-      "If that email has an account, we've sent a reset link.",
-      'success',
-    )
-    router.push({ path: '/auth/login' })
-  } catch (error) {
-    alertStore.setAlert(useErrorCheck().extractMessage(error))
-  }
+  const done = await run(
+    () =>
+      $api('/api/token/send-token', {
+        method: 'POST',
+        body: { email: emailInputRef.value },
+      }),
+    { success: "If that email has an account, we've sent a reset link." },
+  )
+  if (done.ok) router.push({ path: '/auth/login' })
 }
 </script>
 

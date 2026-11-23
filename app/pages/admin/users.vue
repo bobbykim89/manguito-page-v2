@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { UserRoleType } from '#shared/models'
 import { UserType } from '#shared/types'
-import { useAlertStore } from '@/stores'
 import { Modal } from '@bobbykim/manguito-theme'
 import { MclInputRadio } from '@bobbykim/mcl-forms'
 
@@ -15,9 +14,7 @@ useHead({
   meta: [{ property: 'og:title', content: 'Admin - Users | Manguito Page' }],
 })
 
-const cookie = useAuthToken()
-const alertStore = useAlertStore()
-const reportError = useReportApiError()
+const { run } = useApiAction()
 const modalRef = ref<InstanceType<typeof Modal>>()
 const selectedUser = ref<UserType | null>(null)
 const selectedRole = ref<UserRoleType>('USER')
@@ -35,19 +32,19 @@ const onModalClose = () => {
   selectedRole.value = 'USER'
 }
 const onSubmit = async () => {
-  if (!cookie.value) return
-  if (selectedUser.value === null) return
-  try {
-    await $api(`/api/user/admin/${selectedUser.value._id}`, {
-      method: 'PUT',
-      body: { role: selectedRole.value },
-    })
-  } catch (err) {
-    return reportError(err)
-  }
+  const user = selectedUser.value
+  if (user === null) return
+  const done = await run(
+    () =>
+      $api(`/api/user/admin/${user._id}`, {
+        method: 'PUT',
+        body: { role: selectedRole.value },
+      }),
+    { success: 'Successfully updated user role' },
+  )
+  if (!done.ok) return
   onModalClose()
   refresh()
-  alertStore.setAlert('Successfully updated user role', 'success')
   modalRef.value?.close()
 }
 </script>

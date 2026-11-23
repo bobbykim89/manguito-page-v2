@@ -1,10 +1,8 @@
 <script setup lang="ts">
 import { useRequestURL } from '#app'
-import type { CommentType } from '#shared/types'
 import CommentInput from '@/components/posts/CommentInput.vue'
 import CommentItem from '@/components/posts/CommentItem.vue'
 import ContentBlock from '@/components/posts/ContentBlock.vue'
-import { useAuthToken } from '@/composables/useAuthToken'
 import { ImageUrl } from '@/composables/useImageUrl'
 import { useAlertStore, usePostStore, useUserStore } from '@/stores'
 import { useClipboard } from '@vueuse/core'
@@ -13,7 +11,6 @@ import { computed, ref } from 'vue'
 
 const route = useRoute()
 const router = useRouter()
-const cookie = useAuthToken()
 const url = useRequestURL()
 const alertStore = useAlertStore()
 const postStore = usePostStore()
@@ -26,10 +23,8 @@ const { currentUser, isAuthenticated, isAdmin, isManagerOrUp } =
 const contentRef = ref<HTMLDivElement>()
 const { copy, isSupported } = useClipboard()
 
-const { $api } = useNuxtApp()
-const reportError = useReportApiError()
-const { data: comments, refresh } = await useApi<CommentType[]>(
-  `/api/comment/${route.params.id}`,
+const { comments, addComment, removeComment } = await usePostComments(
+  () => route.params.id as string,
 )
 
 const resolveMetaImage = (img: string) => {
@@ -95,28 +90,11 @@ const deletePost = async () => {
   }
 }
 const onCommentSubmit = async (text: string) => {
-  if (!cookie.value) return
-  try {
-    await $api(`/api/comment/${route.params.id}`, {
-      method: 'POST',
-      body: { text },
-    })
-  } catch (err) {
-    return reportError(err)
-  }
-  alertStore.setAlert('Successfully created a comment!', 'success')
-  refresh()
+  await addComment(text)
 }
 const onCommentDelete = async (id: string) => {
   if (isManagerOrUp.value === false && isAuthor.value === false) return
-  if (!cookie.value) return
-  try {
-    await $api(`/api/comment/${id}`, { method: 'DELETE' })
-  } catch (err) {
-    return reportError(err)
-  }
-  alertStore.setAlert('Successfully deleted a comment!', 'success')
-  refresh()
+  await removeComment(id)
 }
 const handleRouterEvent = () => {
   router.push({ path: '/posts' })

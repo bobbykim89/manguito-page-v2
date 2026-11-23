@@ -11,19 +11,13 @@ useHead({
   meta: [{ property: 'og:title', content: 'Admin - Comments | Manguito Page' }],
 })
 
-const cookie = useAuthToken()
 const { $api } = useNuxtApp()
-const reportError = useReportApiError()
+const { run } = useApiAction()
 const { data: res, refresh } = await useApi<CommentType[]>('/api/comment')
 
 const onDelete = async (id: string) => {
-  if (!cookie.value) return
-  try {
-    await $api(`/api/comment/${id}`, { method: 'DELETE' })
-  } catch (err) {
-    return reportError(err)
-  }
-  refresh()
+  const done = await run(() => $api(`/api/comment/${id}`, { method: 'DELETE' }))
+  if (done.ok) refresh()
 }
 </script>
 

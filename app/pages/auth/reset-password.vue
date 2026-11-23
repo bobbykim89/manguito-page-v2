@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useAlertStore } from '@/stores'
 import { MclFormGroup, MclInputText } from '@bobbykim/mcl-forms'
 
 const url = useRequestURL()
@@ -24,7 +23,7 @@ useHead({
 
 const route = useRoute()
 const router = useRouter()
-const alertStore = useAlertStore()
+const { run } = useApiAction()
 const { $api } = useNuxtApp()
 const passwordInputRef = ref<string>('')
 
@@ -34,16 +33,15 @@ const handleFormSubmit = async () => {
   if (!userId) return
   if (!token) return
   if (passwordInputRef.value === '') return
-  try {
-    await $api('/api/token/reset-password', {
-      method: 'POST',
-      body: { userId, token, password: passwordInputRef.value },
-    })
-    alertStore.setAlert('Successfully updated password', 'success')
-    router.push({ path: '/auth/login' })
-  } catch (error) {
-    alertStore.setAlert(useErrorCheck().extractMessage(error))
-  }
+  const done = await run(
+    () =>
+      $api('/api/token/reset-password', {
+        method: 'POST',
+        body: { userId, token, password: passwordInputRef.value },
+      }),
+    { success: 'Successfully updated password' },
+  )
+  if (done.ok) router.push({ path: '/auth/login' })
 }
 </script>
 
