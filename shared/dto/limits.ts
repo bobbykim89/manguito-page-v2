@@ -18,6 +18,22 @@ export const LIMIT_MESSAGES = {
   emailLong: `Email addresses can be at most ${LIMITS.email} characters.`,
 } as const
 
+/**
+ * The most a new post's photo may weigh: the browser sizes photos under it,
+ * and the server refuses anything over it. It leaves room under Vercel's
+ * 4.5 MB request limit for the caption and the form framing.
+ */
+export const UPLOAD_BUDGET = 4 * 1024 * 1024
+
+export const UPLOAD_MESSAGES = {
+  unreadable:
+    "This photo's format can't be read here. Please choose a JPEG, PNG or WebP. On iPhone, Safari converts photos automatically.",
+  inputTooLarge: 'This photo is over 50 MB. Please choose a smaller one.',
+  tooLarge: 'This photo is too large to upload. Please choose a smaller one.',
+  noFile: 'Please choose a photo to upload.',
+  badType: 'Please upload a JPEG, PNG or WebP image.',
+} as const
+
 /** An email, trimmed and lowercased so lookups ignore case. */
 export const emailSchema = z
   .string()

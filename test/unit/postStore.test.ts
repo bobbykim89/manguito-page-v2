@@ -1,5 +1,5 @@
 import { getQuery } from 'h3'
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { useAlertStore, usePostStore, useUserStore } from '@/stores'
 import {
   clearApiMocks,
@@ -8,6 +8,7 @@ import {
   okEnvelope,
   resetState,
 } from './helpers'
+import { FakeXhr } from './fakeXhr'
 
 const me = { _id: 'u1', name: 'mango', email: 'm@example.test', role: 'ADMIN' }
 const post = {
@@ -67,13 +68,60 @@ describe('postStore session handling', () => {
     expect(posts.posts[0]!.content).toBe('hi')
   })
 
-  it('create prepends the new post and alerts', async () => {
-    const fresh = { ...post, _id: 'p2', content: 'new' }
-    mockApi('POST', '/api/post', () => okEnvelope(fresh))
-    const posts = loggedIn()
-    await posts.createNewPost(new FormData())
-    expect(posts.posts.map((p) => p._id)).toEqual(['p2', 'p1'])
-    expect(useAlertStore().alertMessage).toBe('Successfully created a new post')
+  describe('create (uploads over XHR)', () => {
+    beforeEach(() => {
+      FakeXhr.reset()
+      vi.stubGlobal('XMLHttpRequest', FakeXhr)
+    })
+    afterEach(() => vi.unstubAllGlobals())
+    const answerNext = async (status: number, body: unknown) => {
+      await new Promise((resolve) => setTimeout(resolve, 0))
+      FakeXhr.last.respond(status, body)
+    }
+
+    it('create prepends the new post, alerts and returns true', async () => {
+      const fresh = { ...post, _id: 'p2', content: 'new' }
+      const posts = loggedIn()
+      const done = posts.createNewPost(new FormData())
+      await answerNext(201, okEnvelope(fresh))
+      expect(await done).toBe(true)
+      expect(FakeXhr.last.headers.Authorization).toBe('Bearer live')
+      expect(posts.posts.map((p) => p._id)).toEqual(['p2', 'p1'])
+      expect(useAlertStore().alertMessage).toBe(
+        'Successfully created a new post',
+      )
+    })
+
+    it('a failed create alerts, returns false and leaves the list alone', async () => {
+      const posts = loggedIn()
+      const done = posts.createNewPost(new FormData())
+      await answerNext(502, {
+        ok: false,
+        error: {
+          code: 'UPSTREAM_FAILED',
+          message: 'Could not upload the image, please try again.',
+        },
+      })
+      expect(await done).toBe(false)
+      expect(useAlertStore().alertMessage).toBe(
+        'Could not upload the image, please try again.',
+      )
+      expect(posts.posts.map((p) => p._id)).toEqual(['p1'])
+    })
+
+    it('an expired session during upload logs out and returns false', async () => {
+      const posts = loggedIn()
+      const done = posts.createNewPost(new FormData())
+      await answerNext(401, {
+        ok: false,
+        error: {
+          code: 'UNAUTHENTICATED',
+          message: 'Session expired, please log in again',
+        },
+      })
+      expect(await done).toBe(false)
+      expect(useUserStore().sessionExpired).toBe(true)
+    })
   })
 
   it('update replaces the post in the list', async () => {

@@ -118,12 +118,22 @@ export class PostController {
     if (user.role !== 'ADMIN' && user.role !== 'MANAGER') {
       throw apiError('FORBIDDEN', 'Access denied: unauthorized user')
     }
-    const savePost = await new this.postModel({
-      imageId: file.imageId,
-      content,
-      author: user._id,
-    }).save()
-    return await savePost.populate('author', 'name')
+    try {
+      const savePost = await new this.postModel({
+        imageId: file.imageId,
+        content,
+        author: user._id,
+      }).save()
+      return await savePost.populate('author', 'name')
+    } catch (err) {
+      // the image is already on Cloudinary; don't leave it without a post
+      try {
+        await deleteCloudinaryImage(file.imageId)
+      } catch (cleanupErr) {
+        console.error('[post] could not delete the orphaned image:', cleanupErr)
+      }
+      throw err
+    }
   }
   public updatePost = async (
     e: H3Event<EventHandlerRequest>,
