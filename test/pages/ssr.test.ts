@@ -55,6 +55,18 @@ describe('post page', () => {
   })
 })
 
+describe('copy-link button', () => {
+  afterEach(clearContent)
+
+  it('server-renders the copy-link button', async () => {
+    const { id } = await insertUser('MANAGER')
+    const postId = await insertPost(id)
+    const res = await page(`/posts/${postId}`)
+    expect(res.status).toBe(200)
+    expect(res.html).toMatch(/<button[^>]*aria-label="copy current url"/)
+  })
+})
+
 describe('error page', () => {
   it('shows a 404 for an unknown route', async () => {
     const res = await page('/does-not-exist')
