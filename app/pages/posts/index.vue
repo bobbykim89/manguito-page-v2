@@ -7,6 +7,7 @@ import { useAlertStore, usePostStore, useUserStore } from '@/stores'
 import { Modal } from '@bobbykim/manguito-theme'
 import { MclFormGroup, MclInputFile, MclTextArea } from '@bobbykim/mcl-forms'
 import { UploadError } from '@/utils/fitImage'
+import { postAlt } from '@/utils/postAlt'
 import { prepareUpload } from '@/utils/prepareUpload'
 import { storeToRefs } from 'pinia'
 import { computed, ref } from 'vue'
@@ -149,7 +150,7 @@ const onSubmit = async (): Promise<void> => {
             <NuxtImg
               provider="cloudinary"
               :src="formatPostUrl(post.imageId)"
-              alt="image card"
+              :alt="postAlt(post.content)"
               class="relative z-0 aspect-square w-full object-cover object-center"
               loading="lazy"
             />
@@ -169,7 +170,7 @@ const onSubmit = async (): Promise<void> => {
       <template #body="{ close }">
         <div class="px-xs pb-xs">
           <form @submit.prevent="onSubmit">
-            <MclFormGroup field-id="file-input" class="mt-sm">
+            <MclFormGroup field-id="file-input" label="Photo" class="mt-sm">
               <MclInputFile
                 id="file-input"
                 :model-value="imageFileRef ?? null"
@@ -189,7 +190,11 @@ const onSubmit = async (): Promise<void> => {
                 Photo kept: {{ imageFileRef.name }}
               </p>
             </MclFormGroup>
-            <MclFormGroup field-id="content-input" class="mt-sm">
+            <MclFormGroup
+              field-id="content-input"
+              label="Caption"
+              class="mt-sm"
+            >
               <MclTextArea
                 id="content-input"
                 v-model="contentRef"

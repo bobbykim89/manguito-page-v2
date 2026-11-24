@@ -33,7 +33,7 @@ const onDelete = () => {
         <!-- delete -->
         <button
           class="duration-300 ease-linear hover:opacity-65"
-          aria-label="delete post"
+          aria-label="delete comment"
           @click="onDelete"
         >
           <svg

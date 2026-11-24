@@ -67,7 +67,7 @@ const onSubmit = async () => {
           <!-- delete -->
           <button
             class="text-dark-2 duration-300 ease-linear hover:opacity-65"
-            aria-label="delete post"
+            aria-label="edit user"
             @click="openEdit(user)"
           >
             <svg

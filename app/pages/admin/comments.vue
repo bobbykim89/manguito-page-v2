@@ -44,7 +44,7 @@ const onDelete = async (id: string) => {
           <!-- delete -->
           <button
             class="text-dark-2 duration-300 ease-linear hover:opacity-65"
-            aria-label="delete post"
+            aria-label="delete comment"
             @click="onDelete(comment._id!.toString())"
           >
             <svg

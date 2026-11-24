@@ -21,6 +21,12 @@ export const scan = async (
 ): Promise<AxeResults['violations']> => {
   const dom = new JSDOM(html, { runScripts: 'outside-only' })
   try {
+    // jsdom loads no stylesheets: give it the one rule axe's visibility checks
+    // depend on here (Tailwind's .hidden, e.g. the theme's hamburger checkbox
+    // that the browser never shows), instead of turning whole rules off
+    const style = dom.window.document.createElement('style')
+    style.textContent = '.hidden { display: none !important; }'
+    dom.window.document.head.append(style)
     dom.window.eval(axeSource)
     const axe = (dom.window as unknown as { axe: typeof import('axe-core') })
       .axe
@@ -108,4 +114,24 @@ describe('page structure', () => {
       expect(first?.textContent?.trim()).toBe('Skip to content')
     },
   )
+})
+
+describe('WCAG 2.0 A/AA', () => {
+  it.each(matrix)('%s (%s) passes', async (path, who, status) => {
+    const res = await render(path, who)
+    expect(res.status).toBe(status)
+    const violations = await scan(res.html, {
+      type: 'tag',
+      values: ['wcag2a', 'wcag2aa'],
+    })
+    expect(
+      violations.map((v) => `${v.id}: ${v.nodes[0]?.html.slice(0, 160)}`),
+    ).toEqual([])
+  })
+
+  it('names /posts tiles by their caption', async () => {
+    const res = await render('/posts', 'out')
+    expect(res.html).toContain('alt="a post about Manguito"')
+    expect(res.html).not.toContain('alt="image card"')
+  })
 })

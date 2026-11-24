@@ -39,6 +39,9 @@ const banned: Array<[RegExp, string]> = [
     /text-light-3 btn-primary/,
     'light-3 on pink fails 4.5:1: text-light-1 btn-primary',
   ],
+  // WCAG 2.0 names and roles (#14)
+  [/role="submit"/, 'submit is not an ARIA role: use type="submit"'],
+  [/alt="image card"/, 'name a photo by its post: postAlt(post.content)'],
 ]
 
 describe('component library migration', () => {

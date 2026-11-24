@@ -70,6 +70,15 @@ describe('posts page new-post modal', () => {
     expect(wrapper.find('[role="dialog"]').classes()).toContain('rounded-lg')
   })
 
+  it('labels the photo and caption fields', async () => {
+    const wrapper = await mountAsAdmin()
+    await openModal(wrapper)
+    expect(wrapper.find('label[for="file-input"]').text()).toContain('Photo')
+    expect(wrapper.find('label[for="content-input"]').text()).toContain(
+      'Caption',
+    )
+  })
+
   it('requires a file', async () => {
     const wrapper = await mountAsAdmin()
     await openModal(wrapper)
