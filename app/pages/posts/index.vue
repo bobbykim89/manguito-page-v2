@@ -123,7 +123,7 @@ const onSubmit = async (): Promise<void> => {
 </script>
 
 <template>
-  <div class="font-inter container">
+  <div class="container font-inter">
     <div class="mx-auto max-w-screen-lg pt-md pb-lg">
       <div class="mb-md flex flex-col items-center justify-center">
         <h1 class="h2-md text-center font-light">Enjoy the gallery!</h1>

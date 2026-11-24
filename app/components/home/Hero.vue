@@ -9,7 +9,7 @@ defineProps<{
 
 <template>
   <section
-    class="font-inter grid grid-flow-row overflow-x-hidden py-xs md:grid-cols-5 md:py-md"
+    class="grid grid-flow-row overflow-x-hidden py-xs font-inter md:grid-cols-5 md:py-md"
   >
     <div class="order-2 col-span-2 w-full md:order-1">
       <div

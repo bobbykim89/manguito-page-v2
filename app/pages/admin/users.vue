@@ -50,7 +50,7 @@ const onSubmit = async () => {
 </script>
 
 <template>
-  <div class="font-inter relative mx-auto max-w-screen-md px-2xs py-md">
+  <div class="relative mx-auto max-w-screen-md px-2xs py-md font-inter">
     <h1 class="h2-md mb-xs">Users</h1>
     <div class="grid gap-2">
       <div

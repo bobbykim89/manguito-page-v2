@@ -10,6 +10,7 @@ Current focus: the improvement backlog in GitHub issues #11–#22 (tooling, comp
 - pnpm **12** pinned via `packageManager` (use corepack). Build scripts must be explicitly allowed in `pnpm-workspace.yaml` under `allowBuilds`; pnpm 12 fails the install on unapproved ones.
 - Vercel uses the pinned pnpm because the project sets `ENABLE_EXPERIMENTAL_COREPACK=1`.
 - The build scripts run `nuxt prepare` before `nuxt build`. The build's type check (`typeCheck: 'build'`) reads the root `.nuxt/` (auto-import types), which only `nuxt prepare` writes, and Vercel restores a cached `.nuxt/` and skips the postinstall when the install is "Already up to date", so without it a PR that adds a composable fails with `Cannot find name 'useX'`.
+- Fonts: Inter (the base font, `--font-sans`) and Permanent Marker (`font-marker`) come from the `@fontsource/*` packages through `@nuxt/fonts`' `npm` provider, served from `/_nuxt/fonts/`. The network providers are off in `nuxt.config.ts`, so nothing downloads in dev, build or tests. Name fonts with Tailwind 4's `--font-*` theme variables (`--font-family-*` generates nothing).
 - Held back on purpose: TypeScript stays on 6.0 (7.0 is the native compiler, which `vue-tsc` doesn't support yet) and `@types/node` on 24 (the runtime is Node 24). Tailwind 4 runs through its Vite plugin (`@tailwindcss/vite` in `nuxt.config.ts`), not PostCSS.
 
 ## Commands

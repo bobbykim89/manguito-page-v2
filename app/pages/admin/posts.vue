@@ -34,7 +34,7 @@ const onDelete = async (id: string) => {
 </script>
 
 <template>
-  <div class="font-inter mx-auto max-w-screen-md px-2xs py-md">
+  <div class="mx-auto max-w-screen-md px-2xs py-md font-inter">
     <h1 class="h2-md mb-xs">Posts</h1>
     <div class="grid gap-2">
       <div
