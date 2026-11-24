@@ -22,3 +22,19 @@ describe('theme fonts', () => {
     expect(css).not.toContain('--font-family-')
   })
 })
+
+// The no-network guarantee must not rest on upstream defaults: with
+// `npm.remote` left to unifont it is true, and installed packages would be
+// fetched from a CDN at build (still self-hosted, so the page test can't see it)
+describe('font providers', () => {
+  const config = readFileSync('nuxt.config.ts', 'utf8')
+  const fonts = config.match(/\n {2}fonts: \{([\s\S]*?)\n {2}\},\n/)?.[1] ?? ''
+
+  it('uses only the npm provider', () => {
+    expect(fonts).toMatch(/\n {4}provider: 'npm',/)
+  })
+
+  it('never lets the npm provider fetch remotely', () => {
+    expect(fonts).toMatch(/\n {4}npm: \{ remote: false \},/)
+  })
+})
