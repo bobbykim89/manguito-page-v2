@@ -30,6 +30,15 @@ const banned: Array<[RegExp, string]> = [
     /\bmax-w-(3xs|2xs|xs|sm|md|lg|xl|[2-7]xl)\b/,
     'max-w-<size> resolves to the theme spacing scale: use max-w-[<n>rem]',
   ],
+  // WCAG 2.0 AA contrast (#14), checked in contrast.test.ts
+  [
+    /\btext-dark-1\b/,
+    'text-dark-1 fails 4.5:1 on light backgrounds: text-dark-2',
+  ],
+  [
+    /text-light-3 btn-primary/,
+    'light-3 on pink fails 4.5:1: text-light-1 btn-primary',
+  ],
 ]
 
 describe('component library migration', () => {

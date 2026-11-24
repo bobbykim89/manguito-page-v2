@@ -35,7 +35,7 @@ const onDelete = async (id: string) => {
           <p>
             {{ comment.text }}
           </p>
-          <div class="text-end text-sm text-dark-1">
+          <div class="text-end text-sm text-dark-2">
             <p>{{ comment?.author.name }}</p>
             <p><LocalDate :datetime="comment.date" /></p>
           </div>
@@ -43,7 +43,7 @@ const onDelete = async (id: string) => {
         <div class="flex items-center justify-end md:justify-center">
           <!-- delete -->
           <button
-            class="text-dark-1 duration-300 ease-linear hover:opacity-65"
+            class="text-dark-2 duration-300 ease-linear hover:opacity-65"
             aria-label="delete post"
             @click="onDelete(comment._id!.toString())"
           >

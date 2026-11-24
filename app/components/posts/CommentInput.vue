@@ -35,7 +35,7 @@ const submitComment = () => {
           :invalid="isTooLong"
           :invalid-feedback="LIMIT_MESSAGES.commentLong"
         />
-        <div class="mt-3xs flex justify-end gap-2 text-dark-1">
+        <div class="mt-3xs flex justify-end gap-2 text-dark-2">
           <button
             class="duration-300 ease-linear hover:opacity-65"
             type="submit"

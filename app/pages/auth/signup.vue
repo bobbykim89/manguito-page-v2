@@ -99,7 +99,7 @@ const onSubmit = async () => {
             v-model="confirmPassword"
           />
         </MclFormGroup>
-        <button role="submit" class="btn btn-full text-light-3 btn-primary">
+        <button role="submit" class="btn btn-full text-light-1 btn-primary">
           Submit
         </button>
       </form>

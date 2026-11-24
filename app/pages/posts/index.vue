@@ -184,7 +184,7 @@ const onSubmit = async (): Promise<void> => {
               />
               <p
                 v-if="photoKept && imageFileRef"
-                class="mt-3xs text-sm text-dark-1"
+                class="mt-3xs text-sm text-dark-2"
               >
                 Photo kept: {{ imageFileRef.name }}
               </p>
@@ -202,7 +202,7 @@ const onSubmit = async (): Promise<void> => {
             </MclFormGroup>
             <div
               v-if="busy"
-              class="mt-xs text-sm text-dark-1"
+              class="mt-xs text-sm text-dark-2"
               aria-live="polite"
             >
               <p v-if="uploadState === 'preparing'">Preparing photo…</p>
@@ -235,7 +235,7 @@ const onSubmit = async (): Promise<void> => {
               </button>
               <button
                 type="reset"
-                class="btn text-light-1 btn-warning"
+                class="btn text-dark-4 btn-warning"
                 :disabled="busy"
                 @click="close"
               >

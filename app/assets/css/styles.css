@@ -2,6 +2,15 @@
 @import '@bobbykim/manguito-theme/mcl-theme-v4.css';
 @source '../../../node_modules/@bobbykim';
 
+/* WCAG 2.0 AA contrast (#14): the theme's defaults for these fail under light
+   text; each is the same hue, darkened just enough. Pairs are checked in
+   test/unit/contrast.test.ts. */
+:root {
+  --mcl-primary: #d02b78;
+  --mcl-success: #518016;
+  --mcl-info: #007caa;
+}
+
 @theme {
   /* Custom animations */
   --animate-balls: balls 5s infinite;

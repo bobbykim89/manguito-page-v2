@@ -46,7 +46,7 @@ const { currentUser } = storeToRefs(userStore)
       </ul>
       <p class="mb-2xs text-lg">Navigate to:</p>
       <div
-        class="flex items-center justify-center gap-1 overflow-y-auto rounded-lg bg-light-3 px-3xs py-2xs text-dark-1"
+        class="flex items-center justify-center gap-1 overflow-y-auto rounded-lg bg-light-3 px-3xs py-2xs text-dark-2"
       >
         <NuxtLink
           to="/admin/posts"

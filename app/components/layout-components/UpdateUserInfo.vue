@@ -67,7 +67,9 @@ const onPwUpdateSubmit = (e: Event) => {
               />
             </MclFormGroup>
             <div class="mt-3xs flex justify-end">
-              <button role="submit" class="btn btn-primary">Save</button>
+              <button role="submit" class="btn text-light-1 btn-primary">
+                Save
+              </button>
             </div>
           </form>
         </div>
@@ -110,7 +112,9 @@ const onPwUpdateSubmit = (e: Event) => {
               />
             </MclFormGroup>
             <div class="mt-3xs flex justify-end">
-              <button role="submit" class="btn btn-primary">Save</button>
+              <button role="submit" class="btn text-light-1 btn-primary">
+                Save
+              </button>
             </div>
           </form>
         </div>

@@ -72,7 +72,7 @@ const handleFormSubmit = async () => {
         <button
           role="button"
           type="submit"
-          class="btn btn-full text-light-3 btn-primary"
+          class="btn btn-full text-light-1 btn-primary"
         >
           Submit
         </button>

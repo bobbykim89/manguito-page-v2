@@ -47,7 +47,7 @@ const onSubmit = async () => {
 <template>
   <div class="container px-xs py-xl lg:py-2xl">
     <div
-      class="mx-auto max-w-[28rem] rounded-lg bg-light-3 px-xs py-md drop-shadow-md md:px-sm"
+      class="mx-auto max-w-[28rem] rounded-lg bg-light-1 px-xs py-md drop-shadow-md md:px-sm"
     >
       <h2 class="h2-md mb-sm text-center">Login</h2>
       <p
@@ -76,7 +76,7 @@ const onSubmit = async () => {
             v-model="loginCred.password"
           />
         </MclFormGroup>
-        <button role="submit" class="btn btn-full text-light-3 btn-primary">
+        <button role="submit" class="btn btn-full text-light-1 btn-primary">
           Submit
         </button>
       </form>

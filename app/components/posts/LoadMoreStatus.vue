@@ -63,7 +63,7 @@ watch(status, (now, before) => {
 </script>
 
 <template>
-  <div class="py-sm text-center text-dark-1">
+  <div class="py-sm text-center text-dark-2">
     <div ref="sentinel" aria-hidden="true" class="h-px"></div>
     <p v-if="status === 'loading'">Loading more photos…</p>
     <p v-else-if="status === 'done' && posts.length > 0">{{ END }}</p>
