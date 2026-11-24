@@ -97,7 +97,6 @@ const getLayoutBgColor = computed(() => {
       bg-color="light-1"
       mobile-menu-bg-color="light-4"
       :scroll-distance="100"
-      data-allow-mismatch
     >
       <template #content>
         <div class="flex flex-shrink-0 items-center self-center md:py-3xs">
