@@ -20,6 +20,8 @@ const userStore = useUserStore()
 const { alertMessage, alertColor } = storeToRefs(alertStore)
 const { currentUser, isAuthenticated, role } = storeToRefs(userStore)
 const headerRef = ref()
+// the server's instant; NuxtTime keeps it through hydration
+const now = new Date()
 const sidebarRef = ref<InstanceType<typeof Sidebar>>()
 const { y } = useWindowScroll({ behavior: 'smooth' })
 
@@ -216,11 +218,10 @@ const getLayoutBgColor = computed(() => {
       @logo-click="handleTitleClick"
       @menu-click="handleFooterMenuClick"
     >
-      <ClientOnly>
-        <small class="text-light-1"
-          >&copy; Manguito Page {{ new Date().getFullYear() }}</small
-        >
-      </ClientOnly>
+      <small class="text-light-1"
+        >&copy; Manguito Page
+        <NuxtTime :datetime="now" year="numeric" locale="en-US"
+      /></small>
     </MclFooterA>
     <Sidebar
       v-if="currentUser !== null"

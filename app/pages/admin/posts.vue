@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import LocalDate from '@/components/LocalDate.vue'
 import LoadMoreStatus from '@/components/posts/LoadMoreStatus.vue'
 import { usePostStore } from '@/stores'
 import { storeToRefs } from 'pinia'
@@ -57,9 +58,7 @@ const onDelete = async (id: string) => {
             </p>
             <div class="text-end text-sm text-dark-1">
               <p>{{ post?.author.name }}</p>
-              <ClientOnly>
-                <p>{{ new Date(post.date).toDateString() }}</p>
-              </ClientOnly>
+              <p><LocalDate :datetime="post.date" /></p>
             </div>
           </div>
           <div class="flex items-center justify-end md:justify-center">
