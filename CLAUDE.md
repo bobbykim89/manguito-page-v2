@@ -6,7 +6,7 @@ Current focus: the improvement backlog in GitHub issues #11–#22 (tooling, comp
 
 ## Toolchain
 
-- Node **24** (`.nvmrc`; run `nvm use` first). `engines.node` is `>=24.0.0`.
+- Node **24** (`.nvmrc`; run `nvm use` first). `engines.node` is `24.x` (pinned so Vercel can't move to a later major on its own; `test/unit/nodeVersion.test.ts` keeps it matching `.nvmrc`).
 - pnpm **12** pinned via `packageManager` (use corepack). Build scripts must be explicitly allowed in `pnpm-workspace.yaml` under `allowBuilds`; pnpm 12 fails the install on unapproved ones.
 - Vercel uses the pinned pnpm because the project sets `ENABLE_EXPERIMENTAL_COREPACK=1`.
 - The build scripts run `nuxt prepare` before `nuxt build`. The build's type check (`typeCheck: 'build'`) reads the root `.nuxt/` (auto-import types), which only `nuxt prepare` writes, and Vercel restores a cached `.nuxt/` and skips the postinstall when the install is "Already up to date", so without it a PR that adds a composable fails with `Cannot find name 'useX'`.
