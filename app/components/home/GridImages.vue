@@ -31,7 +31,7 @@ const resolveCardColor = (idx: number): 'primary' | 'info' => {
     </p>
     <div
       v-else
-      class="font-inter grid max-w-screen-lg grid-cols-2 gap-4 p-xs md:grid-cols-4"
+      class="grid max-w-screen-lg grid-cols-2 gap-4 p-xs font-inter md:grid-cols-4"
     >
       <h2
         class="h2-md col-span-2 grid grid-cols-2 gap-4 md:col-span-3 md:grid-cols-3"
@@ -41,7 +41,7 @@ const resolveCardColor = (idx: number): 'primary' | 'info' => {
         </span>
       </h2>
       <div
-        class="font-marker col-start-2 row-start-2 animate-bounce-settle self-center text-right transition duration-150 ease-in md:col-span-2 md:col-start-1 md:pr-md"
+        class="col-start-2 row-start-2 animate-bounce-settle self-center text-right font-marker transition duration-150 ease-in md:col-span-2 md:col-start-1 md:pr-md"
       >
         <span class="h3-lg mr-xs">Flip me over!!</span>
         <NuxtImg

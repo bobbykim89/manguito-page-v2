@@ -75,6 +75,26 @@ export default defineNuxtConfig({
       },
     },
   },
+  // Inter (the base font) and Permanent Marker come from the @fontsource
+  // packages; no font service is ever asked, in dev, build or tests (#27)
+  fonts: {
+    // only the npm provider, and never its CDN fallback: these are set here
+    // rather than left to upstream defaults, which a module update could change
+    provider: 'npm',
+    npm: { remote: false },
+    families: [
+      { name: 'Inter', provider: 'npm', weights: [300, 400, 600, 700] },
+      { name: 'Permanent Marker', provider: 'npm', weights: [400] },
+    ],
+    providers: {
+      google: false,
+      googleicons: false,
+      bunny: false,
+      fontshare: false,
+      fontsource: false,
+      adobe: false,
+    },
+  },
   runtimeConfig: {
     workBranch: process.env.WORK_BRANCH,
     // empty unless NUXT_MONGO_URI is set at runtime (the API tests do)

@@ -46,9 +46,11 @@
     }
   }
 
-  /* Custom font families */
-  --font-family-inter: Inter, sans-serif;
-  --font-family-marker: 'Permanent Marker', cursive;
+  /* Fonts (Tailwind 4 reads --font-*): Inter is the base font everywhere,
+     Permanent Marker the accent; @nuxt/fonts serves both (#27) */
+  --font-sans: Inter, ui-sans-serif, system-ui, sans-serif;
+  --font-inter: Inter, sans-serif;
+  --font-marker: 'Permanent Marker', cursive;
 }
 
 /* The footer sits on dark-3, where the theme's default ring (dark-3) can't be

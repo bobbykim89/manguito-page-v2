@@ -17,7 +17,7 @@ const { currentUser } = storeToRefs(userStore)
 </script>
 
 <template>
-  <div class="font-inter flex justify-center px-2xs py-sm">
+  <div class="flex justify-center px-2xs py-sm font-inter">
     <div
       class="max-w-screen-md rounded-lg bg-light-4 px-sm py-md md:px-md md:py-lg"
     >
