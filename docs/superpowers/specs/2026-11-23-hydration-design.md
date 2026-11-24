@@ -20,7 +20,7 @@ Removing `data-allow-mismatch` from the header caused no warning in any state, w
 
 - No hydration warnings on any page, in any of the states above.
 - Dates are in the server-rendered HTML (no pop-in) and show the **visitor's own date** (owner's decision).
-- The post page's `og:image` / `twitter:image` follow the post when moving with previous/next (carried over from #18).
+- No `<ClientOnly>` or `data-allow-mismatch` left in `app/`, and a test that keeps it that way.
 
 ## Non-goals
 
@@ -28,6 +28,7 @@ Removing `data-allow-mismatch` from the header caused no warning in any state, w
 - `/posts` going back to the top on reload (that's #18's scroll rule, not hydration).
 - `$apiFetch`'s type (`typeof $fetch`, so a direct call would be typed as the envelope). Nothing calls it directly, and every `useApi` call names its type, so changing it fixes nothing that exists today.
 - #14's accessibility items.
+- The post page's `og:image` (carried over from #18 as "not reactive"). Checked while planning: `<NuxtPage>` keys the page by `/posts/<id>`, so moving with previous/next remounts it and `useHead` runs again with the new post. Nothing to fix.
 
 ## Anti-goals
 
@@ -50,7 +51,7 @@ For the dates (owner's decision): **the visitor's own date** through Nuxt's `<Nu
 3. **Copy-link button:** `useClipboard({ legacy: true })`. `isSupported` is then true on both sides, and copying falls back to the old method where the Clipboard API is missing (plain http, old browsers).
 4. **Failed first page:** `postStore.loadFirstPage()` does nothing while the app is hydrating (`useNuxtApp().isHydrating`, resolved in the store's setup). The server's result stands: a failed page shows the error line and "Try again", which then loads it. Client-side navigation is unchanged.
 5. **Header:** remove `data-allow-mismatch` from both layouts.
-6. **Head:** the post page's `og:image` and `twitter:image` are getters on `post`, so they follow previous/next.
+6. **Guard:** a unit test fails if `app/` contains `<ClientOnly` or `data-allow-mismatch` (like `libraryMigration.test.ts`), so a new mismatch gets fixed rather than hidden.
 7. **CLAUDE.md:** the browser-only bullet says to show dates with `<LocalDate>` (never `<ClientOnly>`), and that values which differ between server and browser (feature detection like `isSupported`, `Date`, timezone) must not decide what renders. The `postStore` text notes that `loadFirstPage` doesn't refetch during hydration.
 
 ## Tests (per cause)
@@ -59,10 +60,9 @@ For the dates (owner's decision): **the visitor's own date** through Nuxt's `<Nu
 - The post page's server HTML (`test/pages/`) contains the copy-link button and a `<time datetime=…>` date for the post and for a comment.
 - `/admin/posts` and `/admin/comments` server HTML contain the dates.
 - `loadFirstPage` makes no request while hydrating, keeps `status: 'error'`, and `retry()` afterwards loads the page.
-- The post page's head: after moving to another post, `og:image` names the new post's image.
+- The guard test above.
 - The browser walk: 84 loads with 0 hydration warnings, rerun with the suppressions gone.
 
 ## Left to the builder
 
 - Where exactly each test lives, following the existing `test/pages/` and `test/unit/` patterns.
-- How the head test observes the meta (`useHead` result in a mounted page or the server HTML of two different posts).
