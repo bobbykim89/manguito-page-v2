@@ -1,4 +1,3 @@
-import { readFileSync } from 'node:fs'
 import { JSDOM } from 'jsdom'
 import mongoose from 'mongoose'
 import { afterEach, describe, expect, it } from 'vitest'
@@ -124,10 +123,7 @@ describe('dates', () => {
 })
 
 describe('about page', () => {
-  it('shows the approved copy, the package version and its own description', async () => {
-    const pkg = JSON.parse(readFileSync('package.json', 'utf8')) as {
-      version: string
-    }
+  it('shows the approved copy and its own description', async () => {
     const res = await page('/about')
     expect(res.status).toBe(200)
     const doc = new JSDOM(res.html).window.document
@@ -135,12 +131,13 @@ describe('about page', () => {
     for (const line of [
       "Manguito Page is a photo diary of Manguito, a peach-faced lovebird who came to us one late May as a fragile baby who couldn't even chew banana. These days he chirps, flies laps around the house, steals bites of our food and sticks close to my wife.",
       "Here you'll find his everyday moments: the cuddles, the millet and the mischief. Browse the gallery, and sign up if you'd like to comment on your favourite photos.",
-      "I built the site myself and keep improving it as a side project. It's made with Nuxt, and you can install it as an app on your phone.",
-      `Version: ${pkg.version}`,
       'Maintainer: Bobby Kim',
     ]) {
       expect(text).toContain(line)
     }
+    // dropped by the owner after #20: the side-project paragraph and the version
+    expect(text).not.toContain('I built the site myself')
+    expect(text).not.toContain('Version:')
     const description =
       'Meet Manguito, a peach-faced lovebird, and the story behind his photo blog.'
     for (const selector of [
