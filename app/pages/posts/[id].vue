@@ -204,6 +204,11 @@ const handleRouterEvent = () => {
             </div>
             <!-- right side -->
             <div class="flex flex-col gap-3">
+              <h1 class="sr-only">
+                {{
+                  post?.author?.name ? `Post by ${post.author.name}` : 'Post'
+                }}
+              </h1>
               <ContentBlock
                 :is-admin="isAdmin"
                 :is-author="isAuthor"

@@ -49,7 +49,7 @@ const onSubmit = async () => {
     <div
       class="mx-auto max-w-[28rem] rounded-lg bg-light-1 px-xs py-md drop-shadow-md md:px-sm"
     >
-      <h2 class="h2-md mb-sm text-center">Login</h2>
+      <h1 class="h2-md mb-sm text-center">Login</h1>
       <p
         v-if="route.query.reason === 'expired'"
         role="status"

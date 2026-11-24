@@ -88,6 +88,11 @@ const {
 
 <template>
   <div :class="['bg-light-1', 'relative', 'h-full']">
+    <a
+      href="#main"
+      class="sr-only z-50 rounded-md bg-light-1 px-xs py-3xs font-semibold text-dark-4 focus:not-sr-only focus:fixed focus:top-2xs focus:left-2xs focus-visible:mcl-focus-ring"
+      >Skip to content</a
+    >
     <HeaderHorizontal
       ref="headerRef"
       bg-color="light-1"
@@ -116,10 +121,10 @@ const {
           </div>
           <div class="ml-2 flex flex-col justify-center">
             <NuxtLink :to="menuItemData.logoLink">
-              <h2
+              <span
                 class="h2-md inline-block align-middle tracking-wider"
                 v-html="menuItemData.title"
-              ></h2>
+              ></span>
             </NuxtLink>
             <div
               class="hidden items-center gap-4 text-lg font-semibold tracking-wider lg:flex"
@@ -270,7 +275,9 @@ const {
               <span>{{ alertMessage }}</span>
             </div>
           </Alert>
-          <slot />
+          <main id="main" tabindex="-1" class="outline-none">
+            <slot />
+          </main>
         </div>
       </div>
     </div>

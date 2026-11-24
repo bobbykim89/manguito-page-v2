@@ -68,7 +68,7 @@ const AsyncParallax = defineAsyncComponent({
 </script>
 
 <template>
-  <main>
+  <div>
     <Hero
       :hading-text="heroContent.heading"
       :hero-paragraph="heroContent.paragraph"
@@ -157,5 +157,5 @@ const AsyncParallax = defineAsyncComponent({
         </div>
       </template>
     </AsyncParallax>
-  </main>
+  </div>
 </template>

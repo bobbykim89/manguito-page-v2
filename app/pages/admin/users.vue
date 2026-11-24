@@ -51,7 +51,7 @@ const onSubmit = async () => {
 
 <template>
   <div class="font-inter relative mx-auto max-w-screen-md px-2xs py-md">
-    <h2 class="h2-md mb-xs">Users</h2>
+    <h1 class="h2-md mb-xs">Users</h1>
     <div class="grid gap-2">
       <div
         v-for="user in res"

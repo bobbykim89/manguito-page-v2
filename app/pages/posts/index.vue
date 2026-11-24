@@ -118,7 +118,7 @@ const onSubmit = async (): Promise<void> => {
   <div class="font-inter container">
     <div class="mx-auto max-w-screen-lg pt-md pb-lg">
       <div class="mb-md flex flex-col items-center justify-center">
-        <h2 class="h2-md text-center font-light">Enjoy the gallery!</h2>
+        <h1 class="h2-md text-center font-light">Enjoy the gallery!</h1>
         <!-- toggle modal -->
         <button
           v-if="isAuthorizedUser"

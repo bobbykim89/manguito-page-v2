@@ -50,7 +50,7 @@ const handleFormSubmit = async () => {
     <div
       class="mx-auto max-w-[28rem] rounded-lg bg-light-3 px-xs py-md drop-shadow-md md:px-sm"
     >
-      <h2 class="h2-md mb-sm text-center">Reset Password</h2>
+      <h1 class="h2-md mb-sm text-center">Reset Password</h1>
       <form @submit.prevent="handleFormSubmit">
         <MclFormGroup
           field-id="new-password"

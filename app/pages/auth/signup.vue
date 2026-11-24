@@ -54,7 +54,7 @@ const onSubmit = async () => {
     <div
       class="mx-auto max-w-[28rem] rounded-lg bg-light-3 px-xs py-md drop-shadow-md md:px-sm"
     >
-      <h2 class="h2-md mb-sm text-center">Signup</h2>
+      <h1 class="h2-md mb-sm text-center">Signup</h1>
       <form @submit.prevent="onSubmit">
         <MclFormGroup field-id="signup-name" label="Name:" class="mb-xs">
           <MclInputText

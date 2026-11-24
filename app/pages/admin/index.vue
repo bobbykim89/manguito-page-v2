@@ -28,7 +28,7 @@ const { currentUser } = storeToRefs(userStore)
         width="256"
         height="256"
       />
-      <h2 class="h2-md mb-xs text-center">Admin Page</h2>
+      <h1 class="h2-md mb-xs text-center">Admin Page</h1>
       <p class="text-lg">Current user info</p>
       <ul class="mcl-list mcl-list-lg mcl-list-primary">
         <li>
