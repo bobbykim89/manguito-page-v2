@@ -24,3 +24,17 @@ describe('signup password rule', () => {
     expect(wrapper.text()).not.toContain(rule)
   })
 })
+
+describe('signup fields', () => {
+  it.each([
+    '#signup-name',
+    '#signup-email',
+    '#signup-pw',
+    '#signup-pw-confirm',
+  ])('%s is required', async (id) => {
+    const wrapper = await mountSuspended(SignupPage)
+    const input = wrapper.find(id)
+    expect(input.exists()).toBe(true)
+    expect((input.element as HTMLInputElement).required).toBe(true)
+  })
+})
