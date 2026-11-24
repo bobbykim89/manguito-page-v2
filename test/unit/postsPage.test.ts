@@ -257,6 +257,21 @@ describe('posts page upload', () => {
     FakeXhr.last.respond(201, okEnvelope(fresh))
   })
 
+  it('announces the upload stage, not each percent', async () => {
+    const wrapper = await mountAsAdmin()
+    await pickAndSave(wrapper)
+    FakeXhr.last.progress(40, 100)
+    await flush()
+    const live = wrapper.findAll('[role="dialog"] [aria-live]')
+    expect(live).toHaveLength(1)
+    expect(live[0]!.text()).toBe('Uploading photo')
+    const bar = wrapper.find('[role="progressbar"]')
+    expect(bar.attributes('aria-valuenow')).toBe('40')
+    expect(bar.element.closest('[aria-live]')).toBeNull()
+    expect(wrapper.text()).toContain('Uploading… 40%')
+    FakeXhr.last.respond(201, okEnvelope(fresh))
+  })
+
   it('a second Save while busy sends nothing', async () => {
     const wrapper = await mountAsAdmin()
     await pickAndSave(wrapper)

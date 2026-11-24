@@ -49,6 +49,13 @@ type UploadState = 'idle' | 'preparing' | 'uploading'
 const uploadState = ref<UploadState>('idle')
 const progress = ref<number>(0)
 const busy = computed(() => uploadState.value !== 'idle')
+// what screen readers hear: the stage, once, not every percent
+const stageText = computed(() => {
+  if (uploadState.value === 'preparing') return 'Preparing photo'
+  if (uploadState.value === 'uploading')
+    return progress.value < 100 ? 'Uploading photo' : 'Saving post'
+  return ''
+})
 
 /**
  * The modal rebuilds its body when it reopens, and a file input can't be
@@ -205,11 +212,10 @@ const onSubmit = async (): Promise<void> => {
                 show-border
               />
             </MclFormGroup>
-            <div
-              v-if="busy"
-              class="mt-xs text-sm text-dark-2"
-              aria-live="polite"
-            >
+            <p class="sr-only" role="status" aria-live="polite">
+              {{ stageText }}
+            </p>
+            <div v-if="busy" class="mt-xs text-sm text-dark-2">
               <p v-if="uploadState === 'preparing'">Preparing photo…</p>
               <template v-else-if="progress < 100">
                 <div
