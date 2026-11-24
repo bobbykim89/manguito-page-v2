@@ -61,23 +61,26 @@ const socialUrls = {
           <div class="text-dark-3">
             <h1 class="h2-md mb-xs">About Manguito Page</h1>
             <div class="mb-xs text-lg font-bold">
-              <p>
-                Manguito Page is a photo diary of Manguito, a peach-faced
-                lovebird who came to us one late May as a fragile baby who
-                couldn't even chew banana. These days he chirps, flies laps
-                around the house, steals bites of our food and sticks close to
-                my wife.
-              </p>
-              <p>
-                Here you'll find his everyday moments: the cuddles, the millet
-                and the mischief. Browse the gallery, and sign up if you'd like
-                to comment on your favourite photos.
-              </p>
-              <p>
-                I built the site myself and keep improving it as a side project.
-                It's made with Nuxt, and you can install it as an app on your
-                phone.
-              </p>
+              <!-- a gap between the paragraphs; Version and Maintainer stay a pair -->
+              <div class="mb-xs space-y-2xs">
+                <p>
+                  Manguito Page is a photo diary of Manguito, a peach-faced
+                  lovebird who came to us one late May as a fragile baby who
+                  couldn't even chew banana. These days he chirps, flies laps
+                  around the house, steals bites of our food and sticks close to
+                  my wife.
+                </p>
+                <p>
+                  Here you'll find his everyday moments: the cuddles, the millet
+                  and the mischief. Browse the gallery, and sign up if you'd
+                  like to comment on your favourite photos.
+                </p>
+                <p>
+                  I built the site myself and keep improving it as a side
+                  project. It's made with Nuxt, and you can install it as an app
+                  on your phone.
+                </p>
+              </div>
               <p>Version: {{ version }}</p>
               <p>Maintainer: Bobby Kim</p>
             </div>
