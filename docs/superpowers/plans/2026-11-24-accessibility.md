@@ -395,6 +395,7 @@ In `postsPage.test.ts`, after `mountAsAdmin()` and opening the modal:
   - 0 axe violations (`color-contrast` included);
   - every focusable element has a ring;
   - the Home tiles flip and open by keyboard;
+  - on `/posts` with 35 seeded posts, tabbing through the tiles loads page two and the live region announces it; with the second page's request failing (route intercept), "Try again" is reachable by Tab and loads it;
   - 0 hydration warnings.
 
   Record before and after counts for the PR. Clean up only the records the scripts seeded.
