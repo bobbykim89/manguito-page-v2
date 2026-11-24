@@ -129,6 +129,11 @@ describe('WCAG 2.0 A/AA', () => {
     ).toEqual([])
   })
 
+  it('scans the Home photo tiles', async () => {
+    const res = await render('/', 'out')
+    expect(res.html).toContain('aria-label="Flip photo 1"')
+  })
+
   it('names /posts tiles by their caption', async () => {
     const res = await render('/posts', 'out')
     expect(res.html).toContain('alt="a post about Manguito"')

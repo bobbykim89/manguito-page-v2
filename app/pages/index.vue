@@ -16,7 +16,7 @@ useHead({
 })
 
 // the 7 newest, for the grid under the story
-const { data: recent } = await useApi<PostPage>('/api/post', {
+const { data: recent, status } = await useApi<PostPage>('/api/post', {
   query: { limit: 7 },
 })
 const heroContent = reactive<{
@@ -145,7 +145,7 @@ const AsyncParallax = defineAsyncComponent({
         </div>
       </template>
     </MclContainerA>
-    <AsyncGrid :cards="recent?.posts ?? []" />
+    <AsyncGrid :cards="recent?.posts ?? []" :pending="status === 'pending'" />
     <AsyncParallax
       :image-source="thankYouComponentContent.imgSrc"
       :image-alt="thankYouComponentContent.imgAlt"

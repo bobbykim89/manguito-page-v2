@@ -42,6 +42,10 @@ const banned: Array<[RegExp, string]> = [
   // WCAG 2.0 names and roles (#14)
   [/role="submit"/, 'submit is not an ARIA role: use type="submit"'],
   [/alt="image card"/, 'name a photo by its post: postAlt(post.content)'],
+  [
+    /<MclCardC\b|import[^\n]*\bMclCardC\b/,
+    'MclCardC is a clickable div a keyboard cannot reach: FlipCard',
+  ],
 ]
 
 describe('component library migration', () => {
