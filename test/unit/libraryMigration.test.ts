@@ -46,6 +46,11 @@ const banned: Array<[RegExp, string]> = [
     /<MclCardC\b|import[^\n]*\bMclCardC\b/,
     'MclCardC is a clickable div a keyboard cannot reach: FlipCard',
   ],
+  // WCAG 2.0 2.2.2: nothing decorative moves forever (#14)
+  [
+    /\banimate-(bounce|ping|pulse)(?![-\w])/,
+    'loops forever: use animate-bounce-settle (stops within 5 s)',
+  ],
 ]
 
 describe('component library migration', () => {

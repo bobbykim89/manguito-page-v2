@@ -41,7 +41,7 @@ const resolveCardColor = (idx: number): 'primary' | 'info' => {
         </span>
       </h2>
       <div
-        class="font-marker col-start-2 row-start-2 animate-bounce self-center text-right transition duration-150 ease-in md:col-span-2 md:col-start-1 md:pr-md"
+        class="font-marker col-start-2 row-start-2 animate-bounce-settle self-center text-right transition duration-150 ease-in md:col-span-2 md:col-start-1 md:pr-md"
       >
         <span class="h3-lg mr-xs">Flip me over!!</span>
         <NuxtImg

@@ -9,7 +9,7 @@ import {
   type MenuItemType,
   type SocialUrl,
 } from '@bobbykim/mcl-footer'
-import { useWindowScroll } from '@vueuse/core'
+import { usePreferredReducedMotion, useWindowScroll } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 import { reactive, ref } from 'vue'
 
@@ -22,7 +22,11 @@ const headerRef = ref()
 // the server's instant; NuxtTime keeps it through hydration
 const now = new Date()
 const sidebarRef = ref<InstanceType<typeof Sidebar>>()
-const { y } = useWindowScroll({ behavior: 'smooth' })
+// scroll-to-top jumps instead of gliding for visitors who ask for less motion
+const motion = usePreferredReducedMotion()
+const { y } = useWindowScroll({
+  behavior: () => (motion.value === 'reduce' ? 'auto' : 'smooth'),
+})
 
 const footerMenuItems: MenuItemType[] = [
   {

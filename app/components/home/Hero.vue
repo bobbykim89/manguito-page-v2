@@ -30,7 +30,7 @@ defineProps<{
         <div class="mx-auto">
           <NuxtLink
             :to="linkUrl"
-            class="btn btn-progress animate-bounce drop-shadow-md btn-primary"
+            class="btn btn-progress animate-bounce-settle drop-shadow-md btn-primary"
           >
             <span>
               {{ linkText }}
