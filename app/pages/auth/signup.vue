@@ -61,7 +61,7 @@ const onSubmit = async () => {
             id="signup-name"
             :max-length="LIMITS.username"
             rounded
-            requird
+            required
             v-model="userInfo.name"
           />
         </MclFormGroup>
