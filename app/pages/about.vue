@@ -2,11 +2,16 @@
 import { useRequestURL } from '#app'
 
 const url = useRequestURL()
+const { version } = useAppConfig()
+const description =
+  'Meet Manguito, a peach-faced lovebird, and the story behind his photo blog.'
 
 useHead({
   title: 'About | Manguito Page',
   meta: [
+    { name: 'description', content: description },
     { property: 'og:title', content: 'About | Manguito Page' },
+    { property: 'og:description', content: description },
     { property: 'og:url', content: url.href },
     { property: 'twitter:domain', content: url.host },
     { property: 'twitter:url', content: url.href },
@@ -14,6 +19,7 @@ useHead({
       name: 'twitter:title',
       content: 'About | Manguito Page',
     },
+    { name: 'twitter:description', content: description },
   ],
 })
 
@@ -56,10 +62,23 @@ const socialUrls = {
             <h1 class="h2-md mb-xs">About Manguito Page</h1>
             <div class="mb-xs text-lg font-bold">
               <p>
-                A photo blog dedicated to Manguito, an adorable peach-faced
-                lovebird, showcasing daily moments and charming antics.
+                Manguito Page is a photo diary of Manguito, a peach-faced
+                lovebird who came to us one late May as a fragile baby who
+                couldn't even chew banana. These days he chirps, flies laps
+                around the house, steals bites of our food and sticks close to
+                my wife.
               </p>
-              <p>Version: 0.1.1</p>
+              <p>
+                Here you'll find his everyday moments: the cuddles, the millet
+                and the mischief. Browse the gallery, and sign up if you'd like
+                to comment on your favourite photos.
+              </p>
+              <p>
+                I built the site myself and keep improving it as a side project.
+                It's made with Nuxt, and you can install it as an app on your
+                phone.
+              </p>
+              <p>Version: {{ version }}</p>
               <p>Maintainer: Bobby Kim</p>
             </div>
             <div class="flex items-center justify-center gap-xs">

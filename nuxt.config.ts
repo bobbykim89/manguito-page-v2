@@ -1,5 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import tailwindcss from '@tailwindcss/vite'
+import pkg from './package.json'
 
 export default defineNuxtConfig({
   compatibilityDate: '2024-04-03',
@@ -74,6 +75,10 @@ export default defineNuxtConfig({
         types: ['vite/client'],
       },
     },
+  },
+  // only the version reaches the client (shown on the About page)
+  appConfig: {
+    version: pkg.version,
   },
   runtimeConfig: {
     workBranch: process.env.WORK_BRANCH,
