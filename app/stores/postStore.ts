@@ -15,7 +15,8 @@ export type PostListStatus = 'idle' | 'loading' | 'error' | 'done'
  * what; a refusal comes back as an alert.
  */
 export const usePostStore = defineStore('post', () => {
-  const { $api } = useNuxtApp()
+  const nuxtApp = useNuxtApp()
+  const { $api } = nuxtApp
   const { run } = useApiAction()
   const token = useAuthToken()
 
@@ -35,6 +36,9 @@ export const usePostStore = defineStore('post', () => {
   }
   /** Loads page one, unless it's already here or on its way. */
   const loadFirstPage = async () => {
+    // the server's result stands: a page one that failed there shows its
+    // error line and Try again instead of a different page mid-hydration
+    if (nuxtApp.isHydrating) return
     if (loaded.value || status.value === 'loading') return
     status.value = 'loading'
     const res = await run(() => $api<PostPage>('/api/post'))
