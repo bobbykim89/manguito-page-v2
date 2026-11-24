@@ -2,9 +2,21 @@
 @import '@bobbykim/manguito-theme/mcl-theme-v4.css';
 @source '../../../node_modules/@bobbykim';
 
+/* WCAG 2.0 AA contrast (#14): the theme's defaults for these fail under light
+   text; each is the same hue, darkened just enough. Pairs are checked in
+   test/unit/contrast.test.ts. */
+:root {
+  --mcl-primary: #d02b78;
+  --mcl-success: #518016;
+  --mcl-info: #007caa;
+  /* form errors sit on light-3 and light-4 cards */
+  --mcl-danger: #a92727;
+}
+
 @theme {
-  /* Custom animations */
-  --animate-balls: balls 5s infinite;
+  /* Custom animations: decoration stops within 5 s (WCAG 2.0 2.2.2) */
+  --animate-balls: balls 5s ease-in-out 1;
+  --animate-bounce-settle: bounce-settle 1s 5;
 
   /* Custom keyframes */
   @keyframes balls {
@@ -20,7 +32,45 @@
     }
   }
 
+  /* Tailwind's bounce, run a few times instead of forever; it starts and ends
+     at rest, so it doesn't jump when it stops */
+  @keyframes bounce-settle {
+    0%,
+    100% {
+      transform: none;
+      animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+    }
+    50% {
+      transform: translateY(-25%);
+      animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+    }
+  }
+
   /* Custom font families */
   --font-family-inter: Inter, sans-serif;
   --font-family-marker: 'Permanent Marker', cursive;
+}
+
+/* The footer sits on dark-3, where the theme's default ring (dark-3) can't be
+   seen: light ring, dark halo (WCAG 2.0 2.4.7) */
+footer a:focus-visible {
+  @apply mcl-focus-ring;
+  --mcl-focus-color: var(--color-light-1);
+  --mcl-focus-halo: var(--color-dark-3);
+}
+
+/* Visitors who ask for less motion get none, except the loading spinner,
+   which says something is happening */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation: none !important;
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+    scroll-behavior: auto !important;
+  }
+  .animate-spin {
+    animation: var(--animate-spin) !important;
+  }
 }

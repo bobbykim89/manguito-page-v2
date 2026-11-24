@@ -36,7 +36,7 @@ useHead({
       >
         <h1 class="mb-sm text-[4rem] font-bold">{{ status }}</h1>
         <p class="mb-xs text-[1.5rem]">{{ message }}</p>
-        <NuxtLink to="/" class="btn text-light-3 btn-primary"
+        <NuxtLink to="/" class="btn text-light-1 btn-primary"
           >Back to main page</NuxtLink
         >
       </div>

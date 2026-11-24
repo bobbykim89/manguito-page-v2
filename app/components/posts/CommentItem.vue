@@ -23,7 +23,7 @@ const onDelete = () => {
     class="overflow-x-hidden rounded-md bg-light-4 px-xs py-sm drop-shadow-md"
   >
     <p>{{ comment.text }}</p>
-    <div class="text-end text-sm text-dark-1">
+    <div class="text-end text-sm text-dark-2">
       <p>{{ comment?.author.name }}</p>
       <p><LocalDate :datetime="comment.date" /></p>
       <div
@@ -33,7 +33,7 @@ const onDelete = () => {
         <!-- delete -->
         <button
           class="duration-300 ease-linear hover:opacity-65"
-          aria-label="delete post"
+          aria-label="delete comment"
           @click="onDelete"
         >
           <svg

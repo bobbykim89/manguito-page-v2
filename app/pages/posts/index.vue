@@ -7,6 +7,7 @@ import { useAlertStore, usePostStore, useUserStore } from '@/stores'
 import { Modal } from '@bobbykim/manguito-theme'
 import { MclFormGroup, MclInputFile, MclTextArea } from '@bobbykim/mcl-forms'
 import { UploadError } from '@/utils/fitImage'
+import { postAlt } from '@/utils/postAlt'
 import { prepareUpload } from '@/utils/prepareUpload'
 import { storeToRefs } from 'pinia'
 import { computed, ref } from 'vue'
@@ -48,6 +49,13 @@ type UploadState = 'idle' | 'preparing' | 'uploading'
 const uploadState = ref<UploadState>('idle')
 const progress = ref<number>(0)
 const busy = computed(() => uploadState.value !== 'idle')
+// what screen readers hear: the stage, once, not every percent
+const stageText = computed(() => {
+  if (uploadState.value === 'preparing') return 'Preparing photo'
+  if (uploadState.value === 'uploading')
+    return progress.value < 100 ? 'Uploading photo' : 'Saving post'
+  return ''
+})
 
 /**
  * The modal rebuilds its body when it reopens, and a file input can't be
@@ -118,7 +126,7 @@ const onSubmit = async (): Promise<void> => {
   <div class="font-inter container">
     <div class="mx-auto max-w-screen-lg pt-md pb-lg">
       <div class="mb-md flex flex-col items-center justify-center">
-        <h2 class="h2-md text-center font-light">Enjoy the gallery!</h2>
+        <h1 class="h2-md text-center font-light">Enjoy the gallery!</h1>
         <!-- toggle modal -->
         <button
           v-if="isAuthorizedUser"
@@ -149,7 +157,7 @@ const onSubmit = async (): Promise<void> => {
             <NuxtImg
               provider="cloudinary"
               :src="formatPostUrl(post.imageId)"
-              alt="image card"
+              :alt="postAlt(post.content)"
               class="relative z-0 aspect-square w-full object-cover object-center"
               loading="lazy"
             />
@@ -169,7 +177,7 @@ const onSubmit = async (): Promise<void> => {
       <template #body="{ close }">
         <div class="px-xs pb-xs">
           <form @submit.prevent="onSubmit">
-            <MclFormGroup field-id="file-input" class="mt-sm">
+            <MclFormGroup field-id="file-input" label="Photo" class="mt-sm">
               <MclInputFile
                 id="file-input"
                 :model-value="imageFileRef ?? null"
@@ -184,12 +192,16 @@ const onSubmit = async (): Promise<void> => {
               />
               <p
                 v-if="photoKept && imageFileRef"
-                class="mt-3xs text-sm text-dark-1"
+                class="mt-3xs text-sm text-dark-2"
               >
                 Photo kept: {{ imageFileRef.name }}
               </p>
             </MclFormGroup>
-            <MclFormGroup field-id="content-input" class="mt-sm">
+            <MclFormGroup
+              field-id="content-input"
+              label="Caption"
+              class="mt-sm"
+            >
               <MclTextArea
                 id="content-input"
                 v-model="contentRef"
@@ -200,11 +212,10 @@ const onSubmit = async (): Promise<void> => {
                 show-border
               />
             </MclFormGroup>
-            <div
-              v-if="busy"
-              class="mt-xs text-sm text-dark-1"
-              aria-live="polite"
-            >
+            <p class="sr-only" role="status" aria-live="polite">
+              {{ stageText }}
+            </p>
+            <div v-if="busy" class="mt-xs text-sm text-dark-2">
               <p v-if="uploadState === 'preparing'">Preparing photo…</p>
               <template v-else-if="progress < 100">
                 <div
@@ -235,7 +246,7 @@ const onSubmit = async (): Promise<void> => {
               </button>
               <button
                 type="reset"
-                class="btn text-light-1 btn-warning"
+                class="btn text-dark-4 btn-warning"
                 :disabled="busy"
                 @click="close"
               >

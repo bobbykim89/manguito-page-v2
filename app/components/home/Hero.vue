@@ -16,11 +16,11 @@ defineProps<{
         class="ml-auto flex h-full max-w-screen-sm flex-col items-center justify-center md:items-start md:pl-md"
       >
         <div>
-          <h3
+          <p
             class="h3-md mb-2xs ml-2xs text-start font-semibold tracking-wider"
           >
             Welcome to
-          </h3>
+          </p>
           <h1 class="h1-md mb-sm text-primary" v-html="hadingText"></h1>
         </div>
         <p
@@ -30,7 +30,7 @@ defineProps<{
         <div class="mx-auto">
           <NuxtLink
             :to="linkUrl"
-            class="btn btn-progress animate-bounce drop-shadow-md btn-primary"
+            class="btn btn-progress animate-bounce-settle drop-shadow-md btn-primary"
           >
             <span>
               {{ linkText }}

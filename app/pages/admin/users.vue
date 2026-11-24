@@ -51,7 +51,7 @@ const onSubmit = async () => {
 
 <template>
   <div class="font-inter relative mx-auto max-w-screen-md px-2xs py-md">
-    <h2 class="h2-md mb-xs">Users</h2>
+    <h1 class="h2-md mb-xs">Users</h1>
     <div class="grid gap-2">
       <div
         v-for="user in res"
@@ -66,8 +66,8 @@ const onSubmit = async () => {
         <div class="flex items-center justify-end md:justify-center">
           <!-- delete -->
           <button
-            class="text-dark-1 duration-300 ease-linear hover:opacity-65"
-            aria-label="delete post"
+            class="text-dark-2 duration-300 ease-linear hover:opacity-65"
+            aria-label="edit user"
             @click="openEdit(user)"
           >
             <svg
@@ -117,11 +117,15 @@ const onSubmit = async () => {
               }}</label>
             </div>
             <div class="flex justify-end gap-2">
-              <button class="btn btn-primary" role="button" type="submit">
+              <button
+                class="btn text-light-1 btn-primary"
+                role="button"
+                type="submit"
+              >
                 Submit
               </button>
               <button
-                class="btn btn-warning"
+                class="btn text-dark-4 btn-warning"
                 role="button"
                 type="reset"
                 @click="close"

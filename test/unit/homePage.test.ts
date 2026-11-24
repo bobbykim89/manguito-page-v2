@@ -1,6 +1,6 @@
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { getQuery } from 'h3'
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import HomePage from '@/pages/index.vue'
 import { clearApiMocks, mockApi, okEnvelope, resetState } from './helpers'
 
@@ -14,7 +14,11 @@ const post = {
 }
 
 describe('home page', () => {
-  beforeEach(resetState)
+  beforeEach(() => {
+    resetState()
+    // the Nuxt app outlives each test: drop the cached /api/post answer
+    clearNuxtData()
+  })
   afterEach(clearApiMocks)
 
   it('asks for the 7 newest posts', async () => {
@@ -25,5 +29,28 @@ describe('home page', () => {
     })
     await mountSuspended(HomePage)
     expect(limit).toBe('7')
+  })
+
+  it('shows a message, not a spinner, when there are no posts', async () => {
+    mockApi('GET', '/api/post', () =>
+      okEnvelope({ posts: [], nextCursor: null }),
+    )
+    const wrapper = await mountSuspended(HomePage)
+    await vi.waitFor(() =>
+      expect(wrapper.text()).toContain('No photos to show right now.'),
+    )
+    expect(wrapper.find('.animate-spin').exists()).toBe(false)
+  })
+
+  it('shows a tile per post', async () => {
+    mockApi('GET', '/api/post', () =>
+      okEnvelope({ posts: [post, { ...post, _id: 'p2' }], nextCursor: null }),
+    )
+    const wrapper = await mountSuspended(HomePage)
+    await vi.waitFor(() =>
+      expect(wrapper.findAll('button[aria-label^="Flip photo"]')).toHaveLength(
+        2,
+      ),
+    )
   })
 })

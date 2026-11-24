@@ -53,7 +53,7 @@ const socialUrls = {
             />
           </div>
           <div class="text-dark-3">
-            <h2 class="h2-md mb-xs">About Manguito Page</h2>
+            <h1 class="h2-md mb-xs">About Manguito Page</h1>
             <div class="mb-xs text-lg font-bold">
               <p>
                 A photo blog dedicated to Manguito, an adorable peach-faced

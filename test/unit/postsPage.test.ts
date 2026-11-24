@@ -70,6 +70,15 @@ describe('posts page new-post modal', () => {
     expect(wrapper.find('[role="dialog"]').classes()).toContain('rounded-lg')
   })
 
+  it('labels the photo and caption fields', async () => {
+    const wrapper = await mountAsAdmin()
+    await openModal(wrapper)
+    expect(wrapper.find('label[for="file-input"]').text()).toContain('Photo')
+    expect(wrapper.find('label[for="content-input"]').text()).toContain(
+      'Caption',
+    )
+  })
+
   it('requires a file', async () => {
     const wrapper = await mountAsAdmin()
     await openModal(wrapper)
@@ -245,6 +254,21 @@ describe('posts page upload', () => {
     expect(bar.exists()).toBe(true)
     expect(bar.attributes('aria-valuenow')).toBe('30')
     expect(wrapper.text()).toContain('Uploading… 30%')
+    FakeXhr.last.respond(201, okEnvelope(fresh))
+  })
+
+  it('announces the upload stage, not each percent', async () => {
+    const wrapper = await mountAsAdmin()
+    await pickAndSave(wrapper)
+    FakeXhr.last.progress(40, 100)
+    await flush()
+    const live = wrapper.findAll('[role="dialog"] [aria-live]')
+    expect(live).toHaveLength(1)
+    expect(live[0]!.text()).toBe('Uploading photo')
+    const bar = wrapper.find('[role="progressbar"]')
+    expect(bar.attributes('aria-valuenow')).toBe('40')
+    expect(bar.element.closest('[aria-live]')).toBeNull()
+    expect(wrapper.text()).toContain('Uploading… 40%')
     FakeXhr.last.respond(201, okEnvelope(fresh))
   })
 

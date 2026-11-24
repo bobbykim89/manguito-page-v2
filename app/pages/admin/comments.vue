@@ -24,7 +24,7 @@ const onDelete = async (id: string) => {
 
 <template>
   <div class="font-inter mx-auto max-w-screen-md px-2xs py-md">
-    <h2 class="h2-md mb-xs">Comments</h2>
+    <h1 class="h2-md mb-xs">Comments</h1>
     <div class="grid gap-2">
       <div
         v-for="comment in res"
@@ -35,7 +35,7 @@ const onDelete = async (id: string) => {
           <p>
             {{ comment.text }}
           </p>
-          <div class="text-end text-sm text-dark-1">
+          <div class="text-end text-sm text-dark-2">
             <p>{{ comment?.author.name }}</p>
             <p><LocalDate :datetime="comment.date" /></p>
           </div>
@@ -43,8 +43,8 @@ const onDelete = async (id: string) => {
         <div class="flex items-center justify-end md:justify-center">
           <!-- delete -->
           <button
-            class="text-dark-1 duration-300 ease-linear hover:opacity-65"
-            aria-label="delete post"
+            class="text-dark-2 duration-300 ease-linear hover:opacity-65"
+            aria-label="delete comment"
             @click="onDelete(comment._id!.toString())"
           >
             <svg

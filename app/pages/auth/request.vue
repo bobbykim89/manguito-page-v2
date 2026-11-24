@@ -46,7 +46,7 @@ const handleFormSubmit = async () => {
     <div
       class="mx-auto max-w-[28rem] rounded-lg bg-light-3 px-xs py-md drop-shadow-md md:px-sm"
     >
-      <h2 class="h2-md mb-sm text-center">Request Reset</h2>
+      <h1 class="h2-md mb-sm text-center">Request Reset</h1>
       <form @submit.prevent="handleFormSubmit">
         <MclFormGroup
           field-id="email"
@@ -66,7 +66,7 @@ const handleFormSubmit = async () => {
         <button
           role="button"
           type="submit"
-          class="btn btn-full text-light-3 btn-primary"
+          class="btn btn-full text-light-1 btn-primary"
         >
           Submit
         </button>

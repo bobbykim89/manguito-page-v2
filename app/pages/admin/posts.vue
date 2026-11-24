@@ -35,7 +35,7 @@ const onDelete = async (id: string) => {
 
 <template>
   <div class="font-inter mx-auto max-w-screen-md px-2xs py-md">
-    <h2 class="h2-md mb-xs">Posts</h2>
+    <h1 class="h2-md mb-xs">Posts</h1>
     <div class="grid gap-2">
       <div
         v-for="post in posts"
@@ -56,7 +56,7 @@ const onDelete = async (id: string) => {
             <p>
               {{ post.content }}
             </p>
-            <div class="text-end text-sm text-dark-1">
+            <div class="text-end text-sm text-dark-2">
               <p>{{ post?.author.name }}</p>
               <p><LocalDate :datetime="post.date" /></p>
             </div>
@@ -64,7 +64,7 @@ const onDelete = async (id: string) => {
           <div class="flex items-center justify-end md:justify-center">
             <!-- delete -->
             <button
-              class="text-dark-1 duration-300 ease-linear hover:opacity-65"
+              class="text-dark-2 duration-300 ease-linear hover:opacity-65"
               aria-label="delete post"
               @click="onDelete(post._id!.toString())"
             >

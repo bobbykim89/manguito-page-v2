@@ -32,7 +32,7 @@ const onSubmit = async () => {
     <div
       class="mx-auto max-w-[28rem] rounded-lg bg-light-3 px-xs py-md drop-shadow-md md:px-sm"
     >
-      <h3 class="h3-md mb-sm text-center">Request Admin Privileges</h3>
+      <h1 class="h3-md mb-sm text-center">Request Admin Privileges</h1>
       <form @submit.prevent="onSubmit">
         <MclFormGroup
           field-id="admin-phrase"
@@ -47,7 +47,7 @@ const onSubmit = async () => {
             v-model="phraseRef"
           />
         </MclFormGroup>
-        <button role="submit" class="btn btn-full text-light-3 btn-primary">
+        <button type="submit" class="btn btn-full text-light-1 btn-primary">
           Submit
         </button>
       </form>

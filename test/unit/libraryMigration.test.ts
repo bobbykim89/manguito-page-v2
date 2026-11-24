@@ -30,6 +30,27 @@ const banned: Array<[RegExp, string]> = [
     /\bmax-w-(3xs|2xs|xs|sm|md|lg|xl|[2-7]xl)\b/,
     'max-w-<size> resolves to the theme spacing scale: use max-w-[<n>rem]',
   ],
+  // WCAG 2.0 AA contrast (#14), checked in contrast.test.ts
+  [
+    /\btext-dark-1\b/,
+    'text-dark-1 fails 4.5:1 on light backgrounds: text-dark-2',
+  ],
+  [
+    /text-light-3 btn-primary/,
+    'light-3 on pink fails 4.5:1: text-light-1 btn-primary',
+  ],
+  // WCAG 2.0 names and roles (#14)
+  [/role="submit"/, 'submit is not an ARIA role: use type="submit"'],
+  [/alt="image card"/, 'name a photo by its post: postAlt(post.content)'],
+  [
+    /<MclCardC\b|import[^\n]*\bMclCardC\b/,
+    'MclCardC is a clickable div a keyboard cannot reach: FlipCard',
+  ],
+  // WCAG 2.0 2.2.2: nothing decorative moves forever (#14)
+  [
+    /\banimate-(bounce|ping|pulse)(?![-\w])/,
+    'loops forever: use animate-bounce-settle (stops within 5 s)',
+  ],
 ]
 
 describe('component library migration', () => {

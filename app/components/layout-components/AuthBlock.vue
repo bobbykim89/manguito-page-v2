@@ -25,11 +25,11 @@ const handleUserBlockClick = (e: Event) => {
 </script>
 
 <template>
-  <div class="bg-dark-1 px-2xs py-2xs lg:bg-transparent lg:px-0 lg:py-0">
+  <div class="bg-dark-2 px-2xs py-2xs lg:bg-transparent lg:px-0 lg:py-0">
     <!-- auth btns -->
     <div
       v-if="auth"
-      class="flex flex-wrap items-center justify-center gap-4 border-dark-3 px-sm md:border-l-2 lg:justify-normal"
+      class="flex flex-wrap items-center justify-center gap-4 border-dark-3 px-sm text-light-1 md:border-l-2 lg:justify-normal lg:text-inherit"
     >
       <button
         class="flex items-center gap-1 font-bold transition-opacity duration-300 ease-linear hover:opacity-60"
@@ -74,7 +74,7 @@ const handleUserBlockClick = (e: Event) => {
     <!-- guest btns -->
     <div
       v-else
-      class="flex items-center justify-center gap-xs border-dark-3 px-sm text-light-4 md:justify-normal md:gap-sm md:border-l-2 md:text-dark-3 lg:text-dark-3"
+      class="flex items-center justify-center gap-xs border-dark-3 px-sm text-light-1 md:justify-normal md:gap-sm md:border-l-2 lg:text-dark-3"
     >
       <!-- login btn -->
       <NuxtLink

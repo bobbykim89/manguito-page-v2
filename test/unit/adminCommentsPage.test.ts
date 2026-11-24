@@ -38,7 +38,7 @@ describe('admin comments delete', () => {
     )
     const wrapper = await mountSuspended(AdminCommentsPage)
     expect(reads).toBe(1)
-    await wrapper.find('button[aria-label="delete post"]').trigger('click')
+    await wrapper.find('button[aria-label="delete comment"]').trigger('click')
     await new Promise((resolve) => setTimeout(resolve, 50))
     const alertStore = useAlertStore(useNuxtApp().$pinia as Pinia)
     expect(alertStore.alertMessage).toBe('Access denied.')

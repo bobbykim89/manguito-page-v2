@@ -50,7 +50,7 @@ const onDelete = (e: Event) => {
         <p>
           {{ post.content }}
         </p>
-        <div class="text-end text-sm text-dark-1">
+        <div class="text-end text-sm text-dark-2">
           <p>{{ post?.author.name }}</p>
           <p><LocalDate :datetime="post.date" /></p>
           <div v-if="isAdmin || isAuthor" class="mt-3xs flex justify-end gap-2">
@@ -107,7 +107,7 @@ const onDelete = (e: Event) => {
               :invalid-feedback="LIMIT_MESSAGES.captionLong"
             />
           </MclFormGroup>
-          <div class="mt-3xs flex justify-end gap-2 text-dark-1">
+          <div class="mt-3xs flex justify-end gap-2 text-dark-2">
             <!-- cancel -->
             <button
               class="duration-300 ease-linear hover:opacity-65"
