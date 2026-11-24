@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs'
+import { JSDOM } from 'jsdom'
 import mongoose from 'mongoose'
 import { afterEach, describe, expect, it } from 'vitest'
 import { insertUser } from '../utils/auth'
@@ -118,5 +120,37 @@ describe('dates', () => {
     const comments = await page('/admin/comments', token)
     expect(comments.status).toBe(200)
     expect(comments.html.match(timeTag)?.length ?? 0).toBeGreaterThanOrEqual(1)
+  })
+})
+
+describe('about page', () => {
+  it('shows the approved copy, the package version and its own description', async () => {
+    const pkg = JSON.parse(readFileSync('package.json', 'utf8')) as {
+      version: string
+    }
+    const res = await page('/about')
+    expect(res.status).toBe(200)
+    const doc = new JSDOM(res.html).window.document
+    const text = doc.querySelector('main')!.textContent!.replace(/\s+/g, ' ')
+    for (const line of [
+      "Manguito Page is a photo diary of Manguito, a peach-faced lovebird who came to us one late May as a fragile baby who couldn't even chew banana. These days he chirps, flies laps around the house, steals bites of our food and sticks close to my wife.",
+      "Here you'll find his everyday moments: the cuddles, the millet and the mischief. Browse the gallery, and sign up if you'd like to comment on your favourite photos.",
+      "I built the site myself and keep improving it as a side project. It's made with Nuxt, and you can install it as an app on your phone.",
+      `Version: ${pkg.version}`,
+      'Maintainer: Bobby Kim',
+    ]) {
+      expect(text).toContain(line)
+    }
+    const description =
+      'Meet Manguito, a peach-faced lovebird, and the story behind his photo blog.'
+    for (const selector of [
+      'meta[name="description"]',
+      'meta[property="og:description"]',
+      'meta[name="twitter:description"]',
+    ]) {
+      const metas = doc.querySelectorAll(selector)
+      expect(metas).toHaveLength(1)
+      expect(metas[0]!.getAttribute('content')).toBe(description)
+    }
   })
 })
