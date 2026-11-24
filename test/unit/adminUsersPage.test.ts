@@ -43,8 +43,7 @@ describe('admin users role change', () => {
     const wrapper = await mountSuspended(AdminUsersPage, {
       global: { stubs: { transition: false } },
     })
-    // the edit button is (mis)labelled "delete post" today; #14 fixes the label
-    await wrapper.find('button[aria-label="delete post"]').trigger('click')
+    await wrapper.find('button[aria-label="edit user"]').trigger('click')
     await settle()
     const user = wrapper.find('#option-user').element as HTMLInputElement
     expect(user.checked).toBe(true)
@@ -63,7 +62,7 @@ describe('admin users role change', () => {
     const wrapper = await mountSuspended(AdminUsersPage, {
       global: { stubs: { transition: false } },
     })
-    await wrapper.find('button[aria-label="delete post"]').trigger('click')
+    await wrapper.find('button[aria-label="edit user"]').trigger('click')
     await settle()
     await wrapper.find('#option-manager').setValue(true)
     await wrapper.find('[role="dialog"] form').trigger('submit')
