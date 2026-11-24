@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import LocalDate from '@/components/LocalDate.vue'
 import type { PostType } from '#shared/types'
 import { MclFormGroup, MclTextArea } from '@bobbykim/mcl-forms'
 import { LIMIT_MESSAGES, LIMITS } from '#shared/dto/limits'
@@ -51,9 +52,7 @@ const onDelete = (e: Event) => {
         </p>
         <div class="text-end text-sm text-dark-1">
           <p>{{ post?.author.name }}</p>
-          <ClientOnly>
-            <p>{{ new Date(post.date).toDateString() }}</p>
-          </ClientOnly>
+          <p><LocalDate :datetime="post.date" /></p>
           <div v-if="isAdmin || isAuthor" class="mt-3xs flex justify-end gap-2">
             <!-- edit -->
             <button

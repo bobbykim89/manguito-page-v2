@@ -18,7 +18,9 @@ const userStore = useUserStore()
 const { currentUser, isAuthenticated, isAdmin, isManagerOrUp } =
   storeToRefs(userStore)
 const contentRef = ref<HTMLDivElement>()
-const { copy, isSupported } = useClipboard()
+// legacy: true makes isSupported true on the server too (no hydration mismatch)
+// and falls back to execCommand where the Clipboard API is missing (plain http)
+const { copy, isSupported } = useClipboard({ legacy: true })
 
 // both start before either is awaited; an unknown id throws a fatal 404
 const postId = () => route.params.id as string

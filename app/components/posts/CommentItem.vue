@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import LocalDate from '@/components/LocalDate.vue'
 import type { CommentType } from '#shared/types'
 
 const props = defineProps<{
@@ -24,9 +25,7 @@ const onDelete = () => {
     <p>{{ comment.text }}</p>
     <div class="text-end text-sm text-dark-1">
       <p>{{ comment?.author.name }}</p>
-      <ClientOnly>
-        <p>{{ new Date(comment.date).toDateString() }}</p>
-      </ClientOnly>
+      <p><LocalDate :datetime="comment.date" /></p>
       <div
         v-if="isManagerOrUp || isAuthor"
         class="mt-3xs flex justify-end gap-2"

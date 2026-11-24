@@ -1,6 +1,7 @@
 import mongoose from 'mongoose'
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it } from 'vitest'
 import { insertUser } from '../utils/auth'
+import { clearContent, insertComment, insertPost } from '../utils/content'
 import { db } from '../utils/db'
 import { page } from '../utils/page'
 
@@ -54,6 +55,18 @@ describe('post page', () => {
   })
 })
 
+describe('copy-link button', () => {
+  afterEach(clearContent)
+
+  it('server-renders the copy-link button', async () => {
+    const { id } = await insertUser('MANAGER')
+    const postId = await insertPost(id)
+    const res = await page(`/posts/${postId}`)
+    expect(res.status).toBe(200)
+    expect(res.html).toMatch(/<button[^>]*aria-label="copy current url"/)
+  })
+})
+
 describe('error page', () => {
   it('shows a 404 for an unknown route', async () => {
     const res = await page('/does-not-exist')
@@ -74,5 +87,36 @@ describe('form labels', () => {
       expect(res.html).toMatch(new RegExp(`<label[^>]*for="${id}"`))
       expect(res.html).toMatch(new RegExp(`<input[^>]*id="${id}"`))
     }
+  })
+})
+
+describe('dates', () => {
+  // a <time> with a datetime and some text: the date is in the server HTML
+  const timeTag = /<time[^>]*datetime="[^"]+"[^>]*>[^<]+<\/time>/g
+  const footerYear = /Manguito Page\s*<time[^>]*>\d{4}<\/time>/
+
+  afterEach(clearContent)
+
+  it('server-renders the post and comment dates and the footer year', async () => {
+    const { id } = await insertUser('MANAGER')
+    const postId = await insertPost(id)
+    await insertComment(id, postId)
+    const res = await page(`/posts/${postId}`)
+    expect(res.status).toBe(200)
+    expect(res.html.match(timeTag)?.length ?? 0).toBeGreaterThanOrEqual(2)
+    expect(res.html).toMatch(footerYear)
+  })
+
+  it('server-renders dates on /admin/posts and /admin/comments', async () => {
+    const { id, token } = await insertUser('ADMIN')
+    const postId = await insertPost(id)
+    await insertComment(id, postId)
+    const posts = await page('/admin/posts', token)
+    expect(posts.status).toBe(200)
+    expect(posts.html.match(timeTag)?.length ?? 0).toBeGreaterThanOrEqual(1)
+    expect(posts.html).toMatch(footerYear)
+    const comments = await page('/admin/comments', token)
+    expect(comments.status).toBe(200)
+    expect(comments.html.match(timeTag)?.length ?? 0).toBeGreaterThanOrEqual(1)
   })
 })

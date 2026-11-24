@@ -240,6 +240,25 @@ describe('postStore paging', () => {
     expect(store.status).toBe('done')
   })
 
+  it('loadFirstPage keeps the server result while hydrating', async () => {
+    pages({ posts: ['p1'], nextCursor: null })
+    const store = usePostStore()
+    // page one failed during the server render
+    store.$patch({ status: 'error' })
+    const nuxtApp = useNuxtApp()
+    nuxtApp.isHydrating = true
+    try {
+      await store.loadFirstPage()
+    } finally {
+      nuxtApp.isHydrating = false
+    }
+    expect(requests).toHaveLength(0)
+    expect(store.status).toBe('error')
+    await store.retry()
+    expect(requests).toHaveLength(1)
+    expect(store.posts.map((x) => x._id)).toEqual(['p1'])
+  })
+
   it('loadMore appends the next page', async () => {
     pages(
       { posts: ['p1'], nextCursor: 'c1' },
