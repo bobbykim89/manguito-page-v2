@@ -2,7 +2,6 @@
 import { useRequestURL } from '#app'
 
 const url = useRequestURL()
-const { version } = useAppConfig()
 const description =
   'Meet Manguito, a peach-faced lovebird, and the story behind his photo blog.'
 
@@ -61,7 +60,7 @@ const socialUrls = {
           <div class="text-dark-3">
             <h1 class="h2-md mb-xs">About Manguito Page</h1>
             <div class="mb-xs text-lg font-bold">
-              <!-- a gap between the paragraphs; Version and Maintainer stay a pair -->
+              <!-- a gap between the paragraphs and before the maintainer line -->
               <div class="mb-xs space-y-2xs">
                 <p>
                   Manguito Page is a photo diary of Manguito, a peach-faced
@@ -75,13 +74,7 @@ const socialUrls = {
                   and the mischief. Browse the gallery, and sign up if you'd
                   like to comment on your favourite photos.
                 </p>
-                <p>
-                  I built the site myself and keep improving it as a side
-                  project. It's made with Nuxt, and you can install it as an app
-                  on your phone.
-                </p>
               </div>
-              <p>Version: {{ version }}</p>
               <p>Maintainer: Bobby Kim</p>
             </div>
             <div class="flex items-center justify-center gap-xs">
