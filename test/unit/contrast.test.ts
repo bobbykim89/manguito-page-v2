@@ -68,6 +68,9 @@ const pairs: Pair[] = [
   ['error card', 'dark-3', 'light-3', false],
   ['About button', 'light-3', 'dark-3', false],
   ['admin sidebar', 'light-1', 'dark-3', false],
+  // mcl-forms' invalid-feedback is text-xs text-danger on the card
+  ['form error on auth card', 'danger', 'light-3', false],
+  ['form error on comment card', 'danger', 'light-4', false],
 ]
 
 describe('colour contrast (WCAG 2.0 AA)', () => {

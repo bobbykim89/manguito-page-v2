@@ -94,7 +94,7 @@ const {
   <div :class="['bg-light-1', 'relative', 'h-full']">
     <a
       href="#main"
-      class="sr-only z-50 rounded-md bg-light-1 px-xs py-3xs font-semibold text-dark-4 focus:not-sr-only focus:fixed focus:top-2xs focus:left-2xs focus-visible:mcl-focus-ring"
+      class="sr-only z-50 rounded-md bg-light-1 px-xs py-3xs font-semibold text-dark-4 focus:not-sr-only focus:fixed focus:top-2xs focus:left-2xs focus:z-[60] focus-visible:mcl-focus-ring"
       >Skip to content</a
     >
     <HeaderHorizontal

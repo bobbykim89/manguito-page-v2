@@ -30,7 +30,9 @@ const flip = async () => {
 </script>
 
 <template>
-  <div class="tile-perspective">
+  <!-- the ring goes on this unclipped wrapper: the tile's overflow-hidden
+       would cut off a ring drawn outside the button or link -->
+  <div class="tile-perspective has-[:focus-visible]:mcl-focus-ring">
     <div
       :class="[
         'tile relative aspect-square max-h-100 overflow-hidden transition duration-1600 motion-reduce:transition-none',
@@ -42,14 +44,14 @@ const flip = async () => {
         v-if="!flipped"
         type="button"
         :aria-label="`Flip photo ${index}`"
-        class="absolute inset-0 h-full w-full cursor-pointer focus-visible:mcl-focus-ring"
+        class="absolute inset-0 h-full w-full cursor-pointer outline-none"
         @click="flip"
       ></button>
       <NuxtLink
         v-else
         ref="linkRef"
         :to="to"
-        class="absolute inset-0 block focus-visible:mcl-focus-ring"
+        class="absolute inset-0 block outline-none"
       >
         <Transition
           appear

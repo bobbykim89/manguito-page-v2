@@ -21,11 +21,12 @@ export const scan = async (
 ): Promise<AxeResults['violations']> => {
   const dom = new JSDOM(html, { runScripts: 'outside-only' })
   try {
-    // jsdom loads no stylesheets: give it the one rule axe's visibility checks
-    // depend on here (Tailwind's .hidden, e.g. the theme's hamburger checkbox
-    // that the browser never shows), instead of turning whole rules off
+    // jsdom loads no stylesheets: hide the theme's hamburger checkbox, which
+    // the browser never shows (Tailwind's .hidden), instead of turning the
+    // label rule off; only that element, so the desktop header (also in a
+    // .hidden wrapper) is still scanned
     const style = dom.window.document.createElement('style')
-    style.textContent = '.hidden { display: none !important; }'
+    style.textContent = '.hamburger__checkbox { display: none !important; }'
     dom.window.document.head.append(style)
     dom.window.eval(axeSource)
     const axe = (dom.window as unknown as { axe: typeof import('axe-core') })
@@ -127,6 +128,21 @@ describe('WCAG 2.0 A/AA', () => {
     expect(
       violations.map((v) => `${v.id}: ${v.nodes[0]?.html.slice(0, 160)}`),
     ).toEqual([])
+  })
+
+  // the desktop header (nav, account controls) sits in the theme's
+  // `hidden lg:block` wrapper; the scan must still see it
+  it('scans the desktop header', async () => {
+    const res = await render('/', 'USER')
+    const dom = new JSDOM(res.html)
+    const desktop = dom.window.document.querySelector('header div.hidden')
+    expect(desktop).not.toBeNull()
+    desktop!.append(dom.window.document.createElement('img'))
+    const violations = await scan(dom.serialize(), {
+      type: 'rule',
+      values: ['image-alt'],
+    })
+    expect(violations.map((v) => v.id)).toEqual(['image-alt'])
   })
 
   it('scans the Home photo tiles', async () => {

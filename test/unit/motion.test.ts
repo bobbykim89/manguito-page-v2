@@ -29,6 +29,15 @@ describe('motion', () => {
     },
   )
 
+  it('bounce-settle starts and ends at rest, so stopping makes no jump', () => {
+    const frames = css.match(
+      /@keyframes bounce-settle\s*\{([\s\S]*?)\n {2}\}/,
+    )?.[1]
+    expect(frames).toBeDefined()
+    const rest = frames!.match(/0%,\s*100%\s*\{([^}]*)\}/)?.[1]
+    expect(rest).toMatch(/transform:\s*none/)
+  })
+
   it('stops decoration when reduced motion is asked for', () => {
     expect(css).toMatch(/@media \(prefers-reduced-motion: reduce\)/)
   })

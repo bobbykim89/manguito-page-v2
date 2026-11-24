@@ -9,6 +9,8 @@
   --mcl-primary: #d02b78;
   --mcl-success: #518016;
   --mcl-info: #007caa;
+  /* form errors sit on light-3 and light-4 cards */
+  --mcl-danger: #a92727;
 }
 
 @theme {
@@ -30,16 +32,17 @@
     }
   }
 
-  /* Tailwind's bounce, run a few times instead of forever */
+  /* Tailwind's bounce, run a few times instead of forever; it starts and ends
+     at rest, so it doesn't jump when it stops */
   @keyframes bounce-settle {
     0%,
     100% {
-      transform: translateY(-25%);
-      animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
-    }
-    50% {
       transform: none;
       animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+    }
+    50% {
+      transform: translateY(-25%);
+      animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
     }
   }
 
